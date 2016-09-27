@@ -1,0 +1,951 @@
+{% load staticfiles %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/erm_css/style.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.4-dist/css/bootstrap.css' %}" />
+
+ 
+<script type="text/javascript" src="{% static 'jquery-1.12.1/jquery-1.12.1.min.js' %}" ></script>
+<script type="text/javascript" src="{% static 'js/erm_js/main.js' %}" ></script>
+<script type="text/javascript" src="{% static 'bootstrap-3.3.4-dist/js/bootstrap.js' %}" ></script>
+
+
+<link rel="stylesheet" type="text/css" href="{% static 'jquery-ui-1.11.4.custom/jquery-ui.css' %}" />
+<script type="text/javascript" src="{% static 'jquery-ui-1.11.4.custom/jquery-ui.js' %}" ></script>
+
+<script type="text/javascript" src="{% static 'jasny-bootstrap/js/jasny-bootstrap.js' %}" ></script>
+
+
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<link rel="icon" href="/static/icons/erm.ico">
+		<title>NCCC ERM's DTR</title>
+		
+	</head>
+	<body>
+		<div id="wholepage" class="container">
+			<nav class="navbar navbar-inverse">
+				 <div class="container-fluid">
+				    <!-- Collect the nav links, forms, and other content for toggling -->
+				    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+				      	<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+				        <span class="sr-only">Toggle navigation</span>
+				        <span class="icon-bar"></span>
+				        <span class="icon-bar"></span>
+				        <span class="icon-bar"></span>
+				      </button>
+				      
+				      {% if isadmin == 2 or isadmin == 3 or isadmin == 4 %}
+				      	<a class="home navbar-brand" href="/ERM/addUser/">NCCC ERM's DTR</a>	
+				      {% else %}
+				      	<a class="home navbar-brand" href="/ERM/main/">NCCC ERM's DTR</a>
+				      {% endif %}
+				      
+				      <ul class="nav navbar-nav navbar-right">
+				        <li><p class="navbar-text navbar-right">Signed in as &nbsp;&nbsp;&nbsp;&nbsp;</p></li>
+				        <li class="dropdown">
+				          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><b>{{currUser}}, {{fname}} {{mname}} {{lname}}</b><span class="caret"></span></a>
+				          <ul class="dropdown-menu">
+				          	{% if isadmin == 0 %}
+				          	<li><a href="/ERM/profile/">My Profile</a></li>
+				          	<li><a href="/ERM/main/">My DTR</a></li>
+				          	<li><a href="/ERM/changeSched/">Change Schedule</a></li>
+				            {% elif isadmin == 1 %}
+				            <li><a href="/ERM/profile/">My Profile</a></li>
+				            <li><a href="/ERM/main/">My DTR</a></li>
+				          	<li><a href="/ERM/changeSched/">Change Schedule</a></li>
+				            <li role="separator" class="divider">&nbsp;</li>
+				          	<li><a href="/ERM/approval/">Approve DTR</a></li>
+				          	<li role="separator" class="divider">&nbsp;</li>
+				          	<li><a href="/ERM/assocpms/">PMS</a></li>
+				            {% elif isadmin == 2 %}
+				          	<li><a href="/ERM/addHoliday/">Holiday Masterlist</a></li>
+				            <li><a href="/ERM/addUser/">User Masterlist</a></li>
+				            <li><a href="/ERM/addSched/">Assign Schedules</a></li>
+				            <li role="separator" class="divider">&nbsp;</li>
+				            <li><a href="/ERM/periodreports/">Generate Reports</a></li>
+				            {% elif isadmin == 3 or isadmin == 4 %}
+				          	<li><a href="/ERM/addHoliday/">Holiday Masterlist</a></li>
+				            <li><a href="/ERM/addUser/">User Masterlist</a></li>
+				            <li><a href="/ERM/addSched/">Assign Schedules</a></li>
+				            <li role="separator" class="divider">&nbsp;</li>
+				            <li><a href="/ERM/periodreports/">Generate Reports</a></li>
+				            
+			          		<li role="separator" class="divider">&nbsp;</li>
+			          		<li><a href="/ERM/approval/">Approve DTR</a></li>
+			          		
+				            <li role="separator" class="divider">&nbsp;</li>
+				            <li><a class="outputxlslink" href="/ERM/outputtoxls">PMS</a></li>
+				            {% endif %}
+				            
+				            <li role="separator" class="divider">&nbsp;</li>
+				            <li><a id="pwdlink" role="button">Change Password</a></li>
+				            <li role="separator" class="divider">&nbsp;</li>
+				            <li><a href="/ERM/logout/">Logout</a></li>
+				            
+				          </ul>
+				        </li>
+				        
+				      </ul>
+				      
+				    </div><!-- /.navbar-collapse -->
+				  </div><!-- /.container-fluid -->
+			</nav>
+			
+			
+			<div id="bodycontent" class="bodydiv container-fluid content">
+				{% block content %}
+				
+				{% endblock %}
+			</div>
+			
+			<div id="footer">
+				<label style="display:block;">New City Commercial Corporation (NCCC). NCCC ERM's DTR © NCCC 2015</label>
+				<span style="display:block;">NCCC ERM's DTR is maintained by NCCC, ICT Applications.</span>
+				<span id="stat"><!-- STATS: Total: %(total_time).2fs Python: %(python_time).2fs DB: %(db_time).2fs Queries: %(db_queries)d ENDSTATS --></span>
+			</div>
+			
+		</div>
+	</body>
+</html>
+
+
+
+
+
+<!-- DIALOG OUTPUT EXCEL -->
+<div id="dialogoutputxls" title="Output to Excel" class="dialogbox">
+	<form method="post" action="/ERM/outputtoxls/" id="frmoutputxls">
+		{% csrf_token %}
+		<label style="font-family: Courier;">Choose year to generate:</label>
+		{{ formyear.xlsyear }}
+	</form>
+</div>
+<!-- OUTPUT EXCEL PWD -->
+
+
+
+<!-- DIALOG CHANGE PWD -->
+<div id="dialogchangepwd" title="Change Password" class="dialogbox">
+	<form method="post" action="/ERM/pwdcheck/" id="frmChangePwd">
+		{% csrf_token %}
+		<div class="row" style="margin: auto;">
+			<label id="pwdnote" style="color: red;">{{pwdmessage}}</label>
+			<br/><br/>
+			
+			<label style="font-family: Courier;">Old Password</label>
+			<input class="form-control input-sm" id="oldpwd" name="oldpwd" type="password" required>	
+			
+			<br/>
+			
+			<label style="font-family: Courier;">New Password</label>
+			<input class="form-control input-sm" id="newpwd" name="newpwd" required="required" type="password">	
+			
+			<br/>
+			
+			<label style="font-family: Courier;">Confirm New Password</label>
+			<input class="form-control input-sm" id="confirmnewpwd" name="confirmnewpwd" required="required" type="password">	
+		</div>
+		
+	</form>
+</div>
+<!-- CHANGE PWD END -->
+
+
+<!-- DIALOG PWDCHANGE NOTIF -->
+<div id="dialogpwdchngsuccess" title="Password Change Successful" class="dialogbox">
+	<p>Password has been successfully changed.</p>
+	<input id="isadmin" type="hidden" value="{{isadmin}}"/> 
+</div>
+<!-- PWDCHANGE NOTIF END -->
+
+
+
+<!-- DIALOG ADD USER  -->
+<div id="dialogadduser" title="Create User" class="dialogbox">
+	<form method="post" action="/ERM/createUser/" id="frmAddUser">
+		{% csrf_token %}
+		<div class="row" style="margin: auto;">
+		    <div style="float: left; padding-right: 15px; padding-left: 15px;">
+		        <label id="addnote" style="color: red;">Please fill up required fields.</label>
+		    </div>		
+		</div>
+		
+		<!-- 
+		<div style="width: 190px; margin-left: 25px; margin-top: 25px; margin-right: 10px; float:left;">
+			<div id="user_image" class="row image">
+				
+			</div>
+			<div class="row" style="margin-left: 25px; margin-top: 25px; margin-right: 10px; float:left;">
+				
+			</div>
+		</div>
+		 -->
+		
+		<div class="row" style="width: auto; margin-left: 25px; margin-right: 25px; margin-top: 0px; float:left;">
+			<div class="row" style="margin: auto;">
+				<fieldset>
+					<legend class="profileheader">Personal Information</legend>
+					
+					<table class="table table-borderless profile" border="0" style="padding: 10px !important;">
+						
+							<tr>
+								<td valign="middle"><b><i>User ID: <span style="color: red;">*</span></i></b></td>
+								<td valign="middle">{{ form.id }}</td>
+								
+								<td width="25px">&nbsp;</td>
+								
+								<td valign="middle"><b><i>Level: </i></b></td>
+								<td>{{ form.Level }}</td>
+							</tr>
+							<tr>
+								<td valign="middle"><b><i>First Name: <span style="color: red;">*</span></i></b></td>
+								<td>{{ form.FName }}</td>
+								
+								<td>&nbsp;</td>
+								
+								<td valign="middle"><b><i>Branch: <span style="color: red;">*</span></i></b></td>
+								<td>{{ form.Branch }}</td>
+							</tr>
+							<tr>
+								<td valign="middle"><b><i>Middle Name: <span style="color: red;">*</span></i></b></td>
+								<td>{{ form.MName }}</td>
+								
+								<td>&nbsp;</td>
+								
+								<td valign="middle"><b><i>Regularization Date: </i></b></td>
+								<td>{{ form.RegDate }}</td>
+							</tr>	
+							
+							<tr>
+								<td valign="middle"><b><i>Last Name: <span style="color: red;">*</span></i></b></td>
+								<td>{{ form.LName }}</td>
+								
+								<td>&nbsp;</td>
+								
+								<td valign="middle"><b><i>SSS ID: </i></b></td>
+								<td>{{ form.SSSNo }}</td>
+							</tr>
+							
+							<tr>
+								<td valign="middle"><b><i>Gender: </i></b></td>
+								<td>{{ form.Gender }}</td>
+								
+								<td>&nbsp;</td>
+								
+								<td valign="middle"><b><i>Pag-IBIG ID: </i></b></td>
+								<td>{{ form.PagIBIGNo }}</td>
+							</tr>
+							
+							<tr>
+								<td valign="middle"><b><i>Reports To: </i></b></td>
+								<td>{{ form.Approver }}</td>
+								
+								<td>&nbsp;</td>
+								
+								<td valign="middle"><b><i>PhilHealth ID: </i></b></td>
+								<td>{{ form.PhilHealthNo }}</td>
+							</tr>
+							
+							<tr>
+								<td valign="middle"><b><i>Approver?: </i></b></td>
+								<td>
+									<select id="isApprover" tabindex="7" name="isApprover" class="input-sm">
+										<option value="1">Yes</option>
+										<option value="0">No</option>
+									</select>
+								</td>
+								
+								<td>&nbsp;</td>
+								
+								<td valign="middle"><b><i>TIN ID: </i></b></td>
+								<td>{{ form.TINNo }}</td>
+							</tr>
+							
+							<tr>
+								<td valign="middle"><b><i>NBU / Division: </i></b></td>
+								<td>{{ form.Division }}</td>	
+								
+								<td>&nbsp;</td>
+								
+								<td valign="middle"><b><i>Tax Code: </i></b></td>
+								<td>{{ form.TaxCode }}</td>
+							</tr>
+							
+							<tr>
+								<td valign="middle"><b><i>Department: </i></b></td>
+								<td>{{ form.Dept }}</td>	
+								
+								<td>&nbsp;</td>
+								
+								<td valign="middle"><b><i>Tax Exemption: </i></b></td>
+								<td>{{ form.TaxExemption }}</td>
+							</tr>
+							
+							<tr>
+								<td valign="middle"><b><i>Designation: </i></b></td>
+								<td>{{ form.Designation }}</td>	
+								
+								<td>&nbsp;</td>
+								
+								<td valign="middle"><b><i>Professional Fee?: </i></b></td>
+								<td>
+									<select tabindex="20" name="isProfFee" id="isProfFee" class="input-sm">
+										<option value="1">Yes</option>
+										<option value="0">No</option>
+									</select>
+								</td>
+							</tr>
+							
+							<tr>
+								<td colspan="5" bgcolor="gray"></td>
+							</tr>
+							<tr>
+								<td valign="middle"><b><i>Home Address: </i></b></td>
+								<td colspan="4">{{ form.HomeAddress}}</td>
+							</tr>
+							<tr>
+								<td valign="middle"><b><i>Email Address: </i></b></td>
+								<td colspan="4">{{ form.Email }}</td>
+							</tr>
+							<tr>
+								<td valign="middle"><b><i>Civil Status: </i></b></td>
+								<td colspan="4">{{ form.CivilStatus }}</td>
+							</tr>
+							<tr>
+								<td valign="middle"><b><i>Birth Date: </i></b></td>
+								<td colspan="4">{{ form.BDate }}</td>
+							</tr>
+							<tr>
+								<td valign="middle"><b><i>Blood Type: </i></b></td>
+								<td colspan="4">{{ form.BloodType }}</td>
+							</tr>
+							<tr>
+								<td valign="middle"><b><i>Religion: </i></b></td>
+								<td colspan="4">{{ form.Religion }}</td>
+							</tr>
+							<tr>
+								<td valign="middle"><b><i>Citizenship: </i></b></td>
+								<td colspan="4">{{ form.Citizenship }}</td>
+							</tr>
+					</table>
+				</fieldset>
+			</div>
+		</div>
+	</form>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<!--
+	<div class="row">
+		<div class="col-md-12">
+			<form method="post" action="/ERM/createUser/" id="frmAddUser">
+			{% csrf_token %}
+			<div class="row" style="margin: auto; margin-bottom: 5px; vertical-align: middle; line-height: 30px;">
+				<div class="col-md-12">
+					<label id="addnote" style="color: red;">Please fill up required fields.</label>
+				</div>		
+			</div>
+			<div class="row" style="margin: auto; margin-bottom: 0px; vertical-align: middle; line-height: 30px;">
+				<div class="col-md-6">
+					<label>Associate's ID<span style="color: red;">*</span></label>
+				</div>
+				<div class="col-md-6">
+					{{ form.id }}	
+				</div>
+				
+			</div>
+			<div class="row" style="margin: auto; margin-bottom: 0px; vertical-align: middle; line-height: 30px;">
+				<div class="col-md-5">
+					{{ form.FName }}	
+				</div>
+				<div class="col-md-3">
+					{{ form.MName }}
+				</div>
+				<div class="col-md-4">
+					{{ form.LName }}
+				</div>
+			</div>
+			<div class="row" style="margin: auto; margin-bottom: 5px; vertical-align: middle; line-height: 30px;">
+				<div class="col-md-5">
+					<label><i>First Name<span style="color: red;">*</span></i></label>	
+				</div>
+				<div class="col-md-3">
+					<label><i>Middle<span style="color: red;">*</span></i></label>
+				</div>
+				<div class="col-md-4">
+					<label><i>Last Name<span style="color: red;">*</span></i></label>
+				</div>
+			</div>
+			
+			<div class="row" style="margin: auto; margin-bottom: 5px; vertical-align: middle; line-height: 30px;">
+				<div class="col-md-4">
+					<label>Gender</label>
+				</div>
+				<div class="col-md-8">
+					{{ form.Gender }}
+				</div>
+			</div>
+			
+			<div class="row" style="margin: auto; margin-bottom: 5px; vertical-align: middle; line-height: 30px;">
+				<div class="col-md-4">
+					<label>Reports to:</label>
+				</div>
+				<div class="col-md-8">
+					{{ form.Approver }}
+				</div>
+			</div>
+			
+			<div class="row" style="margin: auto; margin-bottom: 5px; vertical-align: middle; line-height: 30px;">
+				<div class="col-md-4">
+					<label>Approver?</label>
+				</div>
+				<div class="col-md-8">
+					<select name="isApprover" id="isApprover" class="form-control">
+						<option value="1">Yes</option>
+						<option value="0">No</option>
+					</select>
+				</div>
+			</div>
+			
+			<div class="row" style="margin: auto; margin-bottom: 5px; vertical-align: middle; line-height: 30px;">
+				<div class="col-md-4">
+					<label>Division</label>
+				</div>
+				<div class="col-md-8">
+					{{ form.Division }}	
+				</div>
+			</div>
+			<div class="row" style="margin: auto; margin-bottom: 5px; vertical-align: middle; line-height: 30px;">
+				<div class="col-md-4">
+					<label>Department</label>
+				</div>
+				<div class="col-md-8">
+					{{ form.Dept }}	
+				</div>
+			</div>
+			<div class="row" style="margin: auto; margin-bottom: 5px; vertical-align: middle; line-height: 30px;">
+				<div class="col-md-4">
+					<label>Branch<span style="color: red;">*</span></label>
+				</div>
+				<div class="col-md-8">
+					{{ form.Branch }}	
+				</div>
+			</div>
+			<div class="row" style="margin: auto; margin-bottom: 5px; vertical-align: middle; line-height: 30px;">
+				<div class="col-md-4">
+					<label>SSS No.</label>
+				</div>
+				<div class="col-md-8">
+					{{ form.SSSNo }}	
+				</div>
+			</div>
+			<div class="row" style="margin: auto; margin-bottom: 5px; vertical-align: middle; line-height: 30px;">
+				<div class="col-md-4">
+					<label>Pag-IBIG No.</label>
+				</div>
+				<div class="col-md-8">
+					{{ form.PagIBIGNo }}	
+				</div>
+			</div>
+			<div class="row" style="margin: auto; margin-bottom: 0px; vertical-align: middle; line-height: 30px;">
+				<div class="col-md-4">
+					<label>PhilHealth No.</label>
+				</div>
+				<div class="col-md-8">
+					{{ form.PhilHealthNo }}	
+				</div>
+				<br />
+			</div>
+			</form>
+		</div>
+	</div>
+	-->	
+</div>
+<!-- ADD USER END -->
+
+
+
+<!--  DIALOG EDIT USER  -->
+<div id="dialogedituser" title="Update User" class="dialogbox">
+	<form method="post" action="/ERM/updateUser/" id="frmUpdateUser">
+		{% csrf_token %}
+		<div class="row" style="margin: auto;">
+		    <div style="float: left; padding-right: 15px; padding-left: 15px;">
+		        <label id="editnote" style="color: red;">Please fill up required fields.</label>
+		        <input id="huidedit" name="huidedit" type="hidden" value="" />
+		    </div>		
+		    {% if isadmin == 4 or isadmin == 3 %}
+		    <div style="float: right; padding-right: 15px; padding-left: 15px;">
+		        <input type="image" id="deluser" src="/static/images/user_delete.png" />
+		    </div>
+		    {% endif %}
+		</div>
+		
+	
+		<div style="width: 190px; margin-left: 25px; margin-top: 25px; margin-right: 10px; float:left;">
+			<div id="user_image" class="row image">
+				
+			</div>
+			<div class="row" style="margin-left: 25px; margin-top: 25px; margin-right: 10px; float:left;">
+				{{ formedit.usrstatusedit }}
+				{% if isadmin == 4 or isadmin == 3 or isadmin == 2 %}
+					<input id="Pwdedit" tabindex="28" name="Pwdedit" type="text" class="input-sm pwdresetfield" placeholder="Password" />
+				{% endif %}
+			</div>
+		</div>
+		
+		
+		
+		<div class="row" style="width: auto; margin-left: 25px; margin-right: 25px; margin-top: 20px; float:left;">
+			<div class="row" style="margin: auto;">
+				<fieldset>
+					<legend id="profileheader">Personal Information</legend>
+					
+					<table class="table table-borderless profile" border="0" style="padding: 10px !important;">
+						<tr>
+							<td valign="middle"><b><i>User ID: </i></b></td>
+							<td valign="middle"><b><span id="userid"></span></b></td>
+							
+							<td width="25px">&nbsp;</td>
+							
+							<td valign="middle"><b><i>Level: </i></b></td>
+							<td>{{ formedit.Leveledit }}</td>
+						</tr>
+						<tr>
+							<td valign="middle"><b><i>First Name: <span style="color: red;">*</span></i></b></td>
+							<td>{{ formedit.FNameedit }}</td>
+							
+							<td>&nbsp;</td>
+							
+							<td valign="middle"><b><i>Branch: <span style="color: red;">*</span></i></b></td>
+							<td>{{ formedit.Branchedit }}</td>
+						</tr>
+						<tr>
+							<td valign="middle"><b><i>Middle Name: <span style="color: red;">*</span></i></b></td>
+							<td>{{ formedit.MNameedit }}</td>
+							
+							<td>&nbsp;</td>
+							
+							<td valign="middle"><b><i>Regularization Date: </i></b></td>
+							<td>{{ formedit.RegDateedit }}</td>
+						</tr>	
+						
+						<tr>
+							<td valign="middle"><b><i>Last Name: <span style="color: red;">*</span></i></b></td>
+							<td>{{ formedit.LNameedit }}</td>
+							
+							<td>&nbsp;</td>
+							
+							<td valign="middle"><b><i>SSS ID: </i></b></td>
+							<td>{{ formedit.SSSNoedit }}</td>
+						</tr>
+						
+						<tr>
+							<td valign="middle"><b><i>Gender: </i></b></td>
+							<td>{{ formedit.Genderedit }}</td>
+							
+							<td>&nbsp;</td>
+							
+							<td valign="middle"><b><i>Pag-IBIG ID: </i></b></td>
+							<td>{{ formedit.PagIBIGNoedit }}</td>
+						</tr>
+						
+						<tr>
+							<td valign="middle"><b><i>Reports To: </i></b></td>
+							<td>{{ formedit.Approveredit }}</td>
+							
+							<td>&nbsp;</td>
+							
+							<td valign="middle"><b><i>PhilHealth ID: </i></b></td>
+							<td>{{ formedit.PhilHealthNoedit }}</td>
+						</tr>
+						
+						<tr>
+							<td valign="middle"><b><i>Approver?: </i></b></td>
+							<td>
+								<select id="isApproveredit" tabindex="6" name="isApproveredit" class="input-sm">
+									<option value="1">Yes</option>
+									<option value="0">No</option>
+								</select>
+							</td>
+							
+							<td>&nbsp;</td>
+							
+							<td valign="middle"><b><i>TIN ID: </i></b></td>
+							<td>{{ formedit.TINNoedit }}</td>
+						</tr>
+						
+						<tr>
+							<td valign="middle"><b><i>NBU / Division: </i></b></td>
+							<td>{{ formedit.Divisionedit }}</td>	
+							
+							<td>&nbsp;</td>
+							
+							<td valign="middle"><b><i>Tax Code: </i></b></td>
+							<td>{{ formedit.TaxCodeedit }}</td>
+						</tr>
+						
+						<tr>
+							<td valign="middle"><b><i>Department: </i></b></td>
+							<td>{{ formedit.Deptedit }}</td>	
+							
+							<td>&nbsp;</td>
+							
+							<td valign="middle"><b><i>Tax Exemption: </i></b></td>
+							<td>{{ formedit.TaxExemptionedit }}</td>
+						</tr>
+						
+						<tr>
+							<td valign="middle"><b><i>Designation: </i></b></td>
+							<td>{{ formedit.Designationedit }}</td>	
+							
+							<td>&nbsp;</td>
+							
+							<td valign="middle"><b><i>Professional Fee?: </i></b></td>
+							<td>
+								<select tabindex="19" name="isProfFeeedit" id="isProfFeeedit" class="input-sm">
+									<option value="1">Yes</option>
+									<option value="0">No</option>
+								</select>
+							</td>
+						</tr>
+						
+						<tr>
+							<td colspan="5" bgcolor="gray"></td>
+						</tr>
+						<tr>
+							<td valign="middle"><b><i>Home Address: </i></b></td>
+							<td colspan="4">{{ formedit.HomeAddressedit }}</td>
+						</tr>
+						<tr>
+							<td valign="middle"><b><i>Email Address: </i></b></td>
+							<td colspan="4">{{ formedit.Emailedit }}</td>
+						</tr>
+						<tr>
+							<td valign="middle"><b><i>Civil Status: </i></b></td>
+							<td colspan="4">{{ formedit.CivilStatusedit }}</td>
+						</tr>
+						<tr>
+							<td valign="middle"><b><i>Birth Date: </i></b></td>
+							<td colspan="4">{{ formedit.BDateedit }}</td>
+						</tr>
+						<tr>
+							<td valign="middle"><b><i>Blood Type: </i></b></td>
+							<td colspan="4">{{ formedit.BloodTypeedit }}</td>
+						</tr>
+						<tr>
+							<td valign="middle"><b><i>Religion: </i></b></td>
+							<td colspan="4">{{ formedit.Religionedit }}</td>
+						</tr>
+						<tr>
+							<td valign="middle"><b><i>Citizenship: </i></b></td>
+							<td colspan="4">{{ formedit.Citizenshipedit }}</td>
+						</tr>
+						
+					</table>
+				</fieldset>
+			</div>
+		</div>
+	</form>
+	
+	
+	
+	
+	<!--
+	<div class="row">
+		<div class="col-md-12">
+			<form method="post" action="/ERM/updateUser/" id="frmUpdateUser">
+			{% csrf_token %}
+			
+			<div class="row" style="margin: auto;">
+				<div style="float: left; padding-right: 15px; padding-left: 15px;">
+					<label id="editnote" style="color: red;">Please fill up required fields.</label>
+					<input id="huidedit" name="huidedit" type="hidden" value="" />
+				</div>		
+				{% if isadmin == 4 or isadmin == 3 %}
+				<div style="float: right; padding-right: 15px; padding-left: 15px;">
+					<input type="image" id="deluser" src="/static/images/user_delete.png" />
+				</div>
+				{% endif %}
+				<br /><br />
+			</div>
+			<div class="row" style="margin: auto; margin-bottom: 0px; vertical-align: middle; line-height: 30px;">
+				<div class="col-md-5">
+					{{ formedit.FNameedit }}	
+				</div>
+				<div class="col-md-3">
+					{{ formedit.MNameedit }}
+				</div>
+				<div class="col-md-4">
+					{{ formedit.LNameedit }}
+				</div>
+			</div>
+			<div class="row" style="margin: auto; margin-bottom: 5px; vertical-align: middle; line-height: 30px;">
+				<div class="col-md-5">
+					<label><i>First Name<span style="color: red;">*</span></i></label>	
+				</div>
+				<div class="col-md-3">
+					<label><i>Middle<span style="color: red;">*</span></i></label>
+				</div>
+				<div class="col-md-4">
+					<label><i>Last Name<span style="color: red;">*</span></i></label>
+				</div>
+			</div>
+			
+			<div class="row" style="margin: auto; margin-bottom: 5px; vertical-align: middle; line-height: 30px;">
+				<div class="col-md-4">
+					<label>Gender</label>
+				</div>
+				<div class="col-md-8">
+					{{ formedit.Genderedit }}
+				</div>
+			</div>
+			
+			<div class="row" style="margin: auto; margin-bottom: 5px; vertical-align: middle; line-height: 30px;">
+				<div class="col-md-4">
+					<label>Reports to:</label>
+				</div>
+				<div class="col-md-8">
+					{{ formedit.Approveredit }}
+				</div>
+			</div>
+			
+			<div class="row" style="margin: auto; margin-bottom: 5px; vertical-align: middle; line-height: 30px;">
+				<div class="col-md-4">
+					<label>Approver?</label>
+				</div>
+				<div class="col-md-8">
+					<select id="isApproveredit" name="isApproveredit" class="form-control">
+						<option value="1">Yes</option>
+						<option value="0">No</option>
+					</select>
+				</div>
+			</div>
+			
+			<div class="row" style="margin: auto; margin-bottom: 5px; vertical-align: middle; line-height: 30px;">
+				<div class="col-md-4">
+					<label>Division</label>
+				</div>
+				<div class="col-md-8">
+					{{ formedit.Divisionedit }}	
+				</div>
+			</div>
+			<div class="row" style="margin: auto; margin-bottom: 5px; vertical-align: middle; line-height: 30px;">
+				<div class="col-md-4">
+					<label>Department</label>
+				</div>
+				<div class="col-md-8">
+					{{ formedit.Deptedit }}	
+				</div>
+			</div>
+			<div class="row" style="margin: auto; margin-bottom: 5px; vertical-align: middle; line-height: 30px;">
+				<div class="col-md-4">
+					<label>Branch<span style="color: red;">*</span></label>
+				</div>
+				<div class="col-md-8">
+					{{ formedit.Branchedit }}	
+				</div>
+			</div>
+			<div class="row" style="margin: auto; margin-bottom: 5px; vertical-align: middle; line-height: 30px;">
+				<div class="col-md-4">
+					<label>SSS No.</label>
+				</div>
+				<div class="col-md-8">
+					{{ formedit.SSSNoedit }}	
+				</div>
+			</div>
+			<div class="row" style="margin: auto; margin-bottom: 5px; vertical-align: middle; line-height: 30px;">
+				<div class="col-md-4">
+					<label>Pag-IBIG No.</label>
+				</div>
+				<div class="col-md-8">
+					{{ formedit.PagIBIGNoedit }}	
+				</div>
+			</div>
+			<div class="row" style="margin: auto; margin-bottom: 0px; vertical-align: middle; line-height: 30px;">
+				<div class="col-md-4">
+					<label>PhilHealth No.</label>
+				</div>
+				<div class="col-md-8">
+					{{ formedit.PhilHealthNoedit }}	
+				</div>
+				<br />
+			</div>
+			<div class="row" style="margin: auto; margin-bottom: 5px; vertical-align: middle; line-height: 30px;">
+				<div class="col-md-4">
+					<label>Status</label>
+				</div>
+				<div class="col-md-8">
+					{{ formedit.usrstatusedit }}	
+				</div>
+			</div>
+			{% if isadmin == 4 %}
+			<div class="row" style="margin: auto; margin-bottom: 0px; vertical-align: middle; line-height: 30px;">
+				<div class="col-md-4">
+					<label>Password</label>
+				</div>
+				<div class="col-md-8">
+					<input id="Pwdedit" name="Pwdedit" type="text" class="form-control input-sm" />	
+				</div>
+			</div>
+			{% endif %}
+			</form>
+		</div>
+	</div>
+	-->
+</div>
+<!-- EDIT USER END -->
+
+
+<!-- DIALOG CONFIRM DELETE -->
+<div id="dialogdelconfirm" title="Confirm User Deletion" class="dialogbox">
+	<p>Are you sure you want to delete thisuser? (This cannot be undone.)</p>
+</div>
+<!-- CONFIRM DELETE END -->
+
+
+<!-- DIALOG ADD HOLIDAY -->
+<div id="dialogaddholiday" title="Add Holiday" class="dialogbox">
+	<div class="row">
+		<div class="col-md-12">
+			<form method="post" action="/ERM/createHoliday/" id="frmAddHoliday">
+				{% csrf_token %}
+				<div class="row" style="margin: auto; margin-bottom: 5px; vertical-align: middle; line-height: 30px;">
+					<div class="col-md-12">
+						<label id="holidaynote" style="color: red;">All fields required.</label>
+					</div>		
+				</div>
+				<div class="row" style="margin: auto; margin-bottom: 5px; vertical-align: middle; line-height: 30px;">
+					<div class="col-md-4">
+						<label>Date</label>
+					</div>
+					<div class="col-md-8">
+						{{ form.dateOfHoliday }}	
+					</div>		
+				</div>
+				<div class="row" style="margin: auto; margin-bottom: 5px; vertical-align: middle; line-height: 30px;">
+					<div class="col-md-4">
+						<label>Description</label>
+					</div>
+					<div class="col-md-8">
+						{{ form.Description }}	
+					</div>		
+				</div>
+				<div class="row" style="margin: auto; margin-bottom: 5px; vertical-align: middle; line-height: 30px;">
+					<div class="col-md-4">
+						<label>Type</label>
+					</div>
+					<div class="col-md-8">
+						{{ form.typeOfHoliday }}	
+					</div>		
+				</div>
+				<div class="row" style="margin: auto; margin-bottom: 5px; vertical-align: middle; line-height: 30px;">
+					<div class="col-md-4">
+						<label>Scheme</label>
+					</div>
+					<div class="col-md-8">
+						{{ form.schemeOfHoliday }}	
+					</div>		
+				</div>
+			</form>
+		</div>
+	</div>	
+</div>
+<!-- ADD HOLIDAY END -->
+
+
+
+<!-- DIALOG PMS POSTING -->
+<div id="dialogconfirmPOST" title="Post Confirmation" class="dialogbox">
+	<p>Are you sure you want to post selected entries?</p>
+</div>
+<!-- PMS POSTING END -->
+
+
+
+<!-- DTR ENTRY MODAL -->
+<div id="bmodal" data-backdrop="static" tabindex="-1" aria-hidden="true" class="modal fade" >
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+	    <button data-dismiss="modal" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>    
+	        	<h3 class="modal-title" align="center">
+		        	<span class="label" id="textheader">
+		        		DTR ENTRY DETAILS
+		        	</span>
+		        </h3>
+      </div>
+	      <div id="apprmodal" class="modal-body">
+	        	&nbsp;
+	      </div>
+    </div><!--/.modal-content -->
+   </div><!-- /.modal-dialog --> 
+</div><!-- /.modal -->
+<!-- DTR ENTRY MODAL END -->
+
+
+
+<!-- NOTES MODAL -->
+<div id="nmodal" data-backdrop="static" tabindex="-1" aria-hidden="true" class="modal fade">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button id="btntopX" type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	        <h3 class="modal-title" align="center">
+		        	<span class="label" id="textheader">
+		        		Remarks / Notes
+		        	</span>
+		        </h3>
+	      </div>
+		      <div id="notesmodal" class="modal-body">
+		        	&nbsp;
+		      </div>
+	      <div class="modal-footer">
+	      		<!-- <button type="button" class="btn btn-danger" id="btnClose">Close</button> -->
+	      </div>
+	    </div><!--/.modal-content -->
+	   </div><!-- /.modal-dialog --> 
+</div><!-- /.modal -->
+<!-- NOTES MODAL END --> 
+ 
+ 
+ 
+<!-- DIALOG CONSUME PREVYRVL -->
+<div id="dialogconfirmLastYearVL" title="Confirm" class="dialogbox">
+	<p>Use your previous year VL?</p>
+</div> 
+<!-- CONSUME PREVYRVL END -->
+
+ 
+<!--MODAL FOR NOTES HERE -->
+	<div id="anotemodal" data-backdrop="static" tabindex="-1" ="true" class="modal fade">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" id="btnNoteX" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	        	<h3 class="modal-title" align="center">
+		        	<span class="label" id="textheader">
+		        		Remarks / Notes
+		        	</span>
+		        </h3>
+	      </div>
+		  <div id="apprnotemodal" class="modal-body">
+		        
+		        	&nbsp;
+		     
+	      </div>
+	    </div><!--/.modal-content -->
+	   </div><!-- /.modal-dialog --> 
+	 </div><!-- /.modal -->

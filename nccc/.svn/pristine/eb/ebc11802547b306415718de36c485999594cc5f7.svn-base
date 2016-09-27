@@ -1,0 +1,479 @@
+{% load staticfiles %}
+{% load ecs_tags %}
+{% load humanize %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/ecs_css/style.css' %}" />
+
+
+<script type="text/javascript">
+	$(function() {
+		$("#dialogconfirmprocess").dialog({
+	      modal: true,
+	      autoOpen: false,
+	      buttons: {
+	        Ok: function() {
+				$("#dialogconfirmprocess").dialog("close");
+				$("form#frmProcess").unbind('submit').submit();
+				
+	        },
+	        Cancel: function() {
+	        	//event.preventDefault();
+	            $("#dialogconfirmprocess").dialog("close");
+	        }
+	        
+	      },
+	      beforeClose: function(){
+	        //event.preventDefault();
+	        
+	      }
+	      
+	    });
+	    
+	    
+		
+	    //REASONS
+	    $("#dialogreason").dialog({
+	      modal: true,
+	      closeOnEscape: false,
+	      width: 350,
+	      position: { my: 'top', at: 'top+150',of: window },
+	      open: function(event, ui) { $(".ui-dialog-titlebar-close", ui.dialog | ui).hide(); 
+	      	 $(".ui-dialog-buttonpane button:contains('Ok')")
+                          .attr("disabled", true)
+                          .addClass("ui-state-disabled");
+                        },
+	      autoOpen: false,
+	      buttons: {
+	        Ok: function() {
+	        	
+	        	var reason = $('input[name="reasonval"]:checked').val();
+	        	var POValue = $('input#POValue').val();
+	        	//$('input#POValue').val(reason);
+	        	document.getElementById('reason' + POValue).innerHTML = reason;
+				$('input#h' + POValue).val(reason);
+				$("#dialogreason").dialog("close");
+	        }
+	        
+	      },
+	      beforeClose: function(){
+	        //event.preventDefault();
+	        
+	      }
+	      
+	    });
+	    
+	    
+	});
+
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+
+	//SUBMIT PROCESS	
+	$("form#frmProcess").on('submit', function(event){
+		event.preventDefault();
+		$("#dialogconfirmprocess").dialog("open");
+	    
+	});
+	
+
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+
+	//DATE
+	$( ".datepickerx" ).datepicker({
+		format: 'mm/dd/yyyy',
+	});
+
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+	
+	$("input.chkbx").change(function() {
+	    var POValue = $(this).val();
+	    if(this.checked) {
+	    	$('input#POValue').val(POValue);
+	        $("#dialogreason").dialog("open");
+	    }
+	    else{
+	    	document.getElementById('reason' + POValue).innerHTML = '';
+			$('input#h' + POValue).val('');
+	    }
+	});
+	
+	$("input[name='reasonval']").click(function() {
+		$(".ui-dialog-buttonpane button:contains('Ok')")
+                          .attr("disabled", false)
+                          .removeClass("ui-state-disabled");
+	});
+	
+    	
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+
+	//csrf token
+	function getCookie(name) {
+	    var cookieValue = null;
+	    if (document.cookie && document.cookie != '') {
+	        var cookies = document.cookie.split(';');
+	        for (var i = 0; i < cookies.length; i++) {
+	            var cookie = jQuery.trim(cookies[i]);
+	            // Does this cookie string begin with the name we want?
+	            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+	                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+	                break;
+	            }
+	        }
+	    }
+	    return cookieValue;
+	}
+	var csrftoken = getCookie('csrftoken');
+	 
+	/*
+	The functions below will create a header with csrftoken
+	*/
+	 
+	function csrfSafeMethod(method) {
+	    // these HTTP methods do not require CSRF protection
+	    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+	}
+	function sameOrigin(url) {
+	    // test that a given url is a same-origin URL
+	    // url could be relative or scheme relative or absolute
+	    var host = document.location.host; // host + port
+	    var protocol = document.location.protocol;
+	    var sr_origin = '//' + host;
+	    var origin = protocol + sr_origin;
+	    // Allow absolute or scheme relative URLs to same origin
+	    return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+	        (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+	        // or any other URL that isn't scheme relative or absolute i.e relative.
+	        !(/^(\/\/|http:|https:).*/.test(url));
+	}
+	 
+	$.ajaxSetup({
+	    beforeSend: function(xhr, settings) {
+	        if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+	            // Send the token to same-origin, relative URLs only.
+	            // Send the token only if the method warrants CSRF protection
+	            // Using the CSRFToken value acquired earlier
+	            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+	        }
+	    }
+	});
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+	
+	
+</script>
+
+
+
+
+<div class="row" style="margin-left: 20px; margin-right: 20px; ">
+	
+		<form method="post" action="/ECS/toprocess/" id="frmProcess">
+		{% csrf_token %}
+		<input type="hidden" id="hallPO" name="allPO" />
+		<input type="hidden" id="hsoano" name="hSOANo" value="{{SOANo}}"/>
+		<input type="hidden" id="hsoastatus" name="hsoastatus" value="{{soadets.SOAStatus}}"/>
+		<div class="row" style="height: 30px; line-height: 30px;">
+			<div style="float: left">
+				<label class="straightline" style="margin-left: 20px;">BILL TO:</label>
+			
+				<label class="straightline" style="margin-right: 100px;">{{soadets.SOABillTo.NBUDesc}}</label>
+				{% if soastatus == 'Open' %}
+				<label class="straightline">Comeback Date: &nbsp;</label> 
+				<label class="straightline" style="color: darkred; margin-right: 100px; float: right;">{{soadets.CBDate|date:"m/d/Y"}}</label>
+				
+				{% else %}
+				<label>Comeback Date: &nbsp;</label> 
+				<label style="color: darkred;">{{soadets.CBDate|date:"m/d/Y"}}</label>
+				{% endif %}
+			</div>
+			
+			{% if soastatus == 'Open' %}
+			<div style="float: right; margin-right: 20px;">
+				<input align="right" type="submit" id="btnProcess" class="btn btn-sm btn-success straightline" value="For Checking" />
+			</div>
+			{% endif %}
+			
+			
+							
+		</div>
+		<div class="row">
+			<table class="table table-striped" style="margin-bottom: 0px;">
+				<tr>
+					<th class="tabletitle text-center">
+						&nbsp;
+					</th>
+					<th class="tabletitle text-center" title="PO NUMBER">
+						PO No.
+					</th>
+					<th class="tabletitle text-center" title="RC DATE">
+						RC DATE
+					</th>
+					<th class="tabletitle text-center" title="RC AMOUNT">
+						RC AMT
+					</th>
+					<th class="tabletitle text-center" title="INVOICE NUMBER">
+						INV No.
+					</th>
+					<th class="tabletitle text-center" title="INVOICE DATE">
+						INV DATE
+					</th>
+					<th class="tabletitle text-center" title="INVOICE AMOUNT">
+						INV AMT
+					</th>
+					<th class="tabletitle text-center" title="INVOICE MATCHING AMOUNT">
+						IM AMT
+					</th>
+					<th class="tabletitle" title="PAYMENT AMOUNT">
+						PAY AMT
+					</th>
+					<th class="tabletitle text-center" title="INVOICE STATUS">
+						STATUS
+					</th>
+					<th class="tabletitle text-center" title="ENTRY COUNT">
+						CTR
+					</th>
+					{% if soahasOpenPO %}
+						<th class="tabletitle text-center" id="denyhide" title="DENY">
+							DENY
+						</th>
+						<th class="tabletitle text-center" title="DENY REASON">
+							REASON
+						</th>
+					{% elif soahasDeniedPO %}
+						<th class="tabletitle text-center" title="DENY REASON">
+							REASON
+						</th>
+					{% endif %}
+					<th class="tabletitle text-center" title="INFS PRINTCODE">
+						PRINTCODE
+					</th>
+				</tr>
+				{% for det in dets %}
+				<tr>
+					<td>
+						<label style="color: gray;">
+							{{forloop.counter}}
+						</label>
+					</td>
+					<td>
+						<label class="fields"> 
+							{{det.PONo}}
+						</label>
+					</td>
+					<td>
+						<label class="fields"> 
+							{{det.PODate|date:"m/d/Y"}}
+						</label>
+					</td>
+					<td class="tdamount">
+						<label class="fields"> 
+							{{det.RRAmount|floatformat:"2"|intcomma}}
+						</label>
+					</td>
+					<td>
+						{% for inv in det.PONo|invsOfPO:det.SOANo_id %}
+							<label class="fields" style="display: block;">
+								{{inv.InvNo}}
+							</label>
+						{% endfor %}
+						
+					</td>
+					<td>
+						{% for inv in det.PONo|invsOfPO:det.SOANo_id %}
+							<label class="fields" style="display: block;">
+								{{inv.InvDate|date:"m/d/Y"}}
+							</label>
+						{% endfor %}
+					</td>
+					<td class="tdamount">
+						{% for inv in det.PONo|invsOfPO:det.SOANo_id %}
+							<label class="fields" style="display: block; color: blue;">
+								{{inv.Amount|intcomma}}
+							</label>
+						{% endfor %}
+					</td>
+					<td class="tdamount">
+						{% for inv in det.PONo|invsOfPO:det.SOANo_id %}
+							<label class="fields" style="display: block; color: darkgreen;">
+								{% if inv.IMAmount == None or inv.IMAmount == '' %}
+									{% getIMAmount inv.InvNo soadets.SOABillTo_id det.PONo soadets.CreatedBy.vendorID as The_IMAmount %}
+									{{ The_IMAmount|floatformat:"2"|intcomma }}
+								{% else %}
+									{{ inv.IMAmount|floatformat:"2"|intcomma}}
+								{% endif %}	
+								
+							</label>
+						{% endfor %}
+					</td>
+					<td class="tdamount">
+						{% for inv in det.PONo|invsOfPO:det.SOANo_id %}
+							<label class="fields" style="display: block; color: darkred;">
+								{% if inv.LowerAmt == None or inv.LowerAmt == '' %}
+									-
+								{% else %}
+									{{inv.LowerAmt|intcomma}}
+								{% endif %}
+							</label>
+						{% endfor %}
+					</td>
+					<td>
+						{% for inv in det.PONo|invsOfPO:det.SOANo_id %}
+							<label class="fields" style="font-weight: bold; display: block; color:
+								{% if inv.IStatus == 'Open' %}
+									blue;
+								{% elif inv.IStatus == 'Denied' %}
+									red;
+								{% elif inv.IStatus == 'Processed' %}
+									green;
+								{% else %}
+									gray;
+								{% endif %}	
+							">
+								{{inv.IStatus}}
+							</label>
+						{% endfor %}
+					</td>
+					<td>
+						{% for inv in det.PONo|invsOfPO:det.SOANo_id %}
+							<label class="fields" style="font-weight: bold; display: block;">
+								{{inv.EntryCount}}
+							</label>
+						{% endfor %}
+					</td>
+					
+					{% if det.DStatus == 'Open' %}
+					<td class="chxbxhide">
+						<input type="checkbox" name="POchx" class="chkbx" value="{{det.PONo}}" 
+							{% if det.DenyReason != '' and det.DenyReason != None %}
+								checked
+							{% endif %}
+						/>
+					</td>
+					<td>
+						<label id="reason{{det.PONo}}" class="fields">
+							-
+						</label>
+						<input type="hidden" id="h{{det.PONo}}" name="h{{det.PONo}}" />
+					</td>
+					{% elif det.DStatus == 'Denied' or det.DStatus == 'Processed' or det.DStatus == 'Closed' %}
+						{% if soahasDeniedPO %}
+						<td>
+							<label style="display: inline-block; font-size: 11px;">
+								{{det.DenyReason}}
+							</label>
+						</td>
+						{% endif %}
+					{% endif %}
+					<td>
+						 {% for inv in det.PONo|invsOfPO:det.SOANo_id %}
+							<label>
+								{{inv.PRINTCODE}}
+							</label>
+						{% endfor %}
+					</td>
+				</tr>
+				{% endfor %}
+				
+				
+				<tr style="border-top: 2px solid black;">
+					<td colspan="5">
+						<label class="fields" style="display: block; font-weight: bold; letter-spacing: 10px;">
+							TOTAL
+						</label>
+					</td>
+					<td>
+						&nbsp;
+					</td>
+					<td class="tdamount">
+						<label class="fields" style="display: block; color: blue;">
+							{% if soadets|totalinvamt %}
+								{{soadets|totalinvamt|intcomma}}
+							{% endif %}
+						</label>
+					</td>
+					<td class="tdamount">
+						<label class="fields" style="display: block; color: darkgreen;">
+							{% if soadets|totalimamt %}
+								{{soadets|totalimamt|intcomma}}
+							{% endif %}
+						</label>
+					</td>
+					<td class="tdamount">
+						<label class="fields" style="display: block; color: darkred;">
+							{% if soadets|totalloweramt %}
+								{{soadets|totalloweramt|intcomma}}
+							{% endif %}
+						</label>
+					</td>
+					<td colspan="6">
+						&nbsp;
+					</td>
+				</tr>
+				
+				<tr>
+					<td colspan="14" style="background: darkgray;">
+						<hr/>
+					</td>	
+				</tr>
+				
+			</table>
+		</div>
+		
+		</form>
+	
+		
+</div>
+
+
+
+
+
+
+
+<div id="dialogreason" title="Choose Reason" class="dialogbox">
+	<div class="row" style="margin-left: 20px;">
+		<label>
+			<input type="radio" name="reasonval" value="No Invoice Surrendered" />
+			<span style="padding-left: 8px;">No Invoice Surrendered</span>
+		</label>
+	</div>
+	<div class="row" style="margin-left: 20px;">
+		<label>
+			<input type="radio" name="reasonval" value="Erroneous NBU Name on Invoice" />
+			<span style="padding-left: 8px;">Erroneous NBU Name on Invoice</span>
+		</label>
+	</div>
+	<div class="row" style="margin-left: 20px;">
+		<label>
+			<input type="radio" name="reasonval" value="Invoice No Stamp Received" />
+			<span style="padding-left: 8px;">Invoice No Stamp Received</span>
+		</label>
+	</div>
+	<div class="row" style="margin-left: 20px;">
+		<label>
+			<input type="radio" name="reasonval" value="Erroneous Invoice Details" />
+			<span style="padding-left: 8px;">Erroneous Invoice Details</span>
+		</label>
+	</div>
+	<div class="row" style="margin-left: 20px;">
+		<label>
+			<input type="radio" name="reasonval" value="No PO attached" />
+			<span style="padding-left: 8px;">No PO attached</span>
+		</label>
+	</div>
+	<input type="hidden" id="POValue" value="" />
+</div>
+
+
+<div id="dialogconfirmprocess" title="Process Confirmation" class="dialogbox">
+	<p>Are you sure you want to process unchecked PO numbers?</p>
+</div>
+	

@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+		{% load tags %}
+				{% block content %}
+				
+				<div id="filterbox" class="row" style="margin-left: 50px; margin-right: 50px; margin-top: 20px; ">
+					
+						<div style="display: inline-block; float: left; margin-left: 10px; margin-right: 20px;">
+							<button id="processrequestlink" type="button" class="btn-sm btn-info"  style="font-weight: bold; display: inline-block; color: black; margin-right: 15px; ">
+								<span class="glyphicon glyphicon-file"></span> Request 
+							</button>
+							
+							
+							<img src="/static/images/calendar-search-result.png" style="height: 30px; display: inline-block;" />
+							
+							<select id="dtType" style="display: inline-block; font-weight: bold;" class="input-sm">
+								<option value="createdate">Request Date</option>
+								<option value="checkeddate">Check Date</option>
+								<option value="approveddate">Approve Date</option>
+							</select>
+							
+							<input id="dtFrom" type="text" style="width: 85px; font-weight: bold; display: inline-block;" class=" input-sm datepickerx readonly" />
+							
+							<label style="display: inline-block;">To</label>
+							
+							<input id="dtTo" type="text" style="width: 85px; font-weight: bold; display: inline-block;" class="input-sm datepickerx readonly" />
+							
+							<input id="btnDTGo" type="button" style="display: inline-block; font-weight: bold; color: black;" class="btn-sm btn-info" value="GO"/>
+						</div>
+						<div style="display: inline-block; float: left;">
+							<img src="/static/images/binocular.png" style="height: 30px; display: inline-block;" />	
+							
+							<label style="display: inline-block;">Search</label>
+							
+							<select id="searchtype" class="input-sm text-left" style="display: inline-block; font-weight: bold;">
+								<option value="rfpno" selected="selected">RFP No.</option>
+								<option value="nbu__desc">NBU</option>
+								<option value="vendorid">Vendor ID</option>
+								<option value="vendorname">Vendor Name</option>
+								<option value="ersno">ERS No.</option>
+								<option value="ejono">EJO No.</option>
+								<option value="epromosno">EPROMOS No.</option>
+							</select>
+							
+							<input id="txtKeyword" style="display: inline-block; font-weight: bold;" type="text" class=" input-sm" placeholder="Keyword" />
+							
+							<label style="display: inline-block;">Status</label>
+						
+							
+							 {{ formmain.status }}
+							 
+							
+							<input id="btnGo" style="display: inline-block; font-weight: bold; color: black;" type="button" class="btn-sm btn-info" value="GO"/>
+						</div>
+					
+				</div>
+				
+				<div class="row">&nbsp;</div>
+				
+				<div class="row" id="rfpviews"  style="margin-left: 40px; margin-right: 40px; margin-top: 5px; ">
+					
+						{% if allrfp %}
+							<table id="rfptable" class="tablesorter">
+								<thead>
+									<tr>
+										<th class="tabletitle">
+											RFP NUMBER
+										</th>
+										<th class="tabletitle">
+											REQUEST DATE
+										</th>
+										<th class="tabletitle">
+											REQUESTED BY
+										</th>
+										<th class="tabletitle">
+											NBU
+										</th>
+										<th class="tabletitle">
+											VENDOR ID
+										</th>
+										<th class="tabletitle">
+											VENDOR NAME
+										</th>
+										<!-- 
+										<th class="tabletitle">
+											CHECK PAYEE
+										</th>
+										 -->
+										<th class="tabletitle">
+											STATUS
+										</th>
+										<th class="tabletitle">
+											ACTION
+										</th>
+									</tr>
+								</thead>
+								<tbody>
+								{% for rfp in allrfp %}
+									<tr>
+										<!-- 
+										<td>
+											{{forloop.counter}}
+										</td>
+										 -->
+										<td align="left" class="emphasize">
+											{{rfp.rfpno}}
+										</td>
+										<td align="left">
+											{{rfp.createdate|date:"m/d/Y"}}
+										</td>
+										<td align="left" class="emphasize">
+											{{rfp.preparedby_id}}
+										</td>
+										<td align="left">
+											{{rfp.nbu.desc}}
+										</td>
+										<td align="left" class="emphasize">
+											{{rfp.vendorid}}
+										</td>
+										<td align="left">
+											{{rfp.vendorname}}
+										</td>
+										<!-- 
+										<td align="left">
+											{{rfp.checkpayee}}
+										</td>
+										 -->
+										
+										<td align="left" style="font-weight: bold; color: 
+											{% if rfp.status.desc == 'WORK' %}
+												gray;
+											{% elif rfp.status.desc == 'OPEN' %}
+												#337ab7;
+											{% elif rfp.status.desc == 'PRINTED' %}
+												#f0ad4e;
+											{% elif rfp.status.desc == 'CHECKED' %}
+												#5cb85c;
+											{% elif rfp.status.desc == 'APPROVED' %}
+												#5bc0de;
+											{% elif rfp.status.desc == 'RECEIVED' %}
+												#8D38C9;
+											{% elif rfp.status.desc == 'CLOSED' %}
+												#d3d3d3;
+											{% else %}
+												#d9534f;
+											{% endif %}
+										">
+											{{rfp.status.desc}}	
+										</td>
+										<td class="text-center">
+											<a role="button" title="View RFP Details" rfp_no="{{rfp.rfpno}}" nbu_id="{{rfp.nbu_id}}" class="rfpeditlink" style="margin:0px 10px 0px 10px;">
+												<i class="glyphicon glyphicon-eye-open"></i>
+											</a>
+											<!-- 
+											<a role="button" id="btnforChecking" type="button" style="margin:0px 10px 0px 10px;">
+			  									<i class="glyphicon glyphicon-send"></i>
+											</a>
+											 -->
+										</td>
+									</tr>
+								{% endfor %}
+								</tbody>
+							</table>  
+							
+							
+							<div class="row" align="right">
+								<div class="pagination">
+								    <span class="step-links" style="font-family: Verdana; font-size: 12px;" >
+								    	
+								    	Go to page:
+								    	<input id="rfppager" type="text" class="numonly form-control input-sm" style="width: 40px; display: inline;" value="{{ allrfp.number }}"/>
+								    	of {{ allrfp.paginator.num_pages }}
+								    	
+								    	&nbsp;
+								        &nbsp;
+								        
+								        
+								        {% if allrfp.has_previous %}
+								            <a href="?page={{ allrfp.previous_page_number }}">
+								            	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true" title="Previous"></span>
+								            </a>
+								        {% else %}
+								        	<span class="glyphicon glyphicon-arrow-left restricted" aria-hidden="true"></span>
+								        {% endif %}
+										
+										&nbsp;
+								        
+								        {% if allrfp.has_next %}
+								            <a href="?page={{ allrfp.next_page_number }}">
+								            	<span class="glyphicon glyphicon-arrow-right" aria-hidden="true" title="Next"></span>
+								            </a>
+								        {% else %}
+								        	<span class="glyphicon glyphicon-arrow-right restricted" aria-hidden="true"></span>
+								        {% endif %}
+								    </span>
+							    </div>
+							</div>
+						
+						
+						{% else %}
+							<h3 style="text-align: center; height: 50%;">No Records to display.</h3>
+						{% endif %}
+					
+					
+					
+				</div>
+				{% endblock %}
+			
+
+			

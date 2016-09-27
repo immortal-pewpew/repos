@@ -1,0 +1,9 @@
+<div class="col-md-12" id="notesandremarks">
+	<h5>
+		{% if message == '' or message == None %}
+			No attached note.<br /><br />
+		{% else %}
+			{{ message|linebreaks}} <br /><br />
+		{% endif %}
+	</h5>	
+</div>

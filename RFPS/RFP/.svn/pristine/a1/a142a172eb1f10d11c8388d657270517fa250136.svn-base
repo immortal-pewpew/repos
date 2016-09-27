@@ -1,0 +1,1531 @@
+/**
+ * @author fdypua
+ */
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+$(document).ready(function(){
+
+	
+$(function() {
+	//////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////
+	
+	//tablesorter
+	$('#rfptable').tablesorter({
+		theme: 'blue',
+		sortList: [[3,1],[0,1]] ,
+		
+	});
+	
+	//////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////
+
+	//loading bar
+	$("#dialogloadingbar").dialog({
+	      modal: true,
+	      autoOpen: false,
+	      position: { my: 'top', at: 'top+200',of: window },
+	      open: function() { $('#dialogloadingbar').dialog('option', 'dialogClass', 'noTitle'); },
+	    });
+	//loading bar end
+	
+	//////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////
+	
+	//dialogactionevent notif
+	$("#dialogactionevent").dialog({
+	      modal: true,
+	      autoOpen: false,
+	      position: { my: 'top', at: 'top+100',of: window },
+	      width: 350,
+	      buttons: {
+	        Ok: function() {
+	        	$(this).dialog("close");
+	        	window.location.replace("/RFP/main/");
+	        },
+	      },
+	     
+	    });
+	//dialogactionevent notif end
+	
+	//////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////
+	/*
+	//dialogvendors
+	$("#dialogvendors").dialog({
+	      modal: true,
+	      autoOpen: false,
+	      position: { my: 'top', at: 'top+100',of: window },
+	      width: 550,
+	      height: 250,
+	      close: function(event, ui) {
+			
+	      },
+	      
+	      buttons: {
+	        Select: function() {
+	        	
+	        },
+	      },
+	    });
+	*/
+	//////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////
+	
+	//dialognotes
+	$("#dialognotes").dialog({
+	      modal: true,
+	      autoOpen: false,
+	      position: { my: 'top', at: 'top+100',of: window },
+	      width: 350,
+	      height: 250,
+	      close: function(event, ui) {
+			
+	      },
+	      
+	      buttons: {
+	        Attach: function() {
+	        	var rfpno = $('#hrfp_no').val();
+	        	var nbu_id = $('#nbu').val();
+		    	var savednotes = $('#savednotes').val()
+	        	
+	        	//update notes
+	        	$.ajax({
+	                url : "/RFP/attachnotes/", // the endpoint
+	                type : "post", // http method
+	                data : { rfpno:rfpno, nbu_id:nbu_id, savednotes:savednotes }, // data sent with the post request
+	        		
+	        		// handle a successful response
+	                success : function(data) {
+	                	$('#dialognotes').dialog("close");
+	                	},
+
+	                // handle a non-successful response
+	                error : function(data) {
+	                	
+	                	}
+	        		 });
+	        	
+	        },
+	        
+	      },
+	      
+	     
+	    });
+	//dialognotes end
+	
+	//////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////
+	
+	//vendor does not exist notif
+	$("#dialogvendornotif").dialog({
+	      modal: true,
+	      autoOpen: false,
+	      position: { my: 'top', at: 'top+100',of: window },
+	      
+	      buttons: {
+	        Ok: function() {
+	        	$(this).dialog("close");
+	        	$('#vendor_id').val('');
+	        	$('#vendor_name').val('');
+	        	$('#check_payee').val('');
+	        	$('#vendor_id').focus();
+	        },
+	      },
+	     
+	    });
+	//vendor notif end
+	
+	//////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////
+	
+	//add request dialog
+	$("#dialogprocessrequest").dialog({
+	      modal: true,
+	      autoOpen: false,
+	      width: 1100,
+	      height: 5000,
+	      closeOnEscape: false,
+	      position: { my: 'top', at: 'top+50',of: window },
+	      open: function(event, ui) {
+	    	  
+	    	  $("input.aaid").val('');
+	    	  $('#dept').val('');
+	    	  $('#location').val('');
+	    	  
+	    	  $('#nature_of_req').val('');
+	    	  $('input.reqdet').prop('disabled',true);
+	    	  $('select.reqdet').prop('disabled',true);
+	    	  $('textarea').prop('disabled',true);
+	    	  $('#nbu').prop('disabled',false);
+	    	  
+	    	  $('select.calculate').prop('selectedIndex', 0);
+	    	  $('.tag').hide();
+	    	  
+	    	  $('.coa_lookup').show();
+	    	  
+	    	  $('#notes').hide();
+	    	  
+	    	  $('.actbtns').hide();
+			}, 
+		  close: function(event, ui) {
+			  /*
+			  $('input.reqdet').prop('disabled',false);
+			  $('select.reqdet').prop('disabled',false);
+			  $('textarea').prop('disabled',false);
+			  */
+			  $('span#rfp_no').val('-----------------');
+			  $('input#hrfp_no').val('');
+			  
+			  $('#bank_clps_div').collapse('hide');
+			  
+			  $("input.calculate").attr('disabled',true);
+			  $("input.amts").val('').attr('disabled',true);
+			  
+			  $("select.calculate").attr('disabled',true).prop('selectedIndex', 0);
+			  $('.tag').hide();
+			  $('.coa_lookup').prop('disabled',false);
+			  $('.coa_lookup').val('').show();
+			  
+			  $("input.aaid").val('');
+			  /////////
+	    	  
+			},
+	
+	});//add request dialog end
+	
+	//////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////
+	
+	//DIALOG CHANGE PASSWORD
+	$("#dialogchangepwd").dialog({
+      modal: true,
+      autoOpen: false,
+      position: { my: 'top', at: 'top+100',of: window },
+      
+      buttons: {
+        Ok: function() {
+			//ajax check for filters
+			var oldpwd = $('input#oldpwd').val();
+			var newpwd = $('input#newpwd').val();
+			var confirmnewpwd = $('input#confirmnewpwd').val();
+			
+			$.ajax({
+		        url : "/RFP/pwdcheck/", // the endpoint
+		        type : "post", // http method
+		        data : { oldpwd:oldpwd, newpwd:newpwd, confirmnewpwd:confirmnewpwd }, // data sent with the post request
+				
+				// handle a successful response
+		        success : function(data) {
+		        	if (data == 'Successful.'){
+			        	$("#dialogchangepwd").dialog("close");
+			        	$("#dialogpwdchngsuccess").dialog("open");
+			        	}
+		        	else{
+			        	document.getElementById('pwdnote').innerHTML = data;
+			        	}
+		        	},
+		
+		        // handle a non-successful response
+		        error : function(data) {
+		        	
+		        	}
+				 });
+			
+			
+        },
+        Cancel: function() {
+        	//event.preventDefault();
+            $("#dialogchangepwd").dialog("close");
+        }
+        
+      },
+      beforeClose: function(){
+        //event.preventDefault();
+        
+      }
+    });
+	
+	
+	
+	
+////////////////////////////////////////////////////////////////////////
+	
+	});//dialog function end 
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+/*
+$("body").on("click","#btnLookup", function(event) {
+	$.ajax({
+        url : "/RFP/vendor_lookup/", // the endpoint
+        type : "post", // http method
+        data : { }, // data sent with the post request
+		
+		// handle a successful response
+        success : function(data) {
+        	$("#dialogvendors").dialog("open");
+        	$('#vendordiv').html(data);
+        	},
+
+        // handle a non-successful response
+        error : function(data) {
+        	
+        	}
+		 });
+});
+*/
+
+////////////////////////////////////////////////////////////////////////
+
+//ADD REQUEST
+$("body").on("click","#processrequestlink", function(event) {
+	event.preventDefault();
+	$("#dialogprocessrequest").dialog("open");
+	$("select#nbu").prop('selectedIndex', 0);
+	$("select#dept").prop('selectedIndex', 0);
+	//$("select#location").prop('selectedIndex', 0);
+	document.getElementById('rfp_no').innerHTML = '-----------------';
+	$('#hrfp_no').val('')	
+	$("input[type='text']").val('');
+	
+	//disable all except nbu
+	$("input.calculate").attr('disabled',true);
+	$("input.amts").attr('disabled',true);
+	$("input.coa_lookup").attr('disabled',true);
+	$("select.calculate").attr('disabled',true);
+	$("select#nbu").attr('disabled',false);
+	//show Clear button
+	$('#btnClear').show();
+	//replace Request button text as Update
+	$('#btnRequest').show();
+	$("#btnRequest").html('<span class="glyphicon glyphicon-floppy-disk"></span> Save');
+	$("#btnRequest").attr('title','Save Request');
+	//Submit Button with Post
+	$('#btnSavePost').html('<span class="glyphicon glyphicon-floppy-saved"></span> <span id="btn-label">Save & Post</span>');
+	$('#btnSavePost').attr('title','Save & Post Request');
+	$('#btnSavePost').show();
+	
+	//change ui-dialog-title
+	document.getElementById('ui-id-5').innerHTML = '<span class="glyphicon glyphicon-plus-sign"></span> Create New Request';
+	//coa_lookup show -> tag hide
+	$('.coa_lookup').show();
+	$('.tag').hide();
+	//set totals to 0.00
+	$('.totals').html('0.00');
+
+});
+
+////////////////////////////////////////////////////////////////////////
+
+$("body").on("click",".processbtn", function(event) {
+	var rfp_no = $('#hrfp_no').val();
+	var nbu_id = $("select#nbu").val();
+	var nbu_text = $("select#nbu option:selected").text();
+	
+	if($(this).attr('id') == 'btnCancel'){
+		var action = 'Cancel';
+	}
+	else if($(this).attr('id') == 'btnSendback'){
+		var action = 'Sendback';
+	}
+	else if($(this).attr('id') == 'btnReceive'){
+		var action = 'Receive';
+	} 
+	else{
+		var action = $('#btn-label').html();
+	}
+	
+	$.ajax({
+        url : "/RFP/actionevent/", // the endpoint
+        type : "post", // http method
+        data : { rfp_no:rfp_no, nbu_id:nbu_id, action:action }, // data sent with the post request
+		
+		// handle a successful response
+        success : function(response) {
+        	$('#dialogprocessrequest').dialog("close");
+        	$("#dialogactionevent").dialog("open");
+        	document.getElementById('actmessage').innerHTML = '<b class="text-info">' + rfp_no + '</b> from <b class="text-danger"><i>' + nbu_text + '</i></b>' + response;
+        	},
+
+        // handle a non-successful response
+        error : function(response) {
+        	
+        	}
+		 });
+	
+});
+
+////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////
+
+//EDIT REQUEST
+$("body").on("click",".rfpeditlink", function(event) {
+	event.preventDefault();
+	var rfp_no = $(this).attr('rfp_no');
+	var nbu_id = $(this).attr('nbu_id');
+	
+	$("input[type='text']").val('');
+	//coa_lookup show -> tag hide
+	$('.coa_lookup').show();
+	$('.tag').hide();
+	//set totals to 0.00
+	$('.totals').html('0.00');
+	$("input.amts").attr('disabled',true);
+	$("select.calculate").attr('disabled',true);
+	
+	//get rfp data
+	$.ajax({
+        url : "/RFP/getrfpdata/", // the endpoint
+        type : "post", // http method
+        data : { rfp_no:rfp_no, nbu_id:nbu_id }, // data sent with the post request
+		
+		// handle a successful response
+        success : function(data) {
+        	$("#dialogprocessrequest").dialog("open");
+        	$("select#nbu").val(nbu_id);
+        	
+        	/*
+        	//update locations dropdown
+			update_locations(nbu_id, data['location']);
+			*/
+        	
+			//SET RFP NO
+        	document.getElementById('rfp_no').innerHTML = rfp_no;
+        	$('#hrfp_no').val(rfp_no);
+        	
+        	//SET FIELD VALUES
+        	$('#doc_no').val(data['docnumber']);
+        	$('#dept').val(data['department']);
+        	
+        	//$('#location').val(data['location']);
+        	
+        	
+        	$('#vendor_id').val(data['vendorid']);
+        	$('#vendor_name').val(data['vendorname']);
+        	$('#check_payee').val(data['checkpayee']);
+        	//set vendor details to readonly
+        	$('.vendor_dets').attr('readonly','readonly');
+        	
+        	
+        	//BANK DETAILS
+        	if (data['bankaccountno'] != ''){
+        		$('#bank_clps_div').collapse('show');
+        		$('#bankaccountno').val(data['bankaccountno']);
+        		$('#bankaccountname').val(data['bankaccountname']);
+        		$('#bankaccounttype').val(data['bankaccounttype']);
+        		$('#bankname').val(data['bankname']);
+        	}
+        	else{
+        		$('#bank_clps_div').collapse('hide');
+        		$('#bankaccountno').val('');
+        		$('#bankaccountname').val('');
+        		$('#bankaccounttype').prop('selectedIndex', 0);
+        		$('#bankname').val('');
+        	}
+        	
+        	$('#expense_type').val(data['expensetype_id']);
+        	$('#grossamt').val(data['grossamount']);
+        	$('#netamount').val(data['netamount']);
+        	
+        	$('#ers_no').val(data['ersnumber']);
+        	$('#ejo_no').val(data['ejonumber']);
+        	$('#epromos_no').val(data['epromosnumber']);
+        	
+        	$('#cwo').val(data['cwo']);
+        	
+        	
+        	//$('#status_id').val(data['status_id']);
+        	$('#nature_of_req').val(data['natureofreq']);
+        	
+        	$('input.reqdet').prop('disabled',false);
+    		$('select.reqdet').prop('disabled',false);
+    		$('textarea').prop('disabled',false);
+        	
+    		
+        	//disabled #nbu
+        	$('#nbu').prop('disabled',true);
+        	//set to hidden field
+        	$('#nbucode').val(nbu_id);
+
+        	//hide Clear button
+        	$('#btnClear').hide();
+        	
+        	//iterate AA Details
+			for (var key in data['aadata']) {
+				  if (data['aadata'].hasOwnProperty(key)) {
+					  key=parseInt(key);
+					  $('#aa_id' + (key+1)).val(data['aadata'][key][0]);
+					  $('#coa_text' + (key+1)).val(data['aadata'][key][1] + ' - ' + data['aadata'][key][2]); 
+					  $("#coa_text" + (key+1)).hide();
+					  ////////////LABEL HERE//////////////
+					  document.getElementById('coa_span' + (key+1)).innerHTML = data['aadata'][key][1] + ' - ' + data['aadata'][key][2];
+					  $('#label-btn' + (key+1)).show();
+					  
+		              //enable same line
+		              $('#grossamt' + (key+1)).attr('disabled',false);
+		              //
+		              $('#dept' + (key+1)).attr('disabled',false);
+		              $('#locs' + (key+1)).attr('disabled',false);
+		              //
+		              $('#tax' + (key+1)).attr('disabled',false);
+		              $('#vatamt' + (key+1)).attr('disabled',false);
+		              $('#wtax' + (key+1)).attr('disabled',false);
+		              $('#wtaxamt' + (key+1)).attr('disabled',false);
+		              $('#netamt' + (key+1)).attr('disabled',false);
+		              
+		              //SET VALUES
+					  $('#grossamt' + (key+1)).val(data['aadata'][key][3].toString().replace(/,/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+					  $('#tax' + (key+1)).val(data['aadata'][key][4]);
+					  $('#vatamt' + (key+1)).val(data['aadata'][key][5].toString().replace(/,/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+					  $('#wtax' + (key+1)).val(data['aadata'][key][6]+'|'+data['aadata'][key][7]);
+					  $('#wtaxamt' + (key+1)).val(data['aadata'][key][8].toString().replace(/,/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+					  $('#netamt' + (key+1)).val(data['aadata'][key][9].toString().replace(/,/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+					  
+				  }
+				}
+			calc_totals();
+			//end iterate
+        	
+        	
+        	/////////////////////////////////////////////////
+        	//show Request/Update - Print - Submit button
+        	
+        	if(data['userclass'] == 'PREPARER'){
+        		if (data['status.desc'] == 'WORK'){
+	        		$('#btnPrint').show();
+	        		$('#btnAction').html('<span class="glyphicon glyphicon-send"></span> <span id="btn-label">Post</span>');
+	        		$('#btnAction').attr('title','Send for Checking');
+	            	$('#btnAction').show();
+	            	//replace Request button text as Update
+	            	$('#btnRequest').show();
+	    			$("#btnRequest").html('<span class="glyphicon glyphicon-check"></span> Update');
+	    			$('#btnRequest').attr('title','Update RFP');
+        		}
+        		else if(data['status.desc'] == 'OPEN'){
+        			$('#btnPrint').show();
+        			$('#btnCancel').show();
+        			//CANCELLATION BUTTON HERE
+        			//PWD E CANCEL IF STATUS IN (OPEN,PRINTED)
+        		}
+        		else if(data['status.desc'] == 'PRINTED'){
+        			$('#btnCancel').show();
+        		}
+        	}
+        	else if(($.inArray(data['status.desc'], ["OPEN","PRINTED"]) != -1) && (data['userclass'] == 'CHECKER')){
+        		$('#btnSendback').show();
+        		$('#btnAction').html('<span class="glyphicon glyphicon-check"></span> <span id="btn-label">Check</span>');
+        		$('#btnAction').attr('title','Mark as Checked');
+        		$('#btnAction').show();
+        	}
+        	else if(($.inArray(data['status.desc'], ["OPEN","PRINTED","CHECKED"]) != -1) && (data['userclass'] == 'APPROVER')){
+        		$('#btnSendback').show();
+        		$('#btnAction').html('<span class="glyphicon glyphicon-thumbs-up"></span> <span id="btn-label">Approve</span>');
+        		$('#btnAction').attr('title','Mark as Approved');
+        		$('#btnAction').show();
+        		//DISABLE - ENABLE APPROVE BUTTON DEPENDS ON AMOUNT
+        		var NETTOTAL = $('#totalnet').html().replace(/,/g , "");;
+        		if (parseFloat(data['amount_limit']) < NETTOTAL){
+        			$('#btnAction').attr('disabled',true);
+        		}
+        		else{
+        			$('#btnAction').attr('disabled',false);
+        		}
+        		
+        		
+        	}
+        	else if(($.inArray(data['status.desc'], ["APPROVED","RECEIVED"]) != -1) && (data['userclass'] == 'PAYASSOC')){
+        		if(data['status.desc'] == "APPROVED"){
+        			//DAPAT DUHA DIRI
+        			$('#btnReceive').show();
+        			$('#btnAction').html('<span class="glyphicon glyphicon-send"></span> <span id="btn-label">Disbursement</span>');
+        			$('#btnAction').attr('title','Send to Disbursement');
+        			$('#btnAction').show();
+        		}
+        		else if(data['status.desc'] == "RECEIVED"){
+        			$('#btnAction').html('<span class="glyphicon glyphicon-send"></span> <span id="btn-label">Disbursement</span>');
+        			$('#btnAction').attr('title','Send to Disbursement');
+        			$('#btnAction').show();
+        		}
+        		
+        	}
+        	
+			
+			//change ui-dialog-title
+			document.getElementById('ui-id-5').innerHTML = '<span class="glyphicon glyphicon-info-sign"></span> Request Information';
+			
+        	
+			//focus on dept (changed to focus on doc number)
+        	//$('#dept').focus();
+        	$('#doc_no').focus();
+        	
+        	//update_coa
+        	update_coa(nbu_id);
+        	//update_coa(nbu_id, data['department'], data['location']);
+			
+			
+			
+			//set rfpno/nbu_id on note
+			$('#notes').show();
+			$('#notes').attr('rfpno',rfp_no);
+			$('#notes').attr('nbu_id',nbu_id);
+			
+			
+			
+        	},
+
+        // handle a non-successful response
+    	error : function(data) {
+    		alert("Error!" + data.toString());
+        	}
+		});
+	
+});
+
+
+
+////////////////////////////////////////////////////////////////////////
+
+//BANK DETAILS COLLAPSE DIV
+	//enabled
+$("#bank_clps_div").on("hide.bs.collapse", function(){
+	$('#bankclpslink').removeClass('btn-success');
+	$('#bankclpslink').addClass('btn-danger');
+	$("#bankclpslink").html('<span class="glyphicon glyphicon-remove-circle"></span> Bank Details');
+	//setting of fields not required
+	$("#accountno").attr("required", false);
+	$("#accountname").attr("required", false);
+	$("#accounttype").attr("required", false);
+	$("#bankname").attr("required", false);
+});
+	//disabled
+$("#bank_clps_div").on("show.bs.collapse", function(){
+	$('#bankclpslink').removeClass('btn-danger');
+	$('#bankclpslink').addClass('btn-success');
+	$("#bankclpslink").html('<span class="glyphicon glyphicon-ok-circle"></span> Bank Details');
+	//setting of fields must be required
+	$("#accountno").attr("required", true);
+	$("#accountname").attr("required", true);
+	$("#accounttype").attr("required", true);
+	$("#bankname").attr("required", true);
+	
+});
+  
+////////////////////////////////////////////////////////////////////////
+  
+
+
+//NOTE LINK
+$('.notelink').on('click', function(event){
+	event.preventDefault();
+	var rfpno = $(this).attr('rfpno');
+	var nbu_id = $(this).attr('nbu_id');
+	
+	$.ajax({
+        url : "/RFP/getnotes/", // the endpoint
+        type : "post", // http method
+        data : { rfpno:rfpno, nbu_id:nbu_id }, // data sent with the post request
+		
+		// handle a successful response
+        success : function(data) {
+        	$("#dialognotes").dialog("open");
+        	
+        	$('#savednotes').val(data);
+        	},
+
+        // handle a non-successful response
+        error : function(data) {
+        	
+        	}
+		 });
+});
+
+////////////////////////////////////////////////////////////////////////
+
+//BANK LINK
+$('.banklink').on('click', function(event){
+	event.preventDefault();
+	console.log('BANK');
+});
+
+////////////////////////////////////////////////////////////////////////
+
+
+$('#pwdlink').on('click', function(event){
+	event.preventDefault();
+	$("#dialogchangepwd").dialog("open");
+});
+
+////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+//CLEAR BUTTON CLICKED
+$('#btnClear').on('click', function(event){
+	$('input[type="text"]').val('');
+	$('#nature_of_req').val('');
+	
+	$('input.reqdet').prop('disabled',true);
+	$('select.reqdet').prop('disabled',true);
+	$('textarea').prop('disabled',true);
+	$('#nbu').prop('disabled',false);
+	$('#nbu').focus();
+	$("select#nbu").prop('selectedIndex', 0);
+	document.getElementById('rfp_no').innerHTML = '-----------------';
+	/////////
+	$("input.calculate").attr('disabled',true);
+	$("input.amts").attr('disabled',true);
+	$("input.coa_lookup").attr('disabled',true);
+	$("select.calculate").attr('disabled',true).prop('selectedIndex', 0);
+	$('.tag').hide();
+	$('.coa_lookup').show();
+	
+	$("input.aaid").val('');
+	///////////
+	$('#location').prop('selectedIndex', 0);
+	$('#dept').prop('selectedIndex', 0);
+	
+	calc_totals();
+	
+	
+});
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+//CALCULATE
+$("body").on("keyup",".calculate", function(event) {
+	var entryno = $(this).attr('entryno');
+	var grossamt = $('#grossamt' + entryno).val().replace(/,/g , "");
+	var taxsched = $('#tax' + entryno).val();
+	var wtaxstr = $('#wtax' + entryno).val().split('|');
+	
+	var wtaxsched = wtaxstr[0];
+	var rate = parseFloat(wtaxstr[1]);
+	var VATamt;
+	var WTaxamt;
+	var NETamt; 
+	
+		
+	if (grossamt != ''){
+		//FOR VAT
+		if (taxsched == '1'){	
+			VATamt = parseFloat(grossamt) * 0.12;
+			WTaxamt = parseFloat(grossamt) * rate;
+		}
+		else if(taxsched == '2'){
+			VATamt = 0.00;
+			WTaxamt = parseFloat(grossamt) * rate;
+		}
+		else if(taxsched == '3'){
+			VATamt = 0.00;
+			WTaxamt = 0.00;
+			$('#wtax' + entryno).prop('selectedIndex', 5);
+		}
+		
+		//FOR NET
+		NETamt = parseFloat(grossamt) + VATamt - WTaxamt; 
+		
+		//SET VALUES
+		$('#vatamt' + entryno).val(VATamt.toFixed(2).toString().replace(/,/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+		$('#wtaxamt' + entryno).val(WTaxamt.toFixed(2).toString().replace(/,/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+		$('#netamt' + entryno).val(NETamt.toFixed(2).toString().replace(/,/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+		
+	}
+	else{
+		//SET VALUES
+		$('#vatamt' + entryno).val('');
+		$('#wtaxamt' + entryno).val('');
+		$('#netamt' + entryno).val('');
+	}
+	calc_totals();
+	
+	
+});
+
+$("body").on("change",".calculate", function(event) {
+	var entryno = $(this).attr('entryno');
+	var grossamt = $('#grossamt' + entryno).val().replace(/,/g , "");
+	var taxsched = $('#tax' + entryno).val();
+	var wtaxstr = $('#wtax' + entryno).val().split('|');
+	
+	var wtaxsched = wtaxstr[0];
+	var rate = parseFloat(wtaxstr[1]);
+	var VATamt;
+	var WTaxamt;
+	var NETamt; 
+	
+	
+	if (grossamt != ''){
+		//FOR VAT
+		if (taxsched == '1'){	
+			VATamt = parseFloat(grossamt) * 0.12;
+			WTaxamt = parseFloat(grossamt) * rate;
+		}
+		else if(taxsched == '2'){
+			VATamt = 0.00;
+			WTaxamt = parseFloat(grossamt) * rate;
+		}
+		else if(taxsched == '3'){
+			VATamt = 0.00;
+			WTaxamt = 0.00;
+			$('#wtax' + entryno).prop('selectedIndex', 5);
+		}
+		
+		//FOR NET
+		NETamt = parseFloat(grossamt) + VATamt - WTaxamt; 
+		
+		//SET VALUES
+		$('#vatamt' + entryno).val(VATamt.toFixed(2).toString().replace(/,/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+		$('#wtaxamt' + entryno).val(WTaxamt.toFixed(2).toString().replace(/,/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+		$('#netamt' + entryno).val(NETamt.toFixed(2).toString().replace(/,/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+	}
+	else{
+		//SET VALUES
+		$('#vatamt' + entryno).val('');
+		$('#wtaxamt' + entryno).val('');
+		$('#netamt' + entryno).val('');
+	}
+	calc_totals();
+});
+
+//     CALCULATE TOTAL AMOUNT     //
+function calc_totals(){
+	var NEWTOTALGROSS = 0;
+	var NEWTOTALVAT = 0;
+	var NEWTOTALWTAX = 0;
+	var NEWTOTALNET = 0;
+	
+	for (x=1;x<=10;x++){
+		gross = $('#grossamt' + x).val().replace(/,/g , "");
+		/*
+		vat = $('#vatamt' + x).val().replace(/,/g , "");
+		tax = $('#wtaxamt' + x).val().replace(/,/g , "");
+		net = $('#netamt' + x).val().replace(/,/g , "");
+		*/
+		if (gross != ''){
+			NEWTOTALGROSS += parseFloat($('#grossamt' + x).val().replace(/,/g , ""));
+			NEWTOTALVAT += parseFloat($('#vatamt' + x).val().replace(/,/g , ""));
+			NEWTOTALWTAX += parseFloat($('#wtaxamt' + x).val().replace(/,/g , ""));
+			NEWTOTALNET += parseFloat($('#netamt' + x).val().replace(/,/g , ""));
+		}
+		
+	}
+	
+	document.getElementById('totalgross').innerHTML = NEWTOTALGROSS.toFixed(2).toString().replace(/,/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	document.getElementById('totalvat').innerHTML = NEWTOTALVAT.toFixed(2).toString().replace(/,/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	document.getElementById('totalwtax').innerHTML = NEWTOTALWTAX.toFixed(2).toString().replace(/,/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	document.getElementById('totalnet').innerHTML = NEWTOTALNET.toFixed(2).toString().replace(/,/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	
+}
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+//ON NBU FOCUSOUT
+$("body").on("focusout","#nbu", function(e) {
+	var nbu = $(this).val();
+	
+	if (nbu != ''){
+		$.ajax({
+	        url : "/RFP/getrfp_no/", // the endpoint
+	        type : "post", // http method
+	        data : { nbu:nbu }, // data sent with the post request
+			
+			// handle a successful response
+	        success : function(rfpno) {
+	        	$('input.reqdet').prop('disabled',false);
+	    		$('select.reqdet').prop('disabled',false);
+	    		$('textarea').prop('disabled',false);
+	        	
+	        	//set rfp_no
+	        	document.getElementById('rfp_no').innerHTML = rfpno;
+	        	$('input#hrfp_no').val(rfpno);
+	        	//disabled #nbu
+	        	$('#nbu').prop('disabled',true);
+	        	
+	        	//set to hidden field
+	        	//var nbu = $('#nbu').val();
+	        	$('#nbucode').val(nbu);
+	        	
+	        	//focus on dept (changed to focus on doc number)
+	        	//$('#dept').focus();
+	        	$('#doc_no').focus();
+	        	
+	        	/*
+	        	//update location dropdowns
+	        	update_locations(nbu, null);
+	        	*/
+	        	
+	        	//set rfpno/nbu_id on note
+	        	$('#notes').show();
+				$('#notes').attr('rfpno',rfpno);
+				$('#notes').attr('nbu_id',nbu);
+				
+	        	},
+
+	        // handle a non-successful response
+	    	error : function(data) {
+	    		alert("Oops! Something went wrong! Please Try Again!");
+	        	}
+			});
+		
+	}
+	else{
+		//pop up notification (No NBU Selected. Please Select NBU.)
+		
+		//after that, focus on #nbu cmb
+		//document.getElementById("nbu").focus();
+		//$('#nbu').focus();
+		document.getElementById('hrfp_no').innerHTML = '';
+		$('input#rfp_no').val('-----------------');
+	}
+	
+});
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+//kuhaon ang name sa MMS
+$('#vendor_id').on('focusout', function(event){
+	var vendorid = $(this).val();
+	var locked = $(this).attr('readonly');
+	
+	if((vendorid!='') && (locked == null)){
+		$.ajax({
+		    
+	        url : "/RFP/getvendorname/", // the endpoint
+	        type : "post", // http method
+	        data : { vendorid:vendorid }, // data sent with the post request
+			
+	        beforeSend: function(xhr, settings) {
+		        if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+		            // Send the token to same-origin, relative URLs only.
+		            // Send the token only if the method warrants CSRF protection
+		            // Using the CSRFToken value acquired earlier
+		            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+		        }
+		        
+		        //put loading bar here
+		        $('#dialogloadingbar').dialog("open");
+		        
+		   	},
+	        complete: function() {
+	        	$('#dialogloadingbar').dialog("close");
+	        },
+		   	
+			// handle a successful response
+	        success : function(data) {
+	        	var vendorname = data['vendorname']; 
+	        	var asvoth = data['asvoth'];
+	        	var afname = data['afname'];
+	        	
+	        	$('#vendor_name').val(vendorname);
+	        	
+	        	if (asvoth=='0'){
+	        		$('#check_payee').val(vendorname);
+	        	}
+	        	else{
+	        		$('#check_payee').val(afname);
+	        	}
+	        	//set vendor details to readonly
+	        	$('.vendor_dets').attr('readonly','readonly');
+	        	
+	        	},
+	
+	        // handle a non-successful response
+	    	error : function(data) {
+	    		//alert('Vendor does not exist.');
+	    		$("#dialogvendornotif").dialog("open");
+	    		
+	        	}
+        	
+			});
+	}
+});
+
+
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+//DISABLED KAY ISABAY NAKO ANG 3 GLMAC IN 1 LOOKUP
+/*
+$("body").on("change","#location", function(event) {
+	var nbu = $('#nbu').val();
+	var dept = $('#dept').val();
+	var locs = $(this).val();
+	
+	if ((nbu!='') && (dept!='') && (locs!='')){
+		update_coa(nbu, dept, locs);
+		$('.coa_lookup').attr('disabled',false);
+	}
+});
+*/
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+$("body").on("click","#btnClearVDets", function(event) {
+	//set vendor details to readonly
+	$('.vendor_dets').attr('readonly',false);
+	$('.vendor_dets').val('');
+});
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+//Search Name of Vendor
+$("body").on("click","#btnLookup", function(event) {
+	var keyword = $('#vendor_name').val();
+	$("#vendor_id").val('');
+	$("#check_payee").val('');
+	
+	//if greater than 2 char and divisible by 3
+	if(keyword != ''){
+		
+		$.ajax({
+	        url : "/RFP/getvendordetails/", // the endpoint
+	        type : "post", // http method
+	        data : { keyword:keyword }, // data sent with the post request
+	        dataType: 'json',
+			// handle a successful response
+	        success : function(data) {
+	        	$(".vname_lookup").autocomplete({
+		    		source: data,
+		    		minLength: 0,
+		            select: function(event, ui) {
+		            	$('#vendor_name').val(ui.item.value);
+		            	
+		            	///////////////////////////
+		            	//ajax to get id and check payee
+		            	$.ajax({
+		        	        url : "/RFP/getvendorid/", // the endpoint
+		        	        type : "post", // http method
+		        	        data : { vendorname:ui.item.value }, // data sent with the post request
+		        			
+		        			// handle a successful response
+		        	        success : function(data) {
+		        	        	var vendorid = data['vendorid']; 
+		        	        	var asvoth = data['asvoth'];
+		        	        	var afname = data['afname'];
+		        	        	
+		        	        	$('#vendor_id').val(vendorid);
+		        	        	
+		        	        	if (asvoth=='0'){
+		        	        		$('#check_payee').val(ui.item.value);
+		        	        	}
+		        	        	else{
+		        	        		$('#check_payee').val(afname);
+		        	        	}
+		        	        	
+		        	        	//set vendor details to readonly
+		        	        	$('.vendor_dets').attr('readonly','readonly');
+		        	        	},
+		        	
+		        	        // handle a non-successful response
+		        	    	error : function(data) {
+		        	    		
+		        	    		},
+		        	    		
+		                	
+		        			});
+		            	///////////////
+		            	
+		            	return false
+		            },
+		            change: function(event, ui) {
+		            	if ($("#vendor_name").val().length == 0) {
+		            		$("#vendor_id").val('');
+		            		$("#vendor_name").val('');
+		            		$("#check_payee").val('');
+		            		
+		            	}
+	            	
+		            }
+	            });
+	        	
+	        	$('#vendor_name').autocomplete("search", "");
+	        	},
+	
+	        // handle a non-successful response
+	        error : function(data) {
+	        	
+	        	}
+			 });	
+	
+	}
+	
+});
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+$('.remove-label').on('click', function(event){
+	var entryno = $(this).attr('entryno');
+	
+	$("#coa_text" + entryno).val('');
+	$("#coa_hidden" + entryno).val('');
+	
+	$("#coa_text" + entryno).show();
+    document.getElementById('coa_span' + entryno).innerHTML = '';
+    $('#label-btn' + entryno).hide();
+    
+    $("#coa_text" + entryno).focus();
+    //disable same line if closed & delete all values
+    $('#grossamt' + entryno).attr('disabled',true).val('');
+    $('#tax' + entryno).attr('disabled',true).prop('selectedIndex', 0);
+    $('#vatamt' + entryno).attr('disabled',true).val('');
+    $('#wtax' + entryno).attr('disabled',true).prop('selectedIndex', 0);
+    $('#wtaxamt' + entryno).attr('disabled',true).val('');
+    $('#netamt' + entryno).attr('disabled',true).val('');
+    
+    calc_totals();
+});
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+
+
+
+function update_coa(nbu){
+//function update_coa(nbu,dept,locs){
+	$.ajax({
+        url : "/RFP/select_coa/", // the endpoint
+        type : "post", // http method
+        data : { nbu:nbu }, // data sent with the post request
+        dataType: 'json',
+		// handle a successful response
+        success : function(data) {
+        	
+        	$(".coa_lookup").autocomplete({
+        		//source: data,
+        		source: function(request, response) {
+        	        var results = $.ui.autocomplete.filter(data, request.term);
+        	        console.log(results.length);
+        	        response(results.slice(0, 15));//limit matches to 15
+        	    },
+	            select: function(event, ui) {
+	            	var entryno = $(this).attr('entryno');
+	                $("#coa_text" + entryno).val(ui.item.value);
+	                $("#coa_hidden" + entryno).val(ui.item.label);
+	                
+	                $("#coa_text" + entryno).hide();
+	                document.getElementById('coa_span' + entryno).innerHTML = ui.item.value;
+	                $('#label-btn' + entryno).show();
+	                //enable same line
+	                $('#grossamt' + entryno).attr('disabled',false);
+	                $('#tax' + entryno).attr('disabled',false);
+	                $('#vatamt' + entryno).attr('disabled',false);
+	                $('#wtax' + entryno).attr('disabled',false);
+	                $('#wtaxamt' + entryno).attr('disabled',false);
+	                $('#netamt' + entryno).attr('disabled',false);
+	                
+	                $('#grossamt' + entryno).focus();
+	                
+	                ////////////////////////////
+	                /*
+	                //throw values to dept and locs
+	                var GLMAC1 = ui.item.label.substring(0, 3); //DEPARTMENT
+	                var GLMAC2 = ui.item.label.substring(4, 7); //ACCOUNT TYPE
+	                var GLMAC3 = ui.item.label.substring(8, 13);//LOCATION-STORECODE
+	                
+	                $('#dept' + entryno).val(GLMAC1);
+	                $('#locs' + entryno).val(GLMAC3);
+	                
+	                $.ajax({
+	                    url : "/RFP/get_deptlocs_name/", // the endpoint
+	                    type : "post", // http method
+	                    data : { GLMAC1:GLMAC1, GLMAC2:GLMAC2, GLMAC3:GLMAC3  }, // data sent with the post request
+	            		
+	            		// handle a successful response
+	                    success : function(data) {
+	                    		                    	
+	                    	},
+
+	            		 });
+	                */
+	                
+	                return false
+	            },
+	            change: function(event, ui) {
+	            	var entryno = $(this).attr('entryno');
+	            	if ($("#coa_text" + entryno).val().length == 0) {
+	            		$("#coa_hidden" + entryno).val('');
+	            		
+	            		$("#coa_text" + entryno).show();
+		                document.getElementById('coa_span' + entryno).innerHTML = '';
+		                $('#label-btn' + entryno).hide();
+	            	}
+            	
+	            }
+            });
+        	
+        	},
+
+        // handle a non-successful response
+        error : function(data) {
+        	
+        	}
+		 });	
+	
+	
+
+}
+
+////////////////////////////////////////////////////////////////////////
+
+/*
+function update_locations(nbu, locs){
+	$.ajax({
+        url : "/RFP/select_locations/", // the endpoint
+        type : "post", // http method
+        data : { nbu:nbu }, // data sent with the post request
+		
+		// handle a successful response
+        success : function(data) {
+        	document.getElementById('locations').innerHTML = data;
+
+        	$('#location').val(locs);
+        	
+        	},
+
+        // handle a non-successful response
+        error : function(data) {
+        	
+        	}
+		 });
+}
+*/
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////////////
+
+//userpager
+$('input#userpager').on('focusout', function(event){
+	var page = $(this).val();
+	window.location.replace("/RFP/addUser/?page=" + page);
+});
+
+//userpager
+$('input#userpager').on('keydown', function(event){
+	if(event.keyCode == 13){
+		var page = $(this).val();
+		window.location.replace("/RFP/addUser/?page=" + page);
+	}
+});
+
+///////////////////////////////////////////////////////////////////////
+
+//rfppager
+$('input#rfppager').on('focusout', function(event){
+	var page = $(this).val();
+	window.location.replace("/RFP/main/?page=" + page);
+});
+
+//rfppager
+$('input#rfppager').on('keydown', function(event){
+	if(event.keyCode == 13){
+		var page = $(this).val();
+		window.location.replace("/RFP/main/?page=" + page);
+	}
+});
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////
+
+
+/**************************************************************************************/
+/**************************************************************************************/
+/**************************************************************************************/
+	
+	//AVOID 2 dots	
+	$(".numdot").keydown(function (e) {
+        var theVal = $(this).val().replace(/,/g, "");
+        var dotctr = (theVal.match(/\./g) || []).length;
+        
+        if ((dotctr == 1 && e.keyCode == 110) || (dotctr == 1 && e.keyCode == 190))
+        	{
+        	e.preventDefault();
+        	}
+        else{
+        	return;
+        }
+	});
+
+/**************************************************************************************/
+/**************************************************************************************/
+/**************************************************************************************/
+
+	//NUM ONLY and dots. only
+	$(".numdot").keydown(function (e) {
+        // Allow: backspace, delete, tab, escape, enter and .
+        if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||
+             // Allow: Ctrl+A, Command+A
+            (e.keyCode == 65 && ( e.ctrlKey === true || e.metaKey === true ) ) || 
+             // Allow: home, end, left, right, down, up
+            (e.keyCode >= 35 && e.keyCode <= 40)) {
+                // let it happen, don't do anything
+                return;
+	            
+                
+        }
+        // Ensure that it is a number and stop the keypress
+        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+            e.preventDefault();
+        }
+    });
+
+/**************************************************************************************/
+/**************************************************************************************/
+/**************************************************************************************/
+	
+	//NUM ONLY and dots. only
+	$(".numonly").keydown(function (e) {
+        // Allow: backspace, delete, tab, escape, enter and .
+        if ($.inArray(e.keyCode, [46, 8, 9, 27, 13]) !== -1 ||
+             // Allow: Ctrl+A, Command+A
+            (e.keyCode == 65 && ( e.ctrlKey === true || e.metaKey === true ) ) || 
+             // Allow: home, end, left, right, down, up
+            (e.keyCode >= 35 && e.keyCode <= 40)) {
+                // let it happen, don't do anything
+                return;
+	            
+                
+        }
+        // Ensure that it is a number and stop the keypress
+        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+            e.preventDefault();
+        }
+    });
+
+/**************************************************************************************/
+/**************************************************************************************/
+/**************************************************************************************/
+	
+	
+/**************************************************************************************/
+/**************************************************************************************/
+/**************************************************************************************/
+
+	$("body").on("input",".uppercase", function(e) {
+	    if (e.which >= 97 && e.which <= 122) {
+	        var newKey = e.which - 32;
+	        // I have tried setting those
+	        e.keyCode = newKey;
+	        e.charCode = newKey;
+	    }
+
+	    $(this).val(($(this).val()).toUpperCase());
+	});
+
+/**************************************************************************************/
+/**************************************************************************************/
+/**************************************************************************************/
+
+	//AMOUNT FORMATTER
+	$("body").on("keyup","input.amts",function(event) {
+    	var x = $(this).val();
+    	$(this).val(x.toString().replace(/,/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+	});
+	
+	
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+
+
+
+//csrf token
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+var csrftoken = getCookie('csrftoken');
+ 
+/*
+The functions below will create a header with csrftoken
+*/
+ 
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+function sameOrigin(url) {
+    // test that a given url is a same-origin URL
+    // url could be relative or scheme relative or absolute
+    var host = document.location.host; // host + port
+    var protocol = document.location.protocol;
+    var sr_origin = '//' + host;
+    var origin = protocol + sr_origin;
+    // Allow absolute or scheme relative URLs to same origin
+    return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+        (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+        // or any other URL that isn't scheme relative or absolute i.e relative.
+        !(/^(\/\/|http:|https:).*/.test(url));
+}
+ 
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+            // Send the token to same-origin, relative URLs only.
+            // Send the token only if the method warrants CSRF protection
+            // Using the CSRFToken value acquired earlier
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    }
+});
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+//DATE 
+	$( ".datepickerx" ).datepicker({
+		 format: 'yyyy-mm-dd',
+		 changeMonth: true,
+         changeYear: true,
+         showButtonPanel: true,
+         yearRange: "-10:+0",
+	});
+
+	
+	
+
+
+	
+});//end
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+// PREDEFINED FUNCTIONS //
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+String.prototype.replaceAt=function(index, character) {
+    return this.substr(0, index) + character + this.substr(index+character.length);
+};
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

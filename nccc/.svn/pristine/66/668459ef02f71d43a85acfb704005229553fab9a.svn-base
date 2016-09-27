@@ -1,0 +1,245 @@
+{% load staticfiles %}
+{% load humanize %}
+{% load ecs_tags %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/ecs_css/style.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.4-dist/css/bootstrap.css' %}" />
+
+<script type="text/javascript" src="{% static 'jquery-1.12.1/jquery-1.12.1.min.js' %}" ></script>
+<script type="text/javascript" src="{% static 'bootstrap-3.3.4-dist/js/bootstrap.js' %}" ></script>
+
+<!DOCTYPE html>
+
+<html>
+	<head>
+		
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<link rel="icon" href="/static/icons/ecs.ico">
+		<title>NCCC ECS</title>
+		
+		<style>
+		    @page {
+		        size: short portrait;
+		        margin-top: 1cm;
+		        margin-bottom: 0.5cm;
+		        margin-left: 1.5cm;
+		    	margin-right: 1.5cm;
+		    	
+		    	@frame footer {
+                    -pdf-frame-content: footerContent;
+                    bottom: 0cm;
+                    height: 4cm;
+                }
+		    }
+		</style>
+	</head>
+
+	<body>
+		
+		<div class="row">
+			<div class="row" align="center">
+				<h1 style="text-decoration: underline;">STATEMENT OF ACCOUNT</h1>
+			</div>
+			
+			<div class="row">
+				<table border="0" cellspacing="5" width="100%" cellspacing="5">
+					<tr>
+						<td width="60px" valign="middle">
+							&nbsp;
+						</td>
+						<td width="250px" valign="middle">
+							<b>Supplier Name: </b>		
+						</td>
+						<td valign="middle" width="600px" colspan="2">
+							<h2 style="color: green;">{{soainfo.CreatedBy.vendorName}}</h2>		
+						</td>
+						
+						
+						
+						<td width="180px" valign="middle">
+							<b>SOA No.:</b>		
+						</td>
+						<td width="500px" valign="middle">
+							<h2 style="color: darkred;">{{SOANo}}</h2>		
+						</td>
+					</tr>
+					
+					<tr>
+						<td valign="middle">
+							&nbsp;
+						</td>
+						<td valign="middle">
+							<b>Bill To: </b>
+						</td>
+						
+						<td valign="middle" colspan="2">
+							<h2>{{soainfo.SOABillTo.NBUDesc}}</h2>		
+						</td>
+						
+						
+						
+						<td valign="middle">
+							<b>SOA Date:</b>		
+						</td>
+						<td valign="middle">
+							<h2 style="color: darkred;">{{soainfo.SOADate|date:"m/d/Y"}}</h2>		
+						</td>
+					</tr>
+					
+				</table>
+			</div>
+			<div class="row">
+				&nbsp;
+			</div>
+			<div class="row">
+				<table border="0">
+					<tr style="background: skyblue; vertical-align: middle; z-index: -100;">
+						<th class="tabletitle" align="left">
+							PO NO.
+						</th>
+						<th class="tabletitle" align="left">
+							PO DATE
+						</th>
+						<th class="tabletitle" align="left">
+							INVOICE NO.
+						</th>
+						<th class="tabletitle" align="left">
+							INVOICE DATE
+						</th>
+						<th class="tabletitle" align="center">
+							AMOUNT
+						</th>
+					</tr>
+					
+					{% for det in detinfo %}
+				
+					<tr>
+						<td valign="top">
+							<label class="fields">
+								{{det.PONo}}
+							</label>
+						</td>
+						<td valign="top">
+							<label class="fields">
+								{{det.PODate|date:"m/d/Y"}}
+							</label>
+						</td>
+						
+						<td valign="top">
+							{% for inv in det.PONo|invsOfPO:det.SOANo_id %}
+								<label class="fields" style="display: block;">
+									{{inv.InvNo}}
+								</label>
+							{% endfor %}
+						</td>
+						<td valign="top">
+							{% for inv in det.PONo|invsOfPO:det.SOANo_id %}
+								<label class="fields" style="display: block;">
+									{{inv.InvDate|date:"m/d/Y"}}
+								</label>
+							{% endfor %}
+						</td>
+						<td class="tdamount" align="right" valign="top">
+							{% for inv in det.PONo|invsOfPO:det.SOANo_id %}
+								<label class="fields" style="display: block;">
+									{{inv.Amount|intcomma}}
+								</label>
+							{% endfor %}
+						</td>
+						
+					</tr>
+				
+					{% endfor %}
+					
+					<tr>
+						<td colspan="5">
+							<hr/>
+						</td>	
+					</tr>
+					<tr>
+						<td align="center">
+							<h3>TOTAL</h3>
+						</td>
+						<td colspan="4" align="right">
+							<h3 style="color: red;">P &nbsp; {{totalamount|intcomma}}</h3>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="5">
+							<hr/>
+						</td>	
+					</tr>
+				</table>
+			</div>
+			
+			<div class="row">
+				&nbsp;
+			</div>
+		</div>
+		
+
+		
+		<div id="footerContent" class="row">
+			<table class="text-left" cellspacing="1" cellpadding="1" border="0">
+				<tr>
+					<td width="10%">
+						&nbsp;
+					</td>
+					<!--  -->
+					<td width="10%" align="right" style="vertical-align: bottom;">
+						<label>Prepared by:</label>
+					</td>
+					<td width="30%" align="center" style="vertical-align: bottom; border-bottom: 0.5pt solid black;">
+						<h3>
+							{{soainfo.CreatedBy.FullName}}
+						</h3>
+					</td>
+					<!--  -->
+					<td width="15%">
+						&nbsp;
+					</td>
+					
+					<td width="10%" align="right">
+						<label>Comeback Date:</label>
+					</td>
+					<td width="15%" align="center" style="vertical-align: bottom; border-bottom: 0.5pt solid black;">
+						<h2 style="color: darkred;">{{soainfo.CBDate|date:"m/d/Y"}}</h2>
+					</td>
+					<!--  -->
+					<td width="10%">
+						&nbsp;
+					</td>
+				</tr>
+				
+				
+				
+				
+				<tr>
+					<td colspan="2">
+						&nbsp;
+					</td>
+					
+					<td align="center" style="padding-top: 2pt;">
+						<span style="">Signature over Printed Name</span>
+					</td>
+					
+					<td colspan="4">
+						&nbsp;
+					</td>
+				</tr>
+			</table>
+		</div>
+					
+
+						
+			
+		
+			
+			
+			
+	
+	
+	</body>
+
+</html>
+

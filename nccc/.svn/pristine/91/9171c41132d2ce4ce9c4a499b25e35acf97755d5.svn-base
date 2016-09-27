@@ -1,0 +1,57 @@
+{% extends "ecs_templates/base.html" %}
+		{% load ecs_tags %}
+				{% block content %}
+				
+				
+				<div class="row" style="margin-left:200px; margin-right:200px; margin-top:40px; margin-bottom:20px; background-color: #f5f5f5; border: 1px solid #ccc; border-radius: 4px; padding-top:20px; padding-bottom: 10px;	">
+					<div class="row" align="center">
+						<label class="textheader">Terms and Conditions</label>
+					</div>
+					
+					<div class="row" style="margin-left:75px; margin-right:75px; margin-top:10px; margin-bottom:20px; text-align: justify; text-justify: inter-word;">
+						<label class="para">
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Welcome to our services.
+						</label>
+						
+						
+						
+						<label class="para">
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Our service design is to supply you with online access of countering receipts supplied to NCCC Business units. You are to use this service only for this sole purpose; this is not to be misused in any way. Any non-compliance or suspected misconduct on your part may lead to suspension or termination of our service.							
+						</label>
+						
+						
+						
+						<label class="para">
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Your account is provided by the system administrator. Change of password is needed after the first log in. Your password is to be kept confidential and is the sole responsibility of the user. It is encouraged that you do not use the ECS password to other accounts. Every year the account will be reset to comply with yearly update of vendor accreditation.					
+						</label>
+						
+						
+						
+						<label class="para">
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;We treat your data as confidential; hence your privacy is protected upon using our services.
+						</label>
+						
+						
+						
+						<label class="para">
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Necessary improvement may be made in our system. Functionalities or features may be added or removed from time to time without prior notice.
+						</label>
+						
+						
+						
+						<label class="para">
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Terms may be modified by statutory reason or changes to our services. You should regularly check the terms. Notice will be posted on this page. Change from statutory reason may apply immediately, but changes to our service will have an announced effective date.
+						</label>
+
+	
+											
+					</div>
+
+							
+					
+				</div>
+				{% endblock %}
+				
+				
+				
+

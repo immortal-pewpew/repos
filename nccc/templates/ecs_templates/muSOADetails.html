@@ -1,0 +1,131 @@
+<script type="text/javascript">
+	$('input.mudets').on('click', function(event) {
+		event.preventDefault();
+		var SOANo = $(this).attr('SOANo');
+		var SOAStatus = $(this).attr('Status');
+		
+		$.ajax({
+			url : "/ECS/mudetprev/", // the endpoint
+			type : "post", // http method
+			data : {
+				SOANo : SOANo,
+				SOAStatus : SOAStatus
+			}, // data sent with the post request
+
+			// handle a successful response
+			success : function(data) {
+				$('#mudetailsbody').html(data);
+			},
+
+			// handle a non-successful response
+			error : function(data) {
+
+			}
+		});
+	});
+
+//CLEAR MODAL DATA IF HIDDEN
+$('.modal').on('hidden.bs.modal', function () {
+  $('.modal-body').html('');
+});
+
+</script>
+
+
+	<div class="col-md-1">
+		&nbsp;
+	</div>
+	<div class="col-md-10">
+		{% if allSOA %}
+		<table class="table table-striped">
+			<tbody>
+				<tr>
+					<th class="tabletitle">
+						SOA No
+					</th>
+					<th class="tabletitle">
+						SOA Creation Date
+					</th>
+					<th class="tabletitle">
+						Created By
+					</th>
+					<th class="tabletitle">
+						Supplier
+					</th>
+					<th class="tabletitle">
+						Comeback Date
+					</th>
+					<th class="tabletitle">
+						Last Update
+					</th>
+					<th class="tabletitle">
+						Status
+					</th>
+					<th class="tabletitle">
+						Action
+					</th>
+				</tr>
+			</tbody>
+			{% for SOA in allSOA %}
+				<tr>
+					<td>
+						{{ SOA.SOANo }}
+					</td>
+					<td>
+						{{ SOA.SOADate|date:"m/d/Y h:i:s A" }}
+					</td>
+					<td align="left">
+						{{ SOA.CreatedBy.FullName }}
+					</td>
+					<td align="left">
+						<!-- KUNG MAG LAGG E SAVE NALANG SA ISA KA COLUMN -->
+						<!--
+						{# SOA.UserName.vendorID|getvendorName #}
+						 -->
+						{{ SOA.CreatedBy.vendorName }}
+					</td>
+					<td>
+						{% if SOA.CBDate %}
+							{{ SOA.CBDate|date:"m/d/Y" }}
+						{% else %}
+							-
+						{% endif %}
+					</td>
+					<td>
+						{{ SOA.SOALastUpdate|date:"m/d/Y h:i:s A" }}
+					</td>
+					
+					<td style="font-weight: bold; color: 
+						{% if SOA.SOAStatus == 'Open' %}
+							blue;
+						{% elif SOA.SOAStatus == 'Denied' %}
+							red;
+						{% elif SOA.SOAStatus == 'Countered' %}
+							green;
+						{% else %}
+							gray;
+						{% endif %}
+					">
+						{{ SOA.SOAStatus }}	
+					</td>
+					<td>
+						<form method="post" class="frmMargin0" action="/ECS/ca_html_to_pdf_directly/" target="_blank">
+						<input type="image" src="/static/images/document_info32.png" title="Details" class="img mudets" SOANo="{{SOA.SOANo}}" data-toggle="modal" data-target="#casoadetailsmodal" Status="{{SOA.SOAStatus}}"/>
+						{% csrf_token %}
+						{% if SOA.SOAStatus == 'Countered' or SOA.SOAStatus == 'Pending'%}
+						<input type="hidden" name="SOANo" value="{{SOA.SOANo}}" />
+						<input type="image" src="/static/images/printer32.png" title="Print" class="img" soanum="{{SOA.SOANo}}" />
+						{% endif %}
+						</form>
+					</td>
+					
+				</tr>
+			{% endfor %}
+		</table>
+		{% else %}
+			<h1 style="text-align: center; ">No Records to display.</h1>
+		{% endif %}
+	</div>
+	<div class="col-md-1">
+		&nbsp;
+	</div>

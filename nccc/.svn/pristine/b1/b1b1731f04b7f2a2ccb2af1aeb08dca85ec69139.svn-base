@@ -1,0 +1,302 @@
+{% load erm_tags %}
+
+
+	<div class="row">
+		<div class="row">
+			<div class="col-md-3">
+				&nbsp;
+			</div>
+			<div class="col-md-6">
+				<div class="col-md-12" align="center">
+					<label id="textheader">DTR SUMMARY</label>	
+				</div>
+			</div>
+			<div class="col-md-3 text-right">
+				<div class="col-md-12" style="padding-top: 10px; padding-right: 0px;">
+					<a href="/ERM/periodreports/" ><input type="button" class="btn btn-sm btn-info" value="&nbsp;&nbsp;Back&nbsp;&nbsp;" /></a>	
+				</div>
+			</div>
+		</div>
+		
+		
+		{% if dtrlist %}
+		
+			<div class="row">
+				<div class="col-md-3">
+					&nbsp;
+				</div>
+				<div class="col-md-6">
+					<div class="col-md-4">
+						<label>Associate ID:</label>
+					</div>
+					<div class="col-md-8">
+						<label>{{uid}}</label>
+					</div>
+				</div>
+				<div class="col-md-3">
+					&nbsp;
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-md-3">
+					&nbsp;
+				</div>
+				<div class="col-md-6">
+					<div class="col-md-4">
+						<label>Associate Name:</label>
+					</div>
+					<div class="col-md-8">
+						<label>{{lname}}, {{fname}} {{mname}}</label>
+					</div>
+				</div>
+				<div class="col-md-3">
+					&nbsp;
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-md-3">
+					&nbsp;
+				</div>
+				<div class="col-md-6">
+					<div class="col-md-4">
+						<label>Year:</label>
+					</div>
+					<div class="col-md-8">
+						<label>{{yearnum}}</label>
+					</div>
+				</div>
+				<div class="col-md-3">
+					&nbsp;
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-md-3">
+					&nbsp;
+				</div>
+				<div class="col-md-6">
+					<div class="col-md-4">
+						<label>Month:</label>
+					</div>
+					<div class="col-md-8">
+						<label>{{monthname}}</label>
+					</div>
+				</div>
+				<div class="col-md-3">
+					&nbsp;
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-md-3">
+					&nbsp;
+				</div>
+				<div class="col-md-6">
+					<div class="col-md-4">
+						<label>Cutoff Period:</label>
+					</div>
+					<div class="col-md-8">
+						<label>{{cutoffperiod}}</label>
+					</div>
+				</div>
+				<div class="col-md-3">
+					&nbsp;
+				</div>
+			</div>
+			
+			<div class="row" align="right">
+				<form method="post" action="/ERM/genindi/">
+					{% csrf_token %}
+					<input name="hassociate" type="hidden" value="{{uid}}"/>
+					<input name="hyearnum" type="hidden" value="{{yearnum}}"/>
+					<input name="hmonthnum" type="hidden" value="{{monthnum}}"/>
+					<input name="hcutoff" type="hidden" value="{{cutoffperiod}}"/>
+					<input id="toxls" type="image" src="/static/images/export_excel.png" title="Generate to Excel" />
+				</form>
+			</div>
+			
+			<div class="row">
+				&nbsp;
+			</div>
+		
+			<div class="row">
+				<table class="table table-striped">
+					<thead>
+						<tr id="tabletitle">
+							<th colspan="2" class="info" align="center"><h6>DATE</h6></th>
+							<th title="Hours Worked" class="info" align="center"><h6>HRS WRKD</h6></th>
+							<th title="Vacation Leave" class="info" align="center"><h6>V.L.</h6></th>
+							<th title="Service Incentive Leave" class="info" align="center"><h6>S.I.L.</h6></th>
+							<th title="Sick Leave" class="info" align="center"><h6>S.L.</h6></th>							   			
+					    	<th class="info" align="center"><h6>ABSENT</h6></th>
+					    	<th class="info" align="center"><h6>NOTES</h6></th>
+						</tr>
+					</thead>
+					{% for data in dtrlist %}
+				    	<tr>
+							<td id="datetext">
+				    			<h5>{{ data.attendanceDate|date:"M" }}  {{ data.attendanceDate|date:"d" }}</h5>
+				    		</td>
+				    		<td>
+				    			&nbsp;
+				    		</td>
+				    		
+				    		{% if uid|isdayoff:data.attendanceDate == False and data.attendanceDate|isHoliday:branch == False %}
+				    		<td>
+								{% if data.hoursWorked == 0 or data.hoursWorked == '' %}
+									<h5>-</h5>
+								{% else %}
+									<h5>{{ data.hoursWorked|divide:60 }}hr {{ data.hoursWorked|modulo:60 }}min</h5>
+								{% endif %}
+							</td>
+							
+							<td>
+								{% if data.Leave.VacationL == 0 or data.Leave.VacationL == '' %}
+									<h5>-</h5>
+								{% else %}
+									<h5>{{ data.Leave.VacationL|divide:60 }}hr {{ data.Leave.VacationL|modulo:60 }}min</h5>
+								{% endif %}
+							</td>
+							<td>
+								{% if data.Leave.ServiceIncentiveL == 0 or data.Leave.ServiceIncentiveL == '' %}
+									<h5>-</h5>
+								{% else %}
+									<h5>{{ data.Leave.ServiceIncentiveL|divide:60 }}hr {{ data.Leave.ServiceIncentiveL|modulo:60 }}min</h5>
+								{% endif %}
+							</td>
+							<td>
+								{% if data.Leave.SickL == 0 or data.Leave.SickL == '' %}
+									<h5>-</h5>
+								{% else %}
+									<h5>{{ data.Leave.SickL|divide:60 }}hr {{ data.Leave.SickL|modulo:60 }}min</h5>
+								{% endif %}
+							</td>
+							<td>
+								{% if data.Leave.AAbsent == 0 or data.Leave.AAbsent == '' %}
+									<h5>-</h5>
+								{% else %}
+									<h5>{{ data.Leave.AAbsent|divide:60 }}hr {{ data.Leave.AAbsent|modulo:60 }}min</h5>
+								{% endif %}
+							</td>
+							
+							{% else %}
+							
+							
+				    		
+				    		
+				    		<td colspan="5">
+				    			{% if uid|isdayoff:data.attendanceDate == True %}
+					    			<h5 style="display: inline-block;">
+					    				<label class="label label-default">Day-off</label>
+					    			</h5>
+				    			{% endif %}
+				    			{% if data.attendanceDate|isHoliday:branch == True %}
+				    				<h5 style="display: inline-block;">
+					    				<label class="label label-primary">{{ data.attendanceDate|getHolidayDesc }}</label>
+					    			</h5>
+				    			{% endif %}
+				    		</td>
+							
+							{% endif %}
+							
+							<td align="center">
+								{% if not data.remarkNotes == "" %}
+								<input type="image" title="View Attached Note" height="20px" width="20px" uid="{{data.User_id}}" thedate="{{data.attendanceDate|date:'Y-m-d'}}" class="btnapprnoteprev" src="/static/images/note_edit.png" data-toggle="modal" data-target="#anotemodal" />
+								{% endif %}
+							</td>
+						</tr>
+							
+						
+				    {% endfor %}
+				</table>
+				
+				<br />
+				
+				<div class="row" id="summary">
+					<div class="col-md-8">
+						<!-- SUMMARY -->
+						<div class="row">
+							<div class="col-md-6">
+								<h4>Summary</h4>	
+							</div>
+							
+						</div>
+						<div class="row" align="right">
+							<div class="col-md-6">
+								Worked Hours:
+							</div>
+							<div class="col-md-3">
+								<label id="totalhw">{{ earnedtime|divide:60 }}hr {{ earnedtime|modulo:60 }}min</label>
+							</div>
+							<div class="col-md-3">
+								&nbsp;
+							</div>
+						</div>
+						<!--VL-->
+						<div class="row" align="right">
+							<div class="col-md-6">
+								Vacation Leave:
+							</div>
+							<div class="col-md-3">
+								<label id="totalvl">{{ VacationL|divide:60 }}hr {{ VacationL|modulo:60 }}min</label>
+							</div>
+							<div class="col-md-3">
+								&nbsp;
+							</div>
+						</div>
+						<!--SIL-->
+						<div class="row" align="right">
+							<div class="col-md-6">
+								Service Incentive Leave:
+							</div>
+							<div class="col-md-3">
+								<label id="totalsil">{{ ServiceIncentiveL|divide:60 }}hr {{ ServiceIncentiveL|modulo:60 }}min</label>						
+							</div>
+							<div class="col-md-3">
+								&nbsp;
+							</div>
+						</div>
+						<!--SL-->
+						<div class="row" align="right">
+							<div class="col-md-6">
+								Sick Leave:
+							</div>
+							<div class="col-md-3">
+								<label id="totalsl">{{ SickL|divide:60 }}hr {{ SickL|modulo:60 }}min</label>
+							</div>
+							<div class="col-md-3">
+								&nbsp;
+							</div>
+						</div>
+						
+						
+						
+						{% if not AAbsent = 0 %}
+						<div class="row" align="right">
+							<div class="col-md-6">
+								Total Absent Hours:
+							</div>
+							<div class="col-md-3">
+								<label id="totalaa" style="color: red;">{{ AAbsent|divide:60 }}hr {{ AAbsent|modulo:60 }}min</label>
+							</div>
+							<br /> <br /> <br/>
+						</div>
+						{% endif %}
+						
+					</div>
+					
+						
+				</div>
+				
+				
+			</div>
+		{% else %}
+			<h3 style="text-align: center; height: 50%;">No Records to display.</h3>
+		{% endif %}
+		
+	</div>
+	
+
+

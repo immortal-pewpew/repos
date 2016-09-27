@@ -1,0 +1,153 @@
+{% load staticfiles %}
+{% load erm_tags %}
+{% load humanize %}
+
+
+	<div class="row modalcontent">
+		<div class="col-md-1">
+			&nbsp;
+		</div>
+		<div class="col-md-10">
+			<div class="row">
+				<div class="col-md-12">
+					<div style="float: left; vertical-align: middle;">
+						<span class="profileheader">{{uid}} - {{lname}}, {{fname}} {{mname}}</span>
+					</div>
+					<div style="float: right; vertical-align: middle;">
+						<form method="post" action="/ERM/appraction/">
+						{% csrf_token %}
+							<input type="hidden" name="uid" value="{{uid}}"/>
+							<input type="hidden" name="start" value="{{dtstart|date:'Y-m-d'}}"/>
+							<input type="hidden" name="end" value="{{dtend|date:'Y-m-d'}}"/>
+							{% if status == 2 or cu_isadmin == 4 %}
+							<input id="btnApprove" name="Approve" type="submit" class="btn btn-success btn-sm" value="Approve"  />
+							<input id="btnDeny" name="Deny" type="submit" class="btn btn-danger btn-sm" value="Deny"  />
+							{% endif %}
+						</form>
+					</div>
+				</div>
+				
+			</div>
+			<div class="row">
+				<table class="table table-hover table-striped tblmodal">
+					<tbody class="table-striped">
+					    <tr>
+							<td colspan="2" class="info"><h4>Date</h4></td>
+							<td class="info"><h4>Hours Worked</h4></td>
+							<td class="info" title="Vacation Leave"><h4>V.L.</h4></td>
+							<td class="info" title="Service Incentive Leave"><h4>S.I.L.</h4></td>
+							<td class="info" title="Sick Leave"><h4>S.L.</h4></td>
+							<td class="info"><h4>Absent</h4></td>
+					    	<td class="info text-center"><h4>Notes</h4></td>
+					    </tr>
+				    </tbody>
+				    
+				    <tbody id="table_row">
+				    	{% for data in toapprdata %}
+						<tr>
+							<td id="datetext">
+				    			<h5>{{ data.attendanceDate|date:"M" }}  {{ data.attendanceDate|date:"d" }}</h5>
+				    		</td>
+				    		<td>
+				    			&nbsp;
+				    		</td>
+				    		
+				    		{% if uid|isdayoff:data.attendanceDate == False and data.attendanceDate|isHoliday:branch == False %}
+				    		<td>
+								{% if data.hoursWorked == 0 or data.hoursWorked == '' %}
+									<h5>-</h5>
+								{% else %}
+									<h5>{{ data.hoursWorked|divide:60 }}hr {{ data.hoursWorked|modulo:60 }}min</h5>
+								{% endif %}
+							</td>
+							
+							<td>
+								{% if data.Leave.VacationL == 0 or data.Leave.VacationL == '' %}
+									<h5>-</h5>
+								{% else %}
+									<h5>{{ data.Leave.VacationL|divide:60 }}hr {{ data.Leave.VacationL|modulo:60 }}min</h5>
+								{% endif %}
+							</td>
+							<td>
+								{% if data.Leave.ServiceIncentiveL == 0 or data.Leave.ServiceIncentiveL == '' %}
+									<h5>-</h5>
+								{% else %}
+									<h5>{{ data.Leave.ServiceIncentiveL|divide:60 }}hr {{ data.Leave.ServiceIncentiveL|modulo:60 }}min</h5>
+								{% endif %}
+							</td>
+							<td>
+								{% if data.Leave.SickL == 0 or data.Leave.SickL == '' %}
+									<h5>-</h5>
+								{% else %}
+									<h5>{{ data.Leave.SickL|divide:60 }}hr {{ data.Leave.SickL|modulo:60 }}min</h5>
+								{% endif %}
+							</td>
+							<td>
+								{% if data.Leave.AAbsent == 0 or data.Leave.AAbsent == '' %}
+									<h5>-</h5>
+								{% else %}
+									<h5>{{ data.Leave.AAbsent|divide:60 }}hr {{ data.Leave.AAbsent|modulo:60 }}min</h5>
+								{% endif %}
+							</td>
+							
+							{% else %}
+							
+							
+				    		
+				    		
+				    		<td colspan="5">
+				    			{% if uid|isdayoff:data.attendanceDate == True %}
+					    			<h5 style="display: inline-block;">
+					    				<label class="label label-default">Day-off</label>
+					    			</h5>
+				    			{% endif %}
+				    			{% if data.attendanceDate|isHoliday:branch == True %}
+				    				<h5 style="display: inline-block;">
+					    				<label class="label label-primary">{{ data.attendanceDate|getHolidayDesc }}</label>
+					    			</h5>
+				    			{% endif %}
+				    		</td>
+							
+							{% endif %}
+							
+							<td align="center">
+								{% if not data.remarkNotes == "" %}
+								<input type="image" title="View Attached Note" height="20px" width="20px" uid="{{data.User_id}}" thedate="{{data.attendanceDate|date:'Y-m-d'}}" class="btnapprnoteprev" src="/static/images/note_edit.png" data-toggle="modal" data-target="#anotemodal" />
+								{% endif %}
+							</td>
+						</tr>
+					 	{% endfor %}
+					</tbody>
+				</table>
+			</div>
+			
+		</div>
+		<div class="col-md-1">
+			&nbsp;
+		</div>
+	</div>
+		
+
+	
+	<!--MODAL FOR NOTES HERE -->
+	<div id="anotemodal" data-backdrop="static" tabindex="-1" ="true" class="modal fade">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" id="btnNoteX" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	        	<h3 class="modal-title" align="center">
+		        	<span class="label" id="textheader">
+		        		Remarks / Notes
+		        	</span>
+		        </h3>
+	      </div>
+		  <div id="apprnotemodal" class="modal-body">
+		        
+		        	&nbsp;
+		     
+	      </div>
+	    </div><!--/.modal-content -->
+	   </div><!-- /.modal-dialog --> 
+	 </div><!-- /.modal -->
+
+	

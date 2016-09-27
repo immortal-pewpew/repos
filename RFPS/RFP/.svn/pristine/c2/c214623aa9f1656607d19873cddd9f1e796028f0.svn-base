@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+		{% load tags %}
+				{% block content %}
+				<!-- PASSWORD EXPIRY NOTIFICATION HERE -->
+				<input id="pwdexpdiff" name="pwdexpdiff" type="hidden" value="{{pwdexpiry|getdaydiff}}" /> 
+				{% if pwdexpiry|getdaydiff <= 15 %}
+				<div class="row notify" align="center" style="margin-left: 50px; margin-right: 50px; margin-top: 20px; ">
+					<span>Your Password will expire after {{pwdexpiry|getdaydiff}} days.</span>
+					<span>Click <a role="button" class="pwdlink" >here</a> to change your password.</span>
+				</div>
+				{% endif %} 
+				
+				<!-- 
+				<div id="filterbox" class="row" style="margin-left: 50px; margin-right: 50px; margin-top: 20px; ">
+					
+						<div style="display: inline-block; float: left; margin-left: 10px; margin-right: 20px;">
+							<button id="processrequestlink" type="button" class="btn-sm btn-info"  style="font-weight: bold; display: inline-block; color: black; margin-right: 15px; ">
+								<span class="glyphicon glyphicon-file"></span> Request 
+							</button>
+							
+							<img src="/static/images/calendar-search-result.png" style="height: 30px; display: inline-block;" />
+							
+							<select id="dtType" style="display: inline-block; font-weight: bold;" class="input-sm">
+								<option value="createdate">Request Date</option>
+								<option value="checkeddate">Check Date</option>
+								<option value="approveddate">Approve Date</option>
+							</select>
+							
+							<input id="dtFrom" type="text" style="width: 85px; font-weight: bold; display: inline-block;" class=" input-sm datepickerx readonly" />
+							
+							<label style="display: inline-block;">To</label>
+							
+							<input id="dtTo" type="text" style="width: 85px; font-weight: bold; display: inline-block;" class="input-sm datepickerx readonly" />
+							
+							<input id="btnDTGo" type="button" style="display: inline-block; font-weight: bold; color: black;" class="btn-sm btn-info" value="GO"/>
+						</div>
+						<div style="display: inline-block; float: left;">
+							<img src="/static/images/binocular.png" style="height: 30px; display: inline-block;" />	
+							
+							<label style="display: inline-block;">Search</label>
+							
+							<select id="searchtype" class="input-sm text-left" style="display: inline-block; font-weight: bold;">
+								<option value="rfpno" selected="selected">RFP No.</option>
+								<option value="nbu__desc">NBU</option>
+								<option value="vendorid">Vendor ID</option>
+								<option value="vendorname">Vendor Name</option>
+								<option value="ersno">ERS No.</option>
+								<option value="ejono">EJO No.</option>
+								<option value="epromosno">EPROMOS No.</option>
+							</select>
+							
+							<input id="txtKeyword" style="display: inline-block; font-weight: bold;" type="text" class=" input-sm" placeholder="Keyword" />
+							
+							<label style="display: inline-block;">Status</label>
+						
+							 {{ formmain.status }}
+							 
+							<input id="btnGo" style="display: inline-block; font-weight: bold; color: black;" type="button" class="btn-sm btn-info" value="GO"/>
+						</div>
+				</div>
+				-->
+				
+				{% if userclass == 'PREPARER' %}
+				<div class="row" align="left" style="margin-left: 50px; margin-right: 50px; margin-top: 20px; ">
+					<button id="processrequestlink" title="Create New Request" type="button" class="btn-sm btn-info"  style="font-weight: bold; display: inline-block; color: black; margin-right: 15px; ">
+						<span class="glyphicon glyphicon-file"></span> Request 
+					</button>
+				</div>
+				{% endif %}
+				
+				
+				<div class="row" id="rfpviews"  style="margin-left: 40px; margin-right: 40px; margin-top: 5px; ">
+					
+						
+							<table id="rfptable" class="tablesorter">
+								<thead>
+									<tr>
+										<th class="tabletitle">
+											RFP NUMBER
+										</th>
+										<th class="tabletitle">
+											REQ. DATE
+										</th>
+										<th class="tabletitle">
+											REQUESTED BY
+										</th>
+										<th class="tabletitle filter-select" data-placeholder="All">
+											NBU
+										</th>
+										<th class="tabletitle">
+											VENDOR ID
+										</th>
+										<th class="tabletitle">
+											VENDOR NAME
+										</th>
+										<th class="tabletitle filter-select" data-placeholder="All">
+											STATUS
+										</th>
+										<th class="tabletitle" data-sorter="false" data-filter="false">
+											ACTION
+										</th>
+									</tr>
+								</thead>
+								
+								<tbody>
+								{% for rfp in allrfp %}
+									<tr>
+										<td align="left" class="emphasize">
+											{{rfp.rfpno}}
+										</td>
+										<td align="left">
+											{{rfp.createdate|date:"m/d/Y"}}
+										</td>
+										<td align="left" class="emphasize">
+											{{rfp.preparedby_id}}
+										</td>
+										<td align="left">
+											{{rfp.nbu.desc}}
+										</td>
+										<td align="left" class="emphasize">
+											{{rfp.vendorid}}
+										</td>
+										<td align="left">
+											{{rfp.vendorname}}
+										</td>
+										
+										<td align="left" style="font-weight: bold; color: 
+											{% if rfp.status.desc == 'WORK' %}
+												gray;
+											{% elif rfp.status.desc == 'OPEN' %}
+												#337ab7;
+											{% elif rfp.status.desc == 'PRINTED' %}
+												#f0ad4e;
+											{% elif rfp.status.desc == 'CHECKED' %}
+												#5cb85c;
+											{% elif rfp.status.desc == 'APPROVED' %}
+												#5bc0de;
+											{% elif rfp.status.desc == 'RECEIVED' %}
+												#8D38C9;
+											{% elif rfp.status.desc == 'CLOSED' %}
+												#d3d3d3;
+											{% else %}
+												#d9534f;
+											{% endif %}
+										">
+											{{rfp.status.desc}}	
+										</td>
+										<td class="text-center">
+											<a role="button" title="View RFP Details" rfp_no="{{rfp.rfpno}}" nbu_id="{{rfp.nbu_id}}" class="rfpeditlink" style="margin:0px 10px 0px 10px;">
+												<i class="glyphicon glyphicon-eye-open"></i>
+											</a>
+										</td>
+									</tr>
+								{% endfor %}
+								</tbody>
+							</table>  
+						
+						
+				</div>
+				
+				<div class="pager tablesorter-pager">
+					Page: 	<select aria-disabled="false" class="gotoPage">
+								
+							</select>		
+					<img aria-disabled="true" tabindex="0" src="/static/tablesorter-master/addons/pager/icons/first.png" class="first disabled" alt="First" title="First page">
+					<img aria-disabled="true" tabindex="0" src="/static/tablesorter-master/addons/pager/icons/prev.png" class="prev disabled" alt="Prev" title="Previous page">
+					
+					<span class="pagedisplay">1 - 20 / 45 (45)</span> <!-- this can be any element, including an input -->
+					
+					<img aria-disabled="false" tabindex="0" src="/static/tablesorter-master/addons/pager/icons/next.png" class="next" alt="Next" title="Next page">
+					<img aria-disabled="false" tabindex="0" src="/static/tablesorter-master/addons/pager/icons/last.png" class="last" alt="Last" title="Last page">
+					<select aria-disabled="false" class="pagesize">
+						<option value="25" selected>25</option>
+						<option value="50">50</option>
+						<option value="100">100</option>
+					</select>
+				</div>
+				
+				{% endblock %}
+			
+
+			

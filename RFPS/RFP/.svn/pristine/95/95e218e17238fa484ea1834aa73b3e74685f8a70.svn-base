@@ -1,0 +1,46 @@
+from django import template
+import datetime
+
+register = template.Library()
+
+@register.filter
+def hash3(dictionary, key):
+    return dictionary.get(key, '')
+
+@register.filter
+def divide(value,by):
+    if not value:
+        return 0
+    else:
+        return int(value)/int(by)
+
+@register.filter
+def modulo(value,by):
+    if not value:
+        return "00"
+    else:
+        if value%by >= 0 and value%by < 9:
+            return "0" + str(value%by)
+        else:            
+            return value%by 
+        
+
+
+    
+@register.filter
+def usernumbering(ctr,num):
+    return int(ctr + ((num-1)*25))
+    
+@register.filter
+def accessnumbering(ctr,num):
+    return int(ctr + ((num-1)*25))
+
+@register.filter
+def holidaynumbering(ctr,num):
+    return int(ctr + ((num-1)*25))
+
+@register.filter
+def toapprovenumbering(ctr,num):
+    return int(ctr + ((num-1)*100))
+
+

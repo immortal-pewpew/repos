@@ -1,0 +1,125 @@
+{% extends "erm_templates/DTR/base.html" %}
+		{% load erm_tags %}
+		{% block content %}
+				<div class="row">
+					<div class="col-md-1">
+					  &nbsp;
+					</div>
+					<div class="col-md-10">
+						<div class="row" align="center">
+							<label id="textheader">
+								User Masterlist
+							</label>
+						</div>
+						<div class="row" align="right">
+							<input id="userlink" type="image" class="btn btn-lg" title="Create User" src="/static/images/user_add.png" />
+						</div>
+						<div class="row">
+							&nbsp;
+						</div>
+						<div class="row" id="userdiv">
+									
+									<table class="table table-striped">
+										<tbody>
+											<tr>
+												<th class="text-left">
+													&nbsp;
+												</th>
+												<th class="text-left">
+													ID
+												</th>
+												<th class="text-left">
+													Name of Associates
+												</th>
+												<th class="text-left">
+													Division
+												</th>
+												<th class="text-left">
+													Department
+												</th>
+												<th class="text-left">
+													Branch
+												</th>
+												<th class="text-left">
+													Status
+												</th>
+											</tr>
+										</tbody>
+										{% for user in allusers %}
+											<tr id="{{user.id}}" role="button" class="editlink">
+												<td width="25px" align="center">
+													<span style="color: gray;">{{forloop.counter|usernumbering:allusers.number}}</span>
+												</td>
+												<td align="left">
+													<span style="color: green; font-weight: bold;">{{ user.id }}</span>
+												</td>
+												<td align="left">
+													<!-- <a id="{{user.id}}" role="button" class="editlink" style="text-decoration: None; color: blue; font-weight: bold;" > -->
+													<span style="color: blue; font-weight: bold;">
+														{{ user.LName }}, {{ user.FName }} {{ user.MName }}
+													</span>	
+													<!-- </a> -->
+												</td>
+												<td align="left">
+													{{ user.Division }}
+												</td>
+												<td align="left">
+													{{ user.Dept }}
+												</td>
+												<td align="left">
+													{{ user.Branch }}
+												</td>
+												<td align="left">
+													{{ user.status }}
+												</td>
+											</tr>
+										{% endfor %}
+									</table> 
+									
+								
+							</div>
+							
+							<div class="row" align="right">
+								<div class="pagination">
+								    <span class="step-links" style="font-family: Verdana; font-size: 12px;" >
+								    	
+								    	Go to page:
+								    	<input id="userpager" type="text" class="numonly form-control input-sm" style="width: 40px; display: inline;" value="{{ allusers.number }}"/>
+								    	of {{ allusers.paginator.num_pages }}
+								    	
+								    	&nbsp;
+								        &nbsp;
+								        
+								        
+								        {% if allusers.has_previous %}
+								            <a href="?page={{ allusers.previous_page_number }}">
+								            	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true" title="Previous"></span>
+								            </a>
+								        {% else %}
+								        	<span class="glyphicon glyphicon-arrow-left restricted" aria-hidden="true"></span>
+								        {% endif %}
+										
+										&nbsp;
+								        
+								        {% if allusers.has_next %}
+								            <a href="?page={{ allusers.next_page_number }}">
+								            	<span class="glyphicon glyphicon-arrow-right" aria-hidden="true" title="Next"></span>
+								            </a>
+								        {% else %}
+								        	<span class="glyphicon glyphicon-arrow-right restricted" aria-hidden="true"></span>
+								        {% endif %}
+								    </span>
+							    </div>
+							</div>
+							 
+						
+					</div>
+					<div class="col-md-1">
+					  &nbsp;
+					</div>
+				</div>
+	
+		{% endblock %}
+			
+
+

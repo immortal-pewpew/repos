@@ -1,0 +1,55 @@
+<script type="text/javascript">
+
+//CLEAR MODAL DATA IF HIDDEN
+$('.modal').on('hidden.bs.modal', function () {
+  $('.modal-body').html('');
+});
+
+</script>
+
+		{% if allcontactswithconvo %}
+		<table class="table table-striped">
+			<tbody>
+				<tr>
+					
+					<th>
+						UserName
+					</th>
+					<th class="tabletitle" colspan="2">
+						FullName
+					</th>
+					<th>
+						Supplier
+					</th>
+				</tr>
+			</tbody>
+			{% for contact in allcontactswithconvo %}
+				<tr id="{{contact.UserName}}" class="msglink" role="button" data-toggle="modal" data-target="#msgmodal">
+					<td align="left" width="100px">
+						<span style="color: red; font-weight: bold;">{{contact.UserName}}</span>
+					</td>
+					<td align="center">
+						{% if contact.msgCount %}
+							<span class="badge progress-bar-warning">{{contact.msgCount}}</span>
+						{% else %}
+							&nbsp;
+						{% endif %}
+					</td>
+					<td align="left">
+						<span style="color: blue; font-weight: bold;">{{contact.FullName}}</span>
+					</td>
+					<td align="left">
+						<span style="color: green; font-weight: bold;">{{contact.vendorID}} — {{contact.vendorName}}</span>
+					</td>
+				</tr>
+			{% endfor %}
+		</table>   
+		
+		
+		
+		{% else %}
+			<h1 style="text-align: center; ">No Records to display.</h1>
+		{% endif %}
+	
+	
+	

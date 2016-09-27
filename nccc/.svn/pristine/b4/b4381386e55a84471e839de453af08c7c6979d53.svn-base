@@ -1,0 +1,211 @@
+{% extends "ecs_templates/base.html" %}
+		{% load ecs_tags %}
+				{% block content %}
+				
+				<!-- PASSWORD EXPIRY NOTIFICATION HERE -->
+				<input id="pwdexpdiff" name="pwdexpdiff" type="hidden" value="{{pwdexpiry|getdaydiff}}" /> 
+				{% if pwdexpiry|getdaydiff <= 15 %}
+				<div class="row notify" align="center" style="margin-left: 50px; margin-right: 50px; margin-top: 20px; ">
+					<span>Your Password will expire after {{pwdexpiry|getdaydiff}} days.</span>
+					<span>Click <a role="button" class="pwdlink" >here</a> to change your password.</span>
+				</div>
+				{% endif %}
+				
+				<div class="row" style="height: 30px; line-height: 30px; margin-left: 50px; margin-right: 50px; margin-top: 20px; ">
+						<div style="display: inline-block; float: left; margin-right: 20px;">
+							<img src="/static/images/calendar-search-result.png" style="height: 30px; display: inline-block;" />
+							
+							<select id="dtType" style="display: inline-block; font-weight: bold;" class="input-sm">
+								<option value="SOADate">SOA Creation</option>
+								<option value="SOALastDate">Last Update</option>
+								<option value="CBDate">Comeback Date</option>
+							</select>
+							
+							<input id="dtFrom" type="text" style="width: 85px; display: inline-block;" class=" input-sm datepickerx readonly" />
+							
+							<label style="display: inline-block;">To</label>
+							
+							<input id="dtTo" type="text" style="width: 85px; display: inline-block;" class="input-sm datepickerx readonly" />
+							
+							<input id="btnDTGo" type="button" style="display: inline-block; font-weight: bold; color: black;" class="btn-sm btn-success" value="GO"/>
+						</div>
+						<div style="display: inline-block; float: left;">
+							<img src="/static/images/binocular.png" style="height: 30px; display: inline-block;" />	
+							
+							<label style="display: inline-block;">Search</label>
+							
+							<select id="searchtype" class="input-sm text-left" style="display: inline-block; font-weight: bold;">
+								<option value="SOANo" selected="selected">SOA No.</option>
+								<option value="vendorID">Supplier ID</option>
+								<option value="vendorName">Supplier Name</option>
+								<option value="CreatedBy_id">Created By</option>
+							</select>
+							
+							<input id="txtKeyword" style="display: inline-block;" type="text" class=" input-sm" placeholder="Keyword" />
+							
+							<label style="display: inline-block;">Status</label>
+						
+							<select class=" input-sm text-left" id="bstatus" name="bstatus" style="display: inline-block; font-weight: bold;">
+								<option value="All" selected="selected">All</option>
+								<option value="Open">Open</option>
+								<option value="Processed">Processed</option>
+								<option value="Returned">Returned</option>
+								<option value="Adjustments">Adjustments</option>
+								<option value="Closed">Closed</option>
+							</select>
+							
+							<input id="btnGo" style="display: inline-block; font-weight: bold; color: black;" type="button" class="btn-sm btn-success" value="GO"/>
+						</div>
+					
+				</div>
+				
+				<div class="row">&nbsp;</div>
+				
+				<div class="row" id="soaviews"  style="margin-left: 40px; margin-right: 40px; margin-top: 5px; ">
+					
+					
+						{% if allSOA %}
+						<table class="table table-striped">
+							<tbody>
+								<tr>
+									<th class="tabletitle">
+										SOA No
+									</th>
+									<th class="tabletitle">
+										SOA Creation Date
+									</th>
+									<th class="tabletitle">
+										Created By
+									</th>
+									<th class="tabletitle">
+										Vendor Name
+									</th>
+									<th class="tabletitle">
+										Comeback Date
+									</th>
+									<th class="tabletitle">
+										Last Update
+									</th>
+									<th class="tabletitle">
+										Status
+									</th>
+									<th colspan="2" class="tabletitle text-center">
+										Action
+									</th>
+									<th class="tabletitle">
+										Processed By
+									</th>
+								</tr>
+							</tbody>
+							{% for SOA in allSOA %}
+								<tr>
+									<td align="left">
+										{{ SOA.SOANo }}
+									</td>
+									<td align="left">
+										{{ SOA.SOADate|date:"m/d/Y h:i:s A" }}
+									</td>
+									<td align="left">
+										{{ SOA.CreatedBy_id }}
+									</td>
+									<td align="left">
+										<!-- KUNG MAG LAGG E SAVE NALANG SA ISA KA COLUMN -->
+										<!--
+										{# SOA.UserName.vendorID|getvendorName #}
+										 -->
+										{{ SOA.CreatedBy.vendorName }}
+									</td>
+									<td align="left">
+										{{ SOA.CBDate|date:"m/d/Y" }}
+									</td>
+									<td align="left">
+										{{ SOA.SOALastUpdate|date:"m/d/Y h:i:s A" }}
+									</td>
+									
+									<td align="left" style="font-weight: bold; color: 
+										{% if SOA.SOAStatus == 'Open' %}
+											blue;
+										{% elif SOA.SOAStatus == 'Returned' %}
+											red;
+										{% elif SOA.SOAStatus == 'Processed' %}
+											green;
+										{% else %}
+											gray;
+										{% endif %}
+									">
+										{{ SOA.SOAStatus }}	
+									</td>
+									<td>
+										<form method="post" class="frmMargin0" action="/ECS/ca_html_to_pdf_directly/" target="_blank">
+										<input type="image" src="/static/images/document_info32.png" title="Details" class="img cadets" SOANo="{{SOA.SOANo}}" data-toggle="modal" data-target="#casoadetailsmodal" Status="{{SOA.SOAStatus}}"/>
+										{% csrf_token %}
+										</form>
+									</td>
+									<!-- ADDITION START -->
+									<td align="left">
+										{% if SOA.SOANo|withremarks %}
+										<input type="image" src="/static/images/note.png" title="Send Back Reason" class="img notes" SOANo="{{SOA.SOANo}}" />
+										{% endif %}
+									</td>
+									<!-- ADDITION END -->
+									{% if SOA.ProcessedBy_id %}
+										<td align="left">
+											{{ SOA.ProcessedBy_id }}
+										</td>
+									{% else %}
+										<td align="center">
+											-
+										</td>
+									{% endif %}
+								</tr>
+							{% endfor %}
+						</table>  
+						
+						
+						<div class="row" align="right">
+							<div class="pagination">
+							    <span class="step-links" style="font-family: Verdana; font-size: 12px;" >
+							    	
+							    	Go to page:
+							    	<input id="capager" type="text" class="numonly form-control input-sm" style="width: 40px; display: inline;" value="{{ allSOA.number }}"/>
+							    	of {{ allSOA.paginator.num_pages }}
+							    	
+							    	&nbsp;
+							        &nbsp;
+							        
+							        
+							        {% if allSOA.has_previous %}
+							            <a href="?page={{ allSOA.previous_page_number }}">
+							            	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true" title="Previous"></span>
+							            </a>
+							        {% else %}
+							        	<span class="glyphicon glyphicon-arrow-left restricted" aria-hidden="true"></span>
+							        {% endif %}
+									
+									&nbsp;
+							        
+							        {% if allSOA.has_next %}
+							            <a href="?page={{ allSOA.next_page_number }}">
+							            	<span class="glyphicon glyphicon-arrow-right" aria-hidden="true" title="Next"></span>
+							            </a>
+							        {% else %}
+							        	<span class="glyphicon glyphicon-arrow-right restricted" aria-hidden="true"></span>
+							        {% endif %}
+							    </span>
+						    </div>
+						</div>
+						
+						
+						{% else %}
+							<h1 style="text-align: center; ">No Records to display.</h1>
+						{% endif %}
+					
+					
+					
+				</div>
+				{% endblock %}
+			
+
+
+
+

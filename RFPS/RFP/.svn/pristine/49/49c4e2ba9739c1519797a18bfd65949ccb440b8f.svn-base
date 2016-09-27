@@ -1,0 +1,772 @@
+/**
+ * @author fdypua
+ */
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+$(document).ready(function(){
+
+	
+
+$(function() {
+	//////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////
+	
+	//tablesorter
+	$('#rfptable').tablesorter({
+		theme: 'blue',
+		sortList: [[3,1],[0,1]] ,
+		
+	});
+	//////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////
+
+	//loading bar
+	$("#dialogloadingbar").dialog({
+	      modal: true,
+	      autoOpen: false,
+	      position: { my: 'top', at: 'top+200',of: window },
+	      open: function() { $('#dialogloadingbar').dialog('option', 'dialogClass', 'noTitle'); },
+	    });
+	//loading bar end
+	
+	//////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////
+	
+	//vendor does not exist notif
+	$("#dialogvendornotif").dialog({
+	      modal: true,
+	      autoOpen: false,
+	      position: { my: 'top', at: 'top+100',of: window },
+	      
+	      buttons: {
+	        Ok: function() {
+	        	$(this).dialog("close");
+	        	$('#vendor_id').val('');
+	        	$('#vendor_id').focus();
+	        },
+	      },
+	     
+	    });
+	//vendor notif end
+	
+	//////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////
+	
+	//add request dialog
+	$("#dialogaddrequest").dialog({
+	      modal: true,
+	      autoOpen: false,
+	      width: 850,
+	      closeOnEscape: false,
+	      position: { my: 'top', at: 'top+75',of: window },
+	      open: function(event, ui) { 
+	      		$('#nature_of_req').val('');
+	    		$('input').prop('disabled',true);
+	    		$('select').prop('disabled',true);
+	    		$('textarea').prop('disabled',true);
+	    		$('#nbu').prop('disabled',false);
+	    		
+	    		
+			}, 
+		  close: function(event, ui) {
+			  $('input').prop('disabled',false);
+			  $('select').prop('disabled',false);
+			  $('textarea').prop('disabled',false);
+			  
+			  $('select#rfp_no').val('');
+			  $('span#rfp_no').val('-----------------');
+	    	  $('input#hrfp_no').val('');
+			},
+	
+	});//add request dialog end
+	
+	//////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////
+	
+	//DIALOG CHANGE PASSWORD
+	$("#dialogchangepwd").dialog({
+      modal: true,
+      autoOpen: false,
+      position: { my: 'top', at: 'top+100',of: window },
+      
+      buttons: {
+        Ok: function() {
+			//ajax check for filters
+			var oldpwd = $('input#oldpwd').val();
+			var newpwd = $('input#newpwd').val();
+			var confirmnewpwd = $('input#confirmnewpwd').val();
+			
+			$.ajax({
+		        url : "/RFP/pwdcheck/", // the endpoint
+		        type : "post", // http method
+		        data : { oldpwd:oldpwd, newpwd:newpwd, confirmnewpwd:confirmnewpwd }, // data sent with the post request
+				
+				// handle a successful response
+		        success : function(data) {
+		        	if (data == 'Successful.'){
+			        	$("#dialogchangepwd").dialog("close");
+			        	$("#dialogpwdchngsuccess").dialog("open");
+			        	}
+		        	else{
+			        	document.getElementById('pwdnote').innerHTML = data;
+			        	}
+		        	},
+		
+		        // handle a non-successful response
+		        error : function(data) {
+		        	
+		        	}
+				 });
+			
+			
+        },
+        Cancel: function() {
+        	//event.preventDefault();
+            $("#dialogchangepwd").dialog("close");
+        }
+        
+      },
+      beforeClose: function(){
+        //event.preventDefault();
+        
+      }
+    });
+	
+	
+	
+	
+////////////////////////////////////////////////////////////////////////
+	
+	});//dialog function end 
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+//ADD REQUEST
+$('#addrequestlink').on('click', function(event){
+	event.preventDefault();
+	$("#dialogaddrequest").dialog("open");
+	$("select#nbu").prop('selectedIndex', 0);
+	$("select#dept").prop('selectedIndex', 0);
+	//$("select#location").prop('selectedIndex', 0);
+	document.getElementById('rfp_no').innerHTML = '-----------------';
+	$('#hrfp_no').val('');
+	$("input[type='text']").val('');
+	//show Clear button
+	$('#btnClear').show();
+	//replace Request button text as Update
+	$('#btnRequest').val('Request');
+	//change ui-dialog-title
+	document.getElementById('ui-id-3').innerHTML = 'Create New Request';
+});
+
+////////////////////////////////////////////////////////////////////////
+
+//EDIT REQUEST
+$('.rfpeditlink').on('click', function(event){
+	event.preventDefault();
+	var rfp_no = $(this).attr('rfp_no');
+	var nbu_id = $(this).attr('nbu_id');
+	var store;
+	
+	//get rfp data
+	$.ajax({
+        url : "/RFP/getrfpdata/", // the endpoint
+        type : "post", // http method
+        data : { rfp_no:rfp_no, nbu_id:nbu_id }, // data sent with the post request
+		
+		// handle a successful response
+        success : function(data) {
+        	$("#dialogaddrequest").dialog("open");
+        	$("select#nbu").val(nbu_id);
+        	
+        	//update locations dropdown
+			update_locations(nbu_id, data['location']);
+        	
+			//SET RFP NO
+        	document.getElementById('rfp_no').innerHTML = rfp_no;
+        	$('#hrfp_no').val(rfp_no);
+        	
+        	//SET FIELD VALUES
+        	$('#doc_no').val(data['docnumber']);
+        	$('#dept').val(data['department']);
+
+        	$('#location').val(data['location']);
+        	
+        	
+        	$('#vendor_id').val(data['vendorid']);
+        	$('#vendor_name').val(data['vendorname']);
+        	$('#check_payee').val(data['checkpayee']);
+        	//insert bank details here
+        	$('#expense_type').val(data['expensetype_id']);
+        	$('#grossamount').val(data['grossamount']);
+        	$('#netamount').val(data['netamount']);
+        	
+        	$('#ers_no').val(data['ersnumber']);
+        	$('#ejo_no').val(data['ejonumber']);
+        	$('#epromos_no').val(data['epromosnumber']);
+        	
+        	$('#tax').val(data['tax_id']);
+        	$('#wtax').val(data['wtax_id']);
+        	$('#cwo').val(data['cwo']);
+        	
+        	//$('#status_id').val(data['status_id']);
+        	
+        	
+        	$('input').prop('disabled',false);
+    		$('select').prop('disabled',false);
+    		$('textarea').prop('disabled',false);
+        	
+        	//disabled #nbu
+        	$('#nbu').prop('disabled',true);
+        	//set to hidden field
+        	$('#nbucode').val(nbu_id);
+
+        	//hide Clear button
+        	$('#btnClear').hide();
+        	//replace Request button text as Update
+			$('#btnRequest').val('Update');
+			
+			//change ui-dialog-title
+			document.getElementById('ui-id-3').innerHTML = 'Request Information';
+			
+        	},
+
+        // handle a non-successful response
+    	error : function(data) {
+    		alert("Something went wrong!");
+        	}
+		});
+	
+});
+
+
+
+////////////////////////////////////////////////////////////////////////
+
+//BANK DETAILS COLLAPSE DIV
+	//enabled
+$("#bank_clps_div").on("hide.bs.collapse", function(){
+	$("#bankclpslink").html('<span class="glyphicon glyphicon-remove-circle"></span> Disabled');
+	//setting of fields not required
+	$("#accountno").attr("required", false);
+	$("#accountname").attr("required", false);
+	$("#accounttype").attr("required", false);
+	$("#bankname").attr("required", false);
+});
+	//disabled
+$("#bank_clps_div").on("show.bs.collapse", function(){
+	$("#bankclpslink").html('<span class="glyphicon glyphicon-ok-circle"></span> Enabled');
+	//setting of fields must be required
+	$("#accountno").attr("required", true);
+	$("#accountname").attr("required", true);
+	$("#accounttype").attr("required", true);
+	$("#bankname").attr("required", true);
+	
+});
+  
+////////////////////////////////////////////////////////////////////////
+  
+
+
+//NOTE LINK
+$('.notelink').on('click', function(event){
+	event.preventDefault();
+	console.log('PEWPEW');
+});
+
+////////////////////////////////////////////////////////////////////////
+
+//BANK LINK
+$('.banklink').on('click', function(event){
+	event.preventDefault();
+	console.log('BANK');
+});
+
+////////////////////////////////////////////////////////////////////////
+
+
+$('#pwdlink').on('click', function(event){
+	event.preventDefault();
+	$("#dialogchangepwd").dialog("open");
+});
+
+////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+//CLEAR BUTTON CLICKED
+$('#btnClear').on('click', function(event){
+	$('input[type="text"]').val('');
+	$('#nature_of_req').val('');
+	
+	$('input').prop('disabled',true);
+	$('select').prop('disabled',true);
+	$('textarea').prop('disabled',true);
+	$('#nbu').prop('disabled',false);
+	$('#nbu').focus();
+	$("select#nbu").prop('selectedIndex', 0);
+	document.getElementById('rfp_no').innerHTML = '-----------------';
+});
+
+
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+//ON NBU BLUR
+$('#nbu').on('blur', function(event){
+	var nbu = $(this).val();
+	
+	if (nbu != ''){
+		$.ajax({
+	        url : "/RFP/getrfp_no/", // the endpoint
+	        type : "post", // http method
+	        data : { nbu:nbu }, // data sent with the post request
+			
+			// handle a successful response
+	        success : function(rfpno) {
+	        	$('input').prop('disabled',false);
+	    		$('select').prop('disabled',false);
+	    		$('textarea').prop('disabled',false);
+	        	
+	        	//set rfp_no
+	        	document.getElementById('rfp_no').innerHTML = rfpno;
+	        	$('input#hrfp_no').val(rfpno);
+	        	//disabled #nbu
+	        	$('#nbu').prop('disabled',true);
+	        	
+	        	//set to hidden field
+	        	//var nbu = $('#nbu').val();
+	        	$('#nbucode').val(nbu);
+	        	
+	        	//focus on dept
+	        	$('#dept').focus();
+	        	
+	        	//update location dropdowns
+	        	update_locations(nbu, null);
+	        	},
+
+	        // handle a non-successful response
+	    	error : function(data) {
+	    		alert("Oops! Something went wrong! Please Try Again!");
+	        	}
+			});
+		
+	}
+	else{
+		//pop up notification (No NBU Selected. Please Select NBU.)
+		
+		//after that, focus on #nbu cmb
+		//document.getElementById("nbu").focus();
+		//$('#nbu').focus();
+		document.getElementById('hrfp_no').innerHTML = '';
+		$('input#rfp_no').val('-----------------');
+	}
+	
+});
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+$('#vendor_id').on('blur', function(event){
+	//kuhaon ang name sa MMS
+	var vendorid = $(this).val();
+	
+	if(vendorid!=''){
+		$.ajax({
+		    
+	        url : "/RFP/getvendorname/", // the endpoint
+	        type : "post", // http method
+	        data : { vendorid:vendorid }, // data sent with the post request
+			
+	        beforeSend: function(xhr, settings) {
+		        if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+		            // Send the token to same-origin, relative URLs only.
+		            // Send the token only if the method warrants CSRF protection
+		            // Using the CSRFToken value acquired earlier
+		            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+		        }
+		        
+		        //put loading bar here
+		        $('#dialogloadingbar').dialog("open");
+		        
+		   	},
+	        complete: function() {
+	        	$('#dialogloadingbar').dialog("close");
+	        },
+		   	
+			// handle a successful response
+	        success : function(data) {
+	        	var vendorname = data['vendorname']; 
+	        	var asvoth = data['asvoth'];
+	        	var afname = data['afname'];
+	        	
+	        	$('#vendor_name').val(vendorname);
+	        	
+	        	if (asvoth=='0'){
+	        		$('#check_payee').val(vendorname);
+	        	}
+	        	else{
+	        		$('#check_payee').val(afname);
+	        	}
+	        	
+	        	//$('#vendor_name').val(data);
+	        	},
+	
+	        // handle a non-successful response
+	    	error : function(data) {
+	    		//alert('Vendor does not exist.');
+	    		$("#dialogvendornotif").dialog("open");
+	    		
+	        	}
+        	
+			});
+		
+	}
+});
+
+////////////////////////////////////////////////////////////////////////
+
+function update_locations(nbu, locs){
+	$.ajax({
+        url : "/RFP/select_locations/", // the endpoint
+        type : "post", // http method
+        data : { nbu:nbu }, // data sent with the post request
+		
+		// handle a successful response
+        success : function(data) {
+        	document.getElementById('locations').innerHTML = data;
+
+        	$('#location').val(locs);
+        	
+        	},
+
+        // handle a non-successful response
+        error : function(data) {
+        	
+        	}
+		 });
+	
+}
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////////////
+
+//userpager
+$('input#userpager').on('blur', function(event){
+	var page = $(this).val();
+	window.location.replace("/RFP/addUser/?page=" + page);
+});
+
+//userpager
+$('input#userpager').on('keydown', function(event){
+	if(event.keyCode == 13){
+		var page = $(this).val();
+		window.location.replace("/RFP/addUser/?page=" + page);
+	}
+});
+
+///////////////////////////////////////////////////////////////////////
+
+//rfppager
+$('input#rfppager').on('blur', function(event){
+	var page = $(this).val();
+	window.location.replace("/RFP/main/?page=" + page);
+});
+
+//rfppager
+$('input#rfppager').on('keydown', function(event){
+	if(event.keyCode == 13){
+		var page = $(this).val();
+		window.location.replace("/RFP/main/?page=" + page);
+	}
+});
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////
+
+
+/**************************************************************************************/
+/**************************************************************************************/
+/**************************************************************************************/
+	
+	//AVOID 2 dots	
+	$(".numdot").keydown(function (e) {
+        var theVal = $(this).val().replace(/,/g, "");
+        var dotctr = (theVal.match(/\./g) || []).length;
+        
+        if ((dotctr == 1 && e.keyCode == 110) || (dotctr == 1 && e.keyCode == 190))
+        	{
+        	e.preventDefault();
+        	}
+        else{
+        	return;
+        }
+	});
+
+/**************************************************************************************/
+/**************************************************************************************/
+/**************************************************************************************/
+
+	//NUM ONLY and dots. only
+	$(".numdot").keydown(function (e) {
+        // Allow: backspace, delete, tab, escape, enter and .
+        if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||
+             // Allow: Ctrl+A, Command+A
+            (e.keyCode == 65 && ( e.ctrlKey === true || e.metaKey === true ) ) || 
+             // Allow: home, end, left, right, down, up
+            (e.keyCode >= 35 && e.keyCode <= 40)) {
+                // let it happen, don't do anything
+                return;
+	            
+                
+        }
+        // Ensure that it is a number and stop the keypress
+        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+            e.preventDefault();
+        }
+    });
+
+/**************************************************************************************/
+/**************************************************************************************/
+/**************************************************************************************/
+	
+	//NUM ONLY and dots. only
+	$(".numonly").keydown(function (e) {
+        // Allow: backspace, delete, tab, escape, enter and .
+        if ($.inArray(e.keyCode, [46, 8, 9, 27, 13]) !== -1 ||
+             // Allow: Ctrl+A, Command+A
+            (e.keyCode == 65 && ( e.ctrlKey === true || e.metaKey === true ) ) || 
+             // Allow: home, end, left, right, down, up
+            (e.keyCode >= 35 && e.keyCode <= 40)) {
+                // let it happen, don't do anything
+                return;
+	            
+                
+        }
+        // Ensure that it is a number and stop the keypress
+        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+            e.preventDefault();
+        }
+    });
+
+/**************************************************************************************/
+/**************************************************************************************/
+/**************************************************************************************/
+	
+	
+/**************************************************************************************/
+/**************************************************************************************/
+/**************************************************************************************/
+
+	$("body").on("input",".uppercase", function(e) {
+	    if (e.which >= 97 && e.which <= 122) {
+	        var newKey = e.which - 32;
+	        // I have tried setting those
+	        e.keyCode = newKey;
+	        e.charCode = newKey;
+	    }
+
+	    $(this).val(($(this).val()).toUpperCase());
+	});
+
+/**************************************************************************************/
+/**************************************************************************************/
+/**************************************************************************************/
+
+	//AMOUNT FORMATTER
+	$("body").on("keyup","input.amts",function(event) {
+    	var x = $(this).val();
+    	$(this).val(x.toString().replace(/,/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+	});
+	
+	
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+
+
+
+//csrf token
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+var csrftoken = getCookie('csrftoken');
+ 
+/*
+The functions below will create a header with csrftoken
+*/
+ 
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+function sameOrigin(url) {
+    // test that a given url is a same-origin URL
+    // url could be relative or scheme relative or absolute
+    var host = document.location.host; // host + port
+    var protocol = document.location.protocol;
+    var sr_origin = '//' + host;
+    var origin = protocol + sr_origin;
+    // Allow absolute or scheme relative URLs to same origin
+    return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+        (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+        // or any other URL that isn't scheme relative or absolute i.e relative.
+        !(/^(\/\/|http:|https:).*/.test(url));
+}
+ 
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+            // Send the token to same-origin, relative URLs only.
+            // Send the token only if the method warrants CSRF protection
+            // Using the CSRFToken value acquired earlier
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    }
+});
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+//DATE 
+	$( ".datepickerx" ).datepicker({
+		 format: 'yyyy-mm-dd',
+		 changeMonth: true,
+         changeYear: true,
+         showButtonPanel: true,
+         yearRange: "-10:+0",
+	});
+
+	
+	
+
+
+	
+});//end
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+// PREDEFINED FUNCTIONS //
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+String.prototype.replaceAt=function(index, character) {
+    return this.substr(0, index) + character + this.substr(index+character.length);
+};
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

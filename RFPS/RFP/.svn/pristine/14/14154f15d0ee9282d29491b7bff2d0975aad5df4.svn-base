@@ -1,0 +1,503 @@
+{% load staticfiles %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" />
+
+<link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.4-dist/css/bootstrap.css' %}" />
+
+ 
+<script type="text/javascript" src="{% static 'js/jquery-1.9.1.js' %}" ></script>
+<script type="text/javascript" src="{% static 'js/main.js' %}" ></script>
+<script type="text/javascript" src="{% static 'bootstrap-3.3.4-dist/js/bootstrap.js' %}" ></script>
+
+
+<link rel="stylesheet" type="text/css" href="{% static 'jquery-ui-1.11.4.custom/jquery-ui.css' %}" />
+<script type="text/javascript" src="{% static 'jquery-ui-1.11.4.custom/jquery-ui.js' %}" ></script>
+
+<link rel="stylesheet" type="text/css" href="{% static 'tablesorter-master/css/theme.blue.css' %}" />
+<script type="text/javascript" src="{% static 'tablesorter-master/js/jquery.tablesorter.js' %}"></script>
+<script type="text/javascript" src="{% static 'tablesorter-master/js/jquery.tablesorter.widgets.js' %}"></script>
+ 
+<script type="text/javascript" src="{% static 'jasny-bootstrap/js/jasny-bootstrap.js' %}" ></script>
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>NCCC e-Request For Payment System</title>
+		
+	</head>
+	<body>
+		<div id="wholepage" class="container-fluid" >
+			<div class="header">
+				<nav class="navbar">
+				 <div class="container-fluid">
+				    <!-- Collect the nav links, forms, and other content for toggling -->
+				    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+				      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+				        <span class="sr-only">Toggle navigation</span>
+				        <span class="icon-bar"></span>
+				        <span class="icon-bar"></span>
+				        <span class="icon-bar"></span>
+				      </button>
+				      
+				      
+				      	<a class="home navbar-brand" href="/RFP/main/">NCCC e-Request For Payment System</a>
+				      
+				      <ul class="nav navbar-nav navbar-right">
+				        <li><p class="navbar-text navbar-right"></p></li>
+				        <li class="dropdown">
+				        	<a style="color: black; font-weight: bold;" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{username}}, {{fname}} {{mname}} {{lname}} <span class="caret"></span></a>
+				        	<ul class="dropdown-menu">
+				        	
+				        	{% if userclass == 'PREPARER' %}
+				        		<li><a role="button">Transactions</a></li>
+				        	{% elif userclass == 'CHECKER' %}
+				        	
+				        	{% elif userclass == 'APPROVER' %}
+				        	
+				        	{% elif userclass == 'PAYASSOC' %}
+				        	
+				        	{% elif userclass == 'ADMINISTRATOR' %}
+					           <li><a href="/RFP/users" role="button">Users Master</a></li>
+					           <li><a href="/RFP/access" role="button">Access Master</a></li>
+				       		{% endif %}
+					            <li role="separator" class="divider">&nbsp;</li>
+					            <li><a id="pwdlink" role="button">Change Password</a></li>
+					            <li role="separator" class="divider">&nbsp;</li>
+					            <li><a href="/RFP/logout/">Logout</a></li>
+				          	</ul>
+				        </li>
+				        
+				      </ul>
+				      
+				    </div><!-- /.navbar-collapse -->
+				  </div><!-- /.container-fluid -->
+			</nav>
+			</div>
+			
+			<div class="content" style="border: 5px solid gray;" >
+				{% block content %}
+				{% endblock %}
+			</div>
+			
+			<div class="footer text-center" style="background: silver; padding: 5px; font-size: 11px;">
+				<span>New City Commercial Corporation (NCCC). NCCC e-Request For Payment System © NCCC 2016</span><br>
+				<span>NCCC eRFP System is maintained by NCCC, ICT Applications.</span><br>
+				<span id="stat"><!-- STATS: Total: %(total_time).2fs Python: %(python_time).2fs DB: %(db_time).2fs Queries: %(db_queries)d ENDSTATS --></span>
+			</div>
+		</div>
+	</body>
+</html>
+
+
+
+<div id="dialogaddrequest" title="Create New Request" class="dialogbox">
+	<form method="post" action="/RFP/addrequest/" id="frmaddrequest">
+		{% csrf_token %}
+		
+		<div class="row" style="margin: auto;">
+				
+			<div style="width:50%; float:left;">
+					
+				<table width="100%">
+					<tr>
+						<td width="95px"><b>RFP No.: </b></td>
+						<td>
+							<span id="rfp_no" style="color: green; font-weight: bold;">-----------------</span>
+							<input type="hidden" id="hrfp_no" name="hrfp_no" />
+						</td>
+					</tr>
+					<tr>
+						<td><b>NBU: <span style="color: red;">*</span></b></td>
+						<td>
+							{{ formmain.nbu }}
+							<input type="hidden" id="nbucode" name="nbucode">
+						</td>
+					</tr>
+					<tr>
+						<td><b>Department: <span style="color: red;">*</span></b></td>
+						<td>
+							{{ formmain.dept }}
+						</td>
+					</tr>	
+					<tr>
+						<td><b>Location: <span style="color: red;">*</span></b></td>
+						<td id="locations">
+							
+						</td>
+					</tr>	
+					<tr>
+						<td><b>DOC No.: <span style="color: red;">*</span></b></td>
+						<td><input type="text" id="doc_no" name="doc_no" style="width:100%" required/></td>
+					</tr>
+				</table>
+				
+				<hr style="height:3px;color:#808080;background-color:#808080;" />
+				
+				<table width="100%">
+					<tr>
+						<td width="95px"><b>VENDOR ID: <span style="color: red;">*</span></b></td>
+						<td><input type="text" id="vendor_id" name="vendor_id" class="numonly" style="width:100%;" required/></td>
+					</tr>
+					<tr>
+						<td><b>VENDOR NAME: </b></td>
+						<td><input type="text" id="vendor_name" name="vendor_name" style="width:100%;" /></td>
+					</tr>
+					<tr>
+						<td><b>CHECK PAYEE: </b></td>
+						<td><input type="text" id="check_payee" name="check_payee" style="width:100%;" /></td>
+					</tr>
+					<!-- 
+					<tr>
+						<td><b>TAX SCHEDULE: </b></td>
+						<td>{{ formmain.tax }}</td>
+					</tr>
+					<tr>
+						<td><b>WTAX SCHEDULE: </b></td>
+						<td>{{ formmain.wtax }}</td>
+					</tr>
+					 -->
+				</table>
+				
+				<hr style="height:3px;color:#808080;background-color:#808080;" />
+				
+				<table width="100%">
+					<tr>
+						<td style="vertical-align: top !important;"><b>NATURE OF REQUEST: </b></td>
+					</tr>
+					<tr>
+						<td>
+							<textarea id="nature_of_req" name="nature_of_req" style="width: 95%;">
+							</textarea>
+						</td>
+					</tr>
+				</table>
+				
+			</div>
+				
+			<div style="width:5%; float:left;">
+				&nbsp;
+			</div>
+				
+			<div style="width:45%; float:left;">
+				<table width="90%">
+					<tr>
+						<td colspan="2" align="right">
+							<input type="image" src="/static/images/note_edit.png" title="Remarks" class="img notelink" style="margin-left: 5px;" />
+						</td>
+					</tr>
+					<tr>
+						<td width="95px" ><b>eRS No.: </b></td>
+						<td><input type="text" id="ers_no" name="ers_no" style="width:100%"/></td>
+					</tr>
+					<tr>
+						<td><b>eJO No.: </b></td>
+						<td><input type="text" id="ejo_no" name="ejo_no" style="width:100%"/></td>
+					</tr>
+					<tr>
+						<td><b>eProMoS No.: </b></td>
+						<td><input type="text" id="epromos_no" name="epromos_no" style="width:100%"/></td>
+					</tr>
+				</table>
+				
+				<hr style="height:3px;color:#808080;background-color:#808080;" />
+				
+				<table width="90%">
+					<tr>
+						<td width="95px"><b>EXPENSE TYPE: </b></td>
+						<td>{{ formmain.expense_type }}</td>
+					</tr>
+					<tr>
+						<td><b>CASH W/ ORDER: </b></td>
+						<td>
+							<select id="cwo" name="cwo">
+								<option value="0">No</option>
+								<option value="1">Yes</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td><b>BANK DETAILS: </b></td>
+						<td>
+							<button id="bankclpslink" type="button" class="btn btn-sm btn-success" data-toggle="collapse" data-target="#bank_clps_div">
+						    	<span class="glyphicon glyphicon-remove-circle"></span> Disabled
+						    </button>
+						    <!-- 
+							<div id="bank_clps_div" class="collapse">
+							    Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+							    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+							    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+							</div>
+							 -->
+							
+							<!-- 
+							<input type="image" src="/static/images/bank.png" title="Bank Details Lookup" class="img banklink"/>
+							-->
+						</td>
+					</tr>
+					<tr id="bank_clps_div" class="collapse">
+						<td colspan="2">
+							<center>
+							<table style="background:#808080; width:95%;">
+								<tr>
+									<td width="95px"><b>Account No.: </b></td>
+									<td><input type="text" id="accountno" name="accountno" style="width:95%" /></td>
+								</tr>
+								<tr>
+									<td><b>Account Name: </b></td>
+									<td><input type="text" id="accountname" name="accountname" style="width:95%" /></td>
+								</tr>
+								<tr>
+									<td><b>Account Type: </b></td>
+									<td>
+										<select id="accounttype" name="accounttype">
+											<option value="Savings">Savings</option>
+											<option value="Current">Current</option>
+											<option value="Others">Others</option>
+										</select>
+									</td>
+								</tr>
+								<tr>
+									<td><b>Bank Name: </b></td>
+								</tr>
+								<tr>
+									<td colspan="2">
+										<input type="text" id="bankname" name="bankname" style="width:95%; margin-left:5px;"/>
+									</td>
+								</tr>
+							</table>
+							</center>
+						</td>
+					</tr>
+					<!-- 
+					<tr>
+						<td colspan="2" style="vertical-align: top !important;"><b>NATURE OF REQUEST: </b></td>
+					</tr>
+					<tr>
+						<td colspan="2" rowspan="2">
+							<textarea id="nature_of_req" name="nature_of_req" style="width: 95%;">
+							</textarea>
+						</td>
+					</tr>
+					 -->
+				</table>
+				
+				<hr style="height:3px;color:#808080;background-color:#808080;" />
+				
+				<table>
+					<tr>
+						<td><b>GROSS AMOUNT: <span style="color: red;">*</span></b></td>
+						<td><input type="text" id="grossamount" name="grossamount" class="numdot amts" required/></td>
+					</tr>
+					<tr>
+						<td><b>NET AMOUNT: </b></td>
+						<td><input type="text" id="netamount" name="netamount" class="numdot amts" readonly required/></td>
+					</tr>
+				</table>
+			</div>
+				
+		
+		</div>
+		
+		<hr style="height:3px;color:#808080;background-color:#808080;" />
+		
+		<div class="row" style="margin: auto;">
+			
+			
+		</div>
+		
+		<hr style="height:3px;color:#808080;background-color:#808080;" />
+		
+		<div class="row" style="margin: auto;" align="right">
+			<input id="btnClear" type="button" class="btn btn-sm btn-default" style="color: #058DC7; font-weight: bold; font-size: 14px; margin-right:5px;" value="Clear" />
+			<input id="btnRequest" type="submit" class="btn btn-sm btn-default" style="color: #058DC7; font-weight: bold; font-size: 14px; margin-right:5px;" value="Request" />
+		</div>
+			
+					<!-- 
+					<table class="table table-borderless" style="margin-bottom:0px;">
+							<tr>
+								<td><b>NBU: <span style="color: red;">*</span></b></td>
+								<td>
+									{{ formnbu.nbu }}
+									<input type="hidden" id="nbucode" name="nbucode">
+								</td>
+								
+								<td width="25px">&nbsp;</td>
+								
+								<td><b>eRS No.: </b></td>
+								<td><input type="text" id="ers_no" name="ers_no" tabindex="8" /></td>
+							</tr>
+							<tr>
+								<td><b>RFP No.: </b></td>
+								<td>
+									<span id="rfp_no" style="color: green; font-weight: bold;">-----------------</span>
+									<input type="hidden" id="hrfp_no" name="hrfp_no" />
+								</td>
+							
+								<td>&nbsp;</td>
+								
+								<td><b>eJO No.: </b></td>
+								<td><input type="text" id="ejo_no" name="ejo_no" tabindex="9" /></td>
+							</tr>
+							<tr>
+								<td><b>VENDOR ID: <span style="color: red;">*</span></b></td>
+								<td><input type="text" id="vendor_id" name="vendor_id" class="numonly" tabindex="2" style="width: 95%;" required/></td>
+								
+								<td>&nbsp;</td>
+								
+								<td><b>eProMoS No.: </b></td>
+								<td><input type="text" id="epromos_no" name="epromos_no" tabindex="10"/></td>
+							</tr>	
+							
+							<tr>
+								<td><b>VENDOR NAME: </b></td>
+								<td><input type="text" id="vendor_name" name="vendor_name" tabindex="3" style="width: 95%;" /></td>
+								
+								
+								<td>&nbsp;</td>
+								
+								<td><b>DOC No.: <span style="color: red;">*</span></b></td>
+								<td><input type="text" id="doc_no" name="doc_no" tabindex="11" required/></td>
+							</tr>
+							
+							<tr>
+								<td><b>CHECK PAYEE: </b></td>
+								<td><input type="text" id="check_payee" name="check_payee" tabindex="4" style="width: 95%;" /></td>
+								
+								<td>&nbsp;</td>
+								
+								<td><b>EXPENSE TYPE: </b></td>
+								<td>{{ formexpense_type.expense_type }}</td>
+							</tr>
+							
+							<tr>
+								<td><b>BANK DETAILS: </b></td>
+								<td>
+									<!-- 
+									<input type="text" id="bank_details" name="bank_details" tabindex="5" style="width: 85%;"/>
+									<input type="image" src="/static/images/magnifier.png" title="Bank Details Lookup" tabindex="6" class="img banklink" style="" />
+									->
+									<input type="image" src="/static/images/bank.png" title="Bank Details Lookup" tabindex="6" class="img banklink" style="" />
+								</td>
+								
+								<td>&nbsp;</td>
+								
+								<td><b>CASH WITH ORDER: </b></td>
+								<td>
+									<select id="cwo" name="cwo" tabindex="13">
+										<option value="0">No</option>
+										<option value="1">Yes</option>
+									</select>
+								</td>
+							</tr>
+							
+							<tr>
+								<td rowspan="2" style="vertical-align: top !important;"><b>NATURE OF REQUEST: </b></td>
+								<td rowspan="2">
+									<textarea id="nature_of_req" name="nature_of_req" tabindex="7" style="width: 95%;">
+									</textarea>
+								</td>
+								
+								<td>&nbsp;</td>
+								
+								<td><b>TAX SCHEDULE: </b></td>
+								<td>{{ formtax.tax }}</td>
+							</tr>
+							
+							<tr>
+								
+								
+								<td>&nbsp;</td>
+								
+								<td><b>WTAX SCHEDULE: </b></td>
+								<td>{{ formwtax.wtax }}</td>
+							</tr>
+							
+							<tr>
+								<td><b>ATTACH NOTE: </b></td>
+								<td>
+									<input type="image" src="/static/images/note_edit.png" tabindex="17" title="Notes" class="img notelink" style="margin-left: 5px;" />
+								</td>
+								
+								<td>&nbsp;</td>
+								
+								<td><b>GROSS AMOUNT: <span style="color: red;">*</span></b></td>
+								<td><input type="text" id="grossamount" name="grossamount" tabindex="15" class="numdot amts" required/></td>
+							</tr>
+							<tr>
+								<td><b>VACANT</b></td>
+								<td>
+								</td>
+								
+								<td>&nbsp;</td>
+								
+								<td><b>NET AMOUNT: <span style="color: red;">*</span></b></td>
+								<td><input type="text" id="netamount" name="netamount" tabindex="16" class="numdot amts" readonly required/></td>
+							</tr>
+							<tr style="border-top: 2px solid gray;">
+								<td colspan="5" align="right">
+									<input id="btnClear" type="button" class="btn btn-sm btn-default" style="color: #058DC7; font-weight: bold; font-size: 14px; margin-right:5px;" value="Clear" />
+									<input id="btnRequest" type="submit" class="btn btn-sm btn-default" style="color: #058DC7; font-weight: bold; font-size: 14px; margin-right:5px;" value="Request" />
+								</td>
+								
+							</tr>
+							
+					</table>
+				 	-->
+			
+	</form>
+</div>
+
+
+<!-- DIALOG CHANGE PWD -->
+<div id="dialogchangepwd" title="Change Password" class="dialogbox">
+	<form method="post" action="/ERM/pwdcheck/" id="frmChangePwd">
+		{% csrf_token %}
+		<div class="row" style="margin: auto;">
+			<label id="pwdnote" style="color: red;">{{pwdmessage}}</label>
+			<br/><br/>
+			
+			<label style="font-family: Courier;">Old Password</label>
+			<input class="form-control input-sm" id="oldpwd" name="oldpwd" type="password" required>	
+			
+			<br/>
+			
+			<label style="font-family: Courier;">New Password</label>
+			<input class="form-control input-sm" id="newpwd" name="newpwd" required="required" type="password">	
+			
+			<br/>
+			
+			<label style="font-family: Courier;">Confirm New Password</label>
+			<input class="form-control input-sm" id="confirmnewpwd" name="confirmnewpwd" required="required" type="password">	
+		</div>
+		
+	</form>
+</div>
+<!-- CHANGE PWD END -->
+
+
+
+
+
+
+<!-- NOTIF FOR VENDOR DOES NOT EXIST -->
+<div id="dialogvendornotif" title="Not Found!" class="dialogbox">
+	<p>Vendor does not exist!</p>
+</div>
+<!-- VENDOR NOTIF END -->
+
+
+
+<!-- LOADING BAR -->
+<div id="dialogloadingbar" title="Search Vendor Name" class="dialogbox">
+	<div class="row" style="margin: auto;" align="center">
+		<label>Searching Vendor Name ...</label>
+		<img src="/static/images/ajax-loader.gif" />
+	</div>
+</div>
+<!-- LOADING BAR END -->
+

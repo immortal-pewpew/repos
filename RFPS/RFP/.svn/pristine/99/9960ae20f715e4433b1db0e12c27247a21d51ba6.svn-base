@@ -1,0 +1,196 @@
+{% load staticfiles %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.4-dist/css/bootstrap.min.css' %}" />
+
+<script type="text/javascript" src="{% static 'jquery-1.12.1/jquery-1.12.1.min.js' %}" ></script>
+
+<!-- GIPULIHAN NA NAKO SILA AS MINIFIED UG JQUERY 1.12.1 NA ANG AKO GAMIT-->
+<script type="text/javascript" src="{% static 'js/main.js' %}" ></script>
+<script type="text/javascript" src="{% static 'bootstrap-3.3.4-dist/js/bootstrap.min.js' %}" ></script>
+
+<link rel="stylesheet" type="text/css" href="{% static 'jquery-ui-1.11.4.custom/jquery-ui.min.css' %}" />
+<script type="text/javascript" src="{% static 'jquery-ui-1.11.4.custom/jquery-ui.min.js' %}" ></script>
+
+<!-- 
+<script type="text/javascript" src="{% static 'jasny-bootstrap/js/jasny-bootstrap.min.js' %}" ></script>
+ -->
+
+
+<script type="text/javascript">
+	$(function() {
+		$("#dialogchangepwdreq").dialog({
+		      modal: true,
+		      autoOpen: false,
+		      closeOnEscape: false,
+		      open: function(event, ui) { $(".ui-dialog-titlebar-close", ui.dialog | ui).hide(); 
+			      	            },
+		      buttons: {
+		        Ok: function() {
+					//ajax check for filters
+					var oldpwd = $('input#oldpwd').val();
+					var newpwd = $('input#newpwd').val();
+					var confirmnewpwd = $('input#confirmnewpwd').val();
+					
+					$.ajax({
+				        url : "/RFP/pwdcheck/", // the endpoint
+				        type : "post", // http method
+				        data : { oldpwd:oldpwd, newpwd:newpwd, confirmnewpwd:confirmnewpwd }, // data sent with the post request
+						
+						// handle a successful response
+				        success : function(data) {
+				        	if (data == 'Successful.'){
+					        	$("#dialogchangepwdreq").dialog("close");
+					        	$("#dialogpwdchngsuccess").dialog("open");
+					        	}
+				        	else{
+					        	document.getElementById('pwdnote').innerHTML = data;
+					        	}
+				        	},
+				
+				        // handle a non-successful response
+				        error : function(data) {
+				        	
+				        	}
+					 	});
+		        },
+		        
+		      },
+	    });
+	    
+	    //CHANGE PWD NOTIF
+	    $("#dialogpwdchngsuccess").dialog({
+	      modal: true,
+	      autoOpen: false,
+	      closeOnEscape: false,
+	      open: function(event, ui) { $(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+	      			}, 
+	      buttons: {
+	        Ok: function() {
+				$("#dialogpwdchngsuccess").dialog("close");
+				window.location.replace("/RFP/main/");
+				
+	        },
+	        
+	      },
+	      beforeClose: function(){
+	        //event.preventDefault();
+	        
+	      }
+	      
+	    });
+	    
+	});
+	
+	
+	$(window).load(function(){
+        $("#dialogchangepwdreq").dialog("open");
+        $("input[type='password']").val('');
+    
+    });
+    
+    ////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+//csrf token
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+var csrftoken = getCookie('csrftoken');
+ 
+/*
+The functions below will create a header with csrftoken
+*/
+ 
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+function sameOrigin(url) {
+    // test that a given url is a same-origin URL
+    // url could be relative or scheme relative or absolute
+    var host = document.location.host; // host + port
+    var protocol = document.location.protocol;
+    var sr_origin = '//' + host;
+    var origin = protocol + sr_origin;
+    // Allow absolute or scheme relative URLs to same origin
+    return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+        (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+        // or any other URL that isn't scheme relative or absolute i.e relative.
+        !(/^(\/\/|http:|https:).*/.test(url));
+}
+ 
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+            // Send the token to same-origin, relative URLs only.
+            // Send the token only if the method warrants CSRF protection
+            // Using the CSRFToken value acquired earlier
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    }
+});
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+	         
+</script>
+	
+
+
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+		<link rel="icon" href="/static/icons/rfp.ico">
+		<title>NCCC e-Request For Payment</title>
+
+	</head>
+
+	<body>
+		
+	</body>
+</html>
+
+
+<!-- DIALOG CHANGE PWD REQUIRED -->
+<div id="dialogchangepwdreq" title="Change Password" class="dialogbox">
+	<div class="row" style="margin: auto;">
+		<form method="post" action="/RFP/pwdcheck/" id="frmChangePwd">
+			{% csrf_token %}
+			<label id="pwdnote" class="normaltext" style="color:red; margin-bottom:15px;">{{pwdmessage}}</label>
+			
+			<label class="normaltext">Old Password</label>
+			<input class="normaltext" id="oldpwd" name="oldpwd" type="password" style="width:100%; margin-bottom:15px;" required />	
+			
+			<label class="normaltext" style="font-family: Courier;">New Password</label>
+			<input class="normaltext" id="newpwd" name="newpwd"  type="password" style="width:100%; margin-bottom:15px;" required />	
+			
+			<label class="normaltext">Confirm New Password</label>
+			<input class="normaltext" id="confirmnewpwd" name="confirmnewpwd" type="password" style="width:100%; margin-bottom:15px;" required />	
+		</form>
+	</div>
+</div>
+<!-- CHANGE PWD END -->
+
+
+<!-- DIALOG PWDCHANGE NOTIF -->
+<div id="dialogpwdchngsuccess" title="Password Change Successful" class="dialogbox">
+	<label>Password has been successfully changed.</label>
+</div>
+<!-- PWDCHANGE NOTIF END -->

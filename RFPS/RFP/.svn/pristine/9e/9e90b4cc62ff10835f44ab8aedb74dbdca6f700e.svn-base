@@ -1,0 +1,39 @@
+{% load staticfiles %}
+
+<script type="text/javascript" src="{% static 'js/jquery-1.9.1.js' %}" ></script>
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'jquery-ui-1.11.4.custom/jquery-ui.css' %}" />
+<script type="text/javascript" src="{% static 'jquery-ui-1.11.4.custom/jquery-ui.js' %}" ></script>
+
+
+<script type="text/javascript">
+	
+	$( document ).ready(function() {
+	  $( "#dialog" ).dialog({
+	    modal: true,
+	    position: { my: 'top', at: 'top+150',of: window },
+	    buttons: {
+	      Ok: function() {
+	        $(this).dialog( "close" );
+	      }
+	    },
+	    beforeClose: function(){
+	    	{% if msgNum == 1 %}
+	      		window.location.replace("/RFP/main/");     	
+	      	
+	      	{% endif %}
+		      }
+	    
+	  });
+	  
+	  
+	});
+
+</script>
+
+
+
+<div id="dialog" title="Information!" class="dialogbox">
+	<p class="normaltext">{{message}}</p>
+</div>

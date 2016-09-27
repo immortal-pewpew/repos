@@ -1,0 +1,82 @@
+{% extends "erm_templates/DTR/base.html" %}
+		
+		{% block content %}
+				<div class="row">
+					<div class="col-md-4">
+						&nbsp;
+					</div>
+					<div class="col-md-4" align="center">
+						<label id="textheader">Assign Schedule</label>	
+						<br />
+					</div>
+					<div class="col-md-4">
+						&nbsp;
+					</div>
+					
+				</div>
+				<div class="col-md-3">
+					&nbsp; 
+				</div>
+				<div class="col-md-6">
+					<form method="post" action="/ERM/createSched/">
+					{% csrf_token %}
+					<div class="row">
+						<div class="col-md-6">
+							<label>Associate's ID</label>
+						</div>
+						<div class="col-md-6">
+							{{ form.uid }}	
+						</div>		
+						<br /><br />				
+					</div>
+					<div class="row">
+						<div class="col-md-6">
+							<label>Work Schedule</label>
+						</div>
+						<div class="col-md-6">
+							{{ form.WorkSched }}	
+						</div>		
+						<br /><br />				
+					</div>
+					<div class="row">
+						<div class="col-md-6">
+							<label id="Day1">Day-off 1</label>
+						</div>
+						<div class="col-md-6">
+							{{ form.DayOff1 }}	
+						</div>		
+						<br /><br />				
+					</div>
+					<div class="row">
+						<div class="col-md-6">
+							<label id="Day2">Day-off 2</label>
+						</div>
+						<div class="col-md-6">
+							{{ form.DayOff2 }}	
+						</div>		
+						<br /><br />				
+					</div>
+					
+					<div class="row">
+						<div class="col-md-12" align="right" >
+							<input id="addSched" type="submit" class="btn btn-primary btn-sm" value="ASSIGN" />	
+						</div>
+					</div>
+					</form>
+				</div>
+				
+				<div class="col-md-3">
+					&nbsp;
+				</div>
+			{% endblock %}
+
+
+
+
+
+
+
+
+
+
+

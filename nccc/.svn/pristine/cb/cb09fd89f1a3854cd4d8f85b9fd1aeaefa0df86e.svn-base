@@ -1,0 +1,495 @@
+body {
+	background: url("/static/images/sky2.jpg") no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+     
+    /*font-size: 12px;*/
+    font-family: "RobotoRegular",Arial;
+    /*min-width: 1000px;*/
+	/*color:#000;*/
+}
+
+#bodycontent{
+	min-height: 500px;
+}
+
+a{
+	text-decoration: none !important;
+}
+
+.para{
+	font-family:monospace, monospace;
+	display: block;
+	padding: 10px;
+	margin: 0 0 10px;
+	font-size: 13px;
+	/*line-height: 1.42857143;*/
+	color: #333;
+	/*word-break: break-all;*/
+	/*word-wrap: break-word;*/
+	
+}
+
+
+.footer > a, .footer > a:focus, .footer > a:hover{
+	color: #333;
+}
+
+.ui-dialog > .ui-widget-header {
+	background: #058DC7;
+	border-color: #058DC7;
+}
+
+div.panel-heading:hover{
+	 background-color: #008080;
+}
+
+div.menuchild:hover{
+	 background-color: #757575;
+}
+
+
+/*Full width header*/	
+
+
+
+/*Navigation Menu*/
+.navigation{
+	opacity: 0.75;
+	/*
+	border-radius: 2px;
+	box-shadow: rgba(0, 0, 0, 0.298039) 0px 2px 2px;
+	overflow: hidden;
+	color: #000000;
+	*/
+}
+
+
+/*Body Content*/
+.content {
+    padding: 20px !important;
+	background-color: #F7F7F7;
+	margin: 0px auto 10px;
+	border-radius: 2px;
+	opacity: 0.80;
+	overflow:hidden;
+	/*min-width: 1300px;*/
+	
+}
+
+
+
+
+/*Full width footer*/	
+.footer {
+	background: #00B9FF;
+	padding: 5px 0px 5px 0px;
+	/*margin: 0px auto 10px;*/
+	text-align:center;
+	opacity: 0.75;
+    /*filter:alpha(opacity=0.75);*/
+    font-size:11px;
+    letter-spacing:1px;
+	}
+
+/*---------------------------------------------------------------------------------*/
+
+.datepicker{z-index:1151 !important;}
+
+.ui-widget-overlay{z-index: 1152!important;}
+/*---------------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------------*/
+
+label.TextValue{
+	color: darkred;
+	
+}
+
+label.fields{
+	font-size: 12;
+}
+
+th.tabletitle{
+	/*text-align: center !important;*/
+	font-size: 13px;
+}
+
+table{
+	text-align: center !important;
+}
+
+td.tdamount{
+	text-align: right !important;
+}
+
+hr {
+    margin: 0px;
+    border: 0px;
+} 
+
+
+input.highlight {
+	box-shadow: 0 0 5px rgba(255, 0, 0, 1);
+	padding: 3px 0px 3px 3px;
+	margin: 5px 1px 3px 0px;
+	border: 1px solid rgba(255, 0, 0, 1);
+}
+
+input.img{
+	display: inline-block;
+	vertical-align: middle !important;	
+	height: 20px;
+	margin: 0px 3px 0px 3px;
+}
+
+/*---------------------------------------------------------------------------------*/
+
+
+
+
+/*---------------------------------------------------------------------------------*/
+
+.restricted{
+	cursor: not-allowed;
+}
+
+p {
+	color: green;
+}
+
+h1, body, html, h5 {
+	margin:1px !important;
+	padding:1px !important;
+}
+
+
+#datetext {
+	color: #058DC7;
+}
+
+
+tabletitle {
+	font-weight:200;
+}
+
+/*Just visual styles*/
+
+
+/*Our full length header. 
+We align the text center so it shows up in the middle. 
+If you prefer you could right or left align it.*/	
+#home {
+	/*background:#01A9DB;*/
+	font-size:36px;
+	font-family: Impact;  
+	/*text-shadow: 2px 4px 3px rgba(0,0,0,0.3);*/
+	
+	letter-spacing: 5px;
+	/*background: #00FFFF;*/
+	text-align:center;
+	padding-bottom: 40px;
+	/*padding:20px;*/
+	/*opacity: 0.75;*/
+    /*filter:alpha(opacity=75);*/
+    overflow: hidden;
+    
+    /*color: 	#000080;*/
+    color: #008080;
+  	/*color: #F7F7F7;  */
+  	/*color: #D3D3D3;*/
+  	
+  	
+	text-shadow: 2px 8px 6px rgba(0,0,0,0.2),
+                 0px -5px 35px rgba(255,255,255,0.3);
+                 
+                 
+  	/*
+  	text-shadow: 0px 15px 5px rgba(0,0,0,0.1),
+                 10px 20px 5px rgba(0,0,0,0.05),
+                 -10px 20px 5px rgba(0,0,0,0.05);
+    */             
+  	/*SUPERHERO
+  	text-shadow: -10px 10px 0px #00e6e6,
+                 -20px 20px 0px #01cccc,
+                 -30px 30px 0px #00bdbd;
+                 	*/
+    text-shadow: 6px 6px 0px rgba(0,0,0,0.2);
+    
+    /*text-shadow: 0px 0px 6px rgba(255,255,255,0.7);*/
+   
+    /*
+    text-shadow: 0px 3px 0px #b2a98f,
+             0px 14px 10px rgba(0,0,0,0.15),
+             0px 24px 2px rgba(0,0,0,0.1),
+             0px 34px 30px rgba(0,0,0,0.1);
+    */
+    /*text-shadow: 2px 4px 3px rgba(0,0,0,0.3);*/
+    
+    /*
+    color: rgba(0,0,0,0.6);
+    text-shadow: 2px 2px 3px rgba(255,255,255,0.1);
+    */
+    
+    /*
+    text-shadow: 0 1px 0 #ccc, 		
+               0 2px 0 #c9c9c9, 	
+               0 3px 0 #bbb,
+               0 4px 0 #b9b9b9,
+               0 5px 0 #aaa,
+               0 6px 1px rgba(0,0,0,.1),
+               0 0 5px rgba(0,0,0,.1),
+               0 1px 3px rgba(0,0,0,.3),
+               0 3px 5px rgba(0,0,0,.2),
+               0 5px 10px rgba(0,0,0,.25),
+               0 10px 10px rgba(0,0,0,.2),
+               0 20px 20px rgba(0,0,0,.15);
+	*/
+	
+	}
+
+.textheader {
+	/*background:#01A9DB;*/
+	font-size:20px !important;
+	font-family: Tahoma;  
+	text-shadow: 2px 4px 3px rgba(0,0,0,0.3);
+	letter-spacing: 3px;
+	text-align:center !important;
+	padding:10px !important;
+    color: #008080 !important;
+	}	
+
+
+
+	
+.frmMargin0{
+	margin: 0px;
+}
+	
+	
+	
+/*Modal Content*/	
+.modalcontent {
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: 100%;
+    opacity: 0.6;
+    filter:alpha(opacity=80);
+	/*padding: 20px;*/
+	
+	background-color: #F7F7F7;
+	/*background-color: #FFF;*/
+	
+	margin: 0px auto 10px;
+	border-radius: 2px;
+	box-shadow: rgba(0, 0, 0, 0.298039) 0px 2px 2px;
+	overflow: hidden;
+	
+    color: #000000;
+}
+
+
+.viewmodal {
+	width: 1100px;
+}
+
+/*.tblmodal > tbody > tr > td{
+	padding: 5px !important;
+}*/
+
+td, th{
+	/*vertical-align: middle !important;*/
+	vertical-align: top !important;
+	padding: 5px !important;
+	font-size: 12px;
+}
+
+#loading {
+   	display: inline-block;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 250px;
+    height: 100px;
+    margin: auto;
+    background-color: blue;
+    text-align: center;
+    z-index: 99;
+}
+
+#loading-image {
+	z-index: 100;
+}
+
+
+
+.dialogbox{
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+
+
+
+
+
+/*These are just styles used for the example for the content.*/	
+.left {
+	float:left;
+	width:500px;
+	background:#ccff66;
+	}
+	
+.right {
+	float:left;
+	width:200px;
+	clear:right;
+	background:#66ff33;
+	}
+	
+.left p, .right p {
+	padding:10px;
+	}
+	
+/*If you are going to use floats then you will NEED to clear the 
+footer so it doesn't bunch the content up*/
+/*.clear {clear:both;}*/
+
+
+
+.msgdiv {
+    display:inline-block;
+    max-width: 75%;
+    width: auto;
+    padding: 0.2em 0.6em 0.3em;
+    border-radius: 0.25em;
+    
+}
+
+.pwdresetfield{
+	font-family: Courier;
+	font-weight: bold; 
+	display: block; 
+	font-size: 12px !important; 
+	
+	/*TEXTFIELD DESIGN*/
+	
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border: 1px solid lightblue;
+    background: #E0FFFF;
+    box-shadow: inset 0px 0px 15px cyan;
+    -moz-box-shadow: inset 0px 0px 15px cyan;
+    -webkit-box-shadow: inset 0px 0px 15px cyan;
+	
+}
+
+.msgdiv-fill
+{
+    float:left;
+    height:inherit;
+    width: 25%;
+    
+}
+
+input[disabled]{
+	cursor: not-allowed !important;
+}
+
+
+.ui-datepicker .ui-datepicker-title select {
+    color: #000;
+}
+
+.normaltext{
+	font-family: Courier; 
+	display: block; 
+	font-size: 12px !important;
+}
+
+.straightline{
+	display: inline-block;
+	margin-bottom: 20px;
+}
+
+
+
+.notify{
+  text-align:center;
+  font-size:16px;
+  color:darkred;
+  /*letter-spacing: -7px;*/
+  font-weight:700;
+  /*text-transform:uppercase;*/
+  animation:blur 1.75s ease-out infinite;
+  text-shadow:0px 0px 5px yellow,
+      0px 0px 7px #006400;
+}
+
+@keyframes blur{
+  from{
+      text-shadow:0px 0px 10px #006400,
+      0px 0px 10px #006400, 
+      0px 0px 25px #006400,
+      0px 0px 25px #006400,
+      0px 0px 25px #006400,
+      0px 0px 25px #006400,
+      0px 0px 25px #006400,
+      0px 0px 25px #006400,
+      0px 0px 50px #006400,
+      0px 0px 50px #006400,
+      0px 0px 50px #7B96B8,
+      0px 0px 150px #7B96B8,
+      0px 10px 100px #7B96B8,
+      0px 10px 100px #7B96B8,
+      0px 10px 100px #7B96B8,
+      0px 10px 100px #7B96B8,
+      0px -10px 100px #7B96B8,
+      0px -10px 100px #7B96B8;}
+}
+
+/**/
+
+.fdownload-container{
+    margin: 15px;
+    padding: 10px;
+    background: #FFFFFF;
+    display: inline-block;
+    width: 110px;
+	height: 135px;
+    float: left;
+    text-align: center;
+    border-radius: 2px;
+	box-shadow: rgba(0, 0, 0, 0.298039) 0px 2px 2px;
+}
+
+.fd-icon-docx{
+	margin: auto;
+	padding: 5px;
+	background: transparent url("/static/images/file_type_docx.png") no-repeat;
+	width: 64px;
+	height: 64px;
+	-webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+.fd-description{
+	font-size: 11px;
+	text-decoration: none;
+	color: #333;
+}
+
+
+
+.ui-menu-item{
+	font-size:9px;
+}

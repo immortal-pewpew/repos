@@ -1,0 +1,122 @@
+{% extends "erm_templates/DTR/base.html" %}
+		{% load erm_tags %}
+			{% block content %}
+				<div class="row">
+					<div class="col-md-2">
+					  &nbsp;
+					</div>
+					<div class="col-md-8">
+						<div class="row" align="center">
+							<label id="textheader">
+								Holiday Masterlist
+							</label>
+						</div>
+						<div class="row" align="right">
+							<input id="holidaylink" type="image" class="btn btn-lg" title="Add Holiday" src="/static/images/date_add.png" />
+						</div>
+						<div class="row">
+							&nbsp;
+						</div>
+						<div class="row" id="holidaydiv">
+							<table class="table table-striped">
+								<tbody>
+									<tr>
+										<th class="text-left">
+											&nbsp;
+										</th>
+										<th class="text-left">
+											Date
+										</th>
+										<th class="text-left">
+											Description
+										</th>
+										<th class="text-left">
+											Type
+										</th>
+										<th class="text-left">
+											Scheme
+										</th>
+										
+									</tr>
+								</tbody>
+								{% for holiday in holidays %}
+									<tr>
+										<td width="25px" align="center">
+											<span style="color: gray;">{{forloop.counter|holidaynumbering:holidays.number}}</span>
+										</td>
+										
+										<td align="left">
+											
+											<a id="{{holiday.id}}" role="button" class="holidayeditlink" style="text-decoration: None; color: blue; font-weight: bold;" >
+												{{ holiday.dateOfHoliday|date:"F d, Y" }}
+											</a>
+										</td>
+										<td align="left">
+											{{ holiday.Description }}
+										</td>
+										<td align="left">
+											{{ holiday.typeOfHoliday }}
+										</td>
+										<td align="left">
+											{{ holiday.schemeOfHoliday }}
+										</td>
+									</tr>
+								{% endfor %}
+							</table> 
+							
+							</div>
+							
+							<div class="row" align="right">
+								<div class="pagination">
+								    <span class="step-links" style="font-family: Verdana; font-size: 12px;" >
+								    	
+								    	Go to page:
+								    	<input id="holidaypager" type="text" class="numonly form-control input-sm" style="width: 40px; display: inline;" value="{{ holidays.number }}"/>
+								    	of {{ holidays.paginator.num_pages }}
+								    	
+								    	&nbsp;
+								        &nbsp;
+								        
+								        
+								        {% if holidays.has_previous %}
+								            <a href="?page={{ holidays.previous_page_number }}">
+								            	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true" title="Previous"></span>
+								            </a>
+								        {% else %}
+								        	<span class="glyphicon glyphicon-arrow-left restricted" aria-hidden="true"></span>
+								        {% endif %}
+										
+										&nbsp;
+								        
+								        {% if holidays.has_next %}
+								            <a href="?page={{ holidays.next_page_number }}">
+								            	<span class="glyphicon glyphicon-arrow-right" aria-hidden="true" title="Next"></span>
+								            </a>
+								        {% else %}
+								        	<span class="glyphicon glyphicon-arrow-right restricted" aria-hidden="true"></span>
+								        {% endif %}
+								    </span>
+							    </div>
+							</div>
+							 
+						
+					</div>
+					<div class="col-md-2">
+					  &nbsp;
+					</div>
+				</div>
+			{% endblock %}
+					
+					
+					
+					
+
+
+
+
+
+
+
+
+
+

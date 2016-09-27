@@ -1,0 +1,31 @@
+{% load staticfiles %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'tablesorter-master/css/theme.blue.css' %}" />
+<script type="text/javascript" src="{% static 'tablesorter-master/js/jquery.tablesorter.js' %}"></script>
+<script type="text/javascript" src="{% static 'tablesorter-master/js/jquery.tablesorter.widgets.js' %}"></script>
+
+					<table id="vendortable" class="tablesorter">
+						<thead>
+							<tr>
+								<th class="tabletitle">
+									ID
+								</th>
+								<th class="tabletitle">
+									NAME
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+						{% for vend in allvendors %}
+							<tr>
+								<td align="left">
+									{{vend.ASNUM}}
+								</td>
+								<td align="left">
+									{{vend.ASNAME}}
+								</td>
+							</tr>
+						{% endfor %}
+						</tbody>
+					</table>  
+				

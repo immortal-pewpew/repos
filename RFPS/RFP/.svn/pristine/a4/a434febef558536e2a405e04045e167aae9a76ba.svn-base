@@ -1,0 +1,26 @@
+from django.conf.urls import url
+from . import views
+
+urlpatterns = [
+    url(r'^$', views.index, name='url_index'),
+    url(r'^authenticate/$', views.authenticate, name='url_authenticate'),
+    url(r'^main/?$', views.main, name='url_main'),
+    url(r'^logout/$', views.logout, name='url_logout'),
+    ################################################################################
+    url(r'^getrfp_no/$', views.getrfp_no, name='url_getrfp_no'),
+    url(r'^getrfpdata/$', views.getrfpdata, name='url_getrfpdata'),
+    url(r'^getvendorname/$', views.getvendorname, name='url_getvendorname'),
+    url(r'^select_locations/$', views.select_locations, name='url_select_locations'),
+    ################################################################################
+    
+    url(r'^addrequest/$', views.addrequest, name='url_addrequest'),
+    url(r'^pwdcheck/$', views.pwdcheck, name='url_pwdcheck'),
+    
+    url(r'^users/$', views.users, name='url_users'),
+    url(r'^access/$', views.access, name='url_access'),
+ 
+]
+
+    
+ 
+    

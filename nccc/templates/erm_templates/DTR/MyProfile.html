@@ -1,0 +1,327 @@
+{% extends "erm_templates/DTR/base.html" %}
+		{% block content %}
+				
+				
+					
+				<div style="width: 190px; margin-left: 50px; margin-top: 25px; margin-right: 10px; float:left;">
+					<div class="row image">
+						<img src="/media/{{photo}}" width="100%" height="100%"/>	
+					</div>
+					<div class="row" align="center">
+						 <form action="/ERM/upload_avatar/" method="post" enctype="multipart/form-data">
+							{% csrf_token %}
+							<span class="btn btn-primary btn-file btn-sm">
+	    						Browse 
+	    						{{formimg.avatar}}
+							</span>
+							<input id="up_avatar" type="submit" class="btn-success btn-file btn-sm" value="Upload" />
+						</form>
+						<span id="filename">No file selected.</span>
+					</div>
+				</div>
+				
+				
+					
+				<div class="row" style="width: auto; margin-left: 50px; margin-right: 25px; margin-top: 20px; float:left;">
+					<div class="form-style-3">
+						<fieldset>
+							<legend id="profileheader">Personal Information</legend>
+							
+							<table class="table table-borderless profile" border="0" style="padding: 10px !important;">
+								<tr>
+									<td>User ID: </td>
+									<td>{{ userinfo.id }}</td>
+									
+									<td width="100px">&nbsp;</td>
+									
+									<td>Level: </td>
+									<td>{{ userinfo.Level }}</td>
+								</tr>
+								<tr>
+									<td>First Name: </td>
+									<td>{{ userinfo.FName }}</td>
+									
+									<td>&nbsp;</td>
+									
+									<td>Branch: </td>
+									<td>{{ userinfo.Branch }}</td>
+								</tr>
+								<tr>
+									<td>Middle Name: </td>
+									<td>{{ userinfo.MName }}</td>
+									
+									<td>&nbsp;</td>
+									
+									<td>Regularization Date: </td>
+									<td>{{ userinfo.RegDate|date:"F d, Y" }}</td>
+								</tr>	
+								
+								<tr>
+									<td>Last Name: </td>
+									<td>{{ userinfo.LName }}</td>
+									
+									<td>&nbsp;</td>
+									
+									<td>SSS ID.: </td>
+									<td>{{ userinfo.SSSNo }}</td>
+								</tr>
+								
+								<tr>
+									<td>Gender: </td>
+									<td>{{ userinfo.Gender }}</td>
+									
+									<td>&nbsp;</td>
+									
+									<td>Pag-IBIG ID: </td>
+									<td>{{ userinfo.PagIBIGNo }}</td>
+								</tr>
+								
+								<tr>
+									<td>Immediate Head: </td>
+									<td>{{ approvername }}</td>
+									
+									<td>&nbsp;</td>
+									
+									<td>PhilHealth ID: </td>
+									<td>{{ userinfo.PhilHealthNo }}</td>
+								</tr>
+								
+								<tr>
+									<td>Approver?: </td>
+									<td>
+										{% if userinfo.isadmin == 1 %}
+											Yes
+										{% else %}
+											No
+										{% endif %}
+									</td>
+									
+									<td>&nbsp;</td>
+									
+									<td>TIN ID: </td>
+									<td>{{ userinfo.TINNo }}</td>
+								</tr>
+								
+								<tr>
+									<td>NBU / Division: </td>
+									<td>{{ userinfo.Division }}</td>	
+									
+									<td>&nbsp;</td>
+									
+									<td>Tax Code: </td>
+									<td>{{ userinfo.TaxCode }}</td>
+								</tr>
+								
+								<tr>
+									<td>Department: </td>
+									<td>{{ userinfo.Dept }}</td>	
+									
+									<td>&nbsp;</td>
+									
+									<td>Tax Exemption: </td>
+									<td>{{ userinfo.TaxExemption }}</td>
+								</tr>
+								
+								<tr>
+									<td>Designation: </td>
+									<td>{{ userinfo.Designation }}</td>	
+									
+									<td>&nbsp;</td>
+									
+									<td>Professional Fee?: </td>
+									<td>{{ userinfo.ProfFee }}</td>
+								</tr>
+								
+								<tr>
+									<td colspan="5" bgcolor="gray"></td>
+								</tr>
+								<tr>
+									<td>Home Address: </td>
+									<td colspan="4">{{ userinfo.HomeAddress }}</td>
+								</tr>
+								<tr>
+									<td>Email Address: </td>
+									<td colspan="4">{{ userinfo.Email }}</td>
+								</tr>
+								<tr>
+									<td>Civil Status: </td>
+									<td colspan="4">{{ userinfo.CivilStatus }}</td>
+								</tr>
+								<tr>
+									<td>Birth Date: </td>
+									<td colspan="4">{{ userinfo.BDate|date:"F d, Y" }}</td>
+								</tr>
+								<tr>
+									<td>Blood Type: </td>
+									<td colspan="4">{{ userinfo.BloodType }}</td>
+								</tr>
+								<tr>
+									<td>Religion: </td>
+									<td colspan="4">{{ userinfo.Religion }}</td>
+								</tr>
+								<tr>
+									<td>Citizenship: </td>
+									<td colspan="4">{{ userinfo.Citizenship }}</td>
+								</tr>
+								
+							</table>
+							
+							
+							
+						</fieldset>
+							
+						
+						
+					</div>
+				</div>
+				
+				
+			
+				
+				
+				
+				
+				<!--
+				<div class="row">
+					<div class="col-md-4">
+						&nbsp;
+					</div>
+					<div class="col-md-4" align="center">
+						<label id="textheader">My Profile</label>	
+						<br />
+					</div>
+					<div class="col-md-4">
+						&nbsp;
+					</div>
+				</div>
+				<div class="col-md-3">
+					&nbsp; 
+				</div>
+				<div class="col-md-6">
+					
+					
+					<div class="row">
+						<div class="col-md-4">
+							<label>Associate's ID</label>
+							{{ form.uid }}	
+						</div>
+						<div class="col-md-8 text-center">
+							<div class="row image">
+								<img src="/media/{{photo}}" width="100%" height="100%"/>	
+							</div>
+							<div class="row">
+								 <form action="/ERM/upload_avatar/" method="post" enctype="multipart/form-data">
+									{% csrf_token %}
+									<span class="btn btn-primary btn-file btn-sm">
+			    						Browse 
+			    						{{formimg.avatar}}
+									</span>
+									<input type="submit" class="btn-success btn-file btn-sm" value="Upload" />
+								</form>
+							</div>
+						</div>
+						<br /><br />
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<label>Associate's Full Name</label>	
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-4">
+							{{ form.FName }}	
+						</div>
+						<div class="col-md-4">
+							{{ form.MName }}
+						</div>
+						<div class="col-md-4">
+							{{ form.LName }}
+						</div>
+					</div>
+					<div class="row" align="center">
+						<div class="col-md-4">
+							<label><i>First Name</i></label>	
+						</div>
+						<div class="col-md-4">
+							<label><i>Middle Name</i></label>
+						</div>
+						<div class="col-md-4">
+							<label><i>Last Name</i></label>
+						</div>
+						<br /><br />
+					</div>
+					
+					<div class="row">
+						<div class="col-md-6">
+							<label>Approver</label>
+						</div>
+						<div class="col-md-6">
+							{{ form.Approver }}	
+						</div>
+						<br /><br />
+					</div>
+					
+					<div class="row">
+						<div class="col-md-6">
+							<label>Division</label>
+						</div>
+						<div class="col-md-6">
+							{{ form.Division }}	
+						</div>
+						<br /><br />
+					</div>
+					<div class="row">
+						<div class="col-md-6">
+							<label>Department</label>
+						</div>
+						<div class="col-md-6">
+							{{ form.Dept }}	
+						</div>
+						<br /><br />
+					</div>
+					<div class="row">
+						<div class="col-md-6">
+							<label>Branch</label>
+						</div>
+						<div class="col-md-6">
+							{{ form.Branch }}	
+						</div>
+						<br /><br />
+					</div>
+					<div class="row">
+						<div class="col-md-6">
+							<label>SSS No.</label>
+						</div>
+						<div class="col-md-6">
+							{{ form.SSSNo }}	
+						</div>
+						<br /><br />
+					</div>
+					<div class="row">
+						<div class="col-md-6">
+							<label>Pag-IBIG No.</label>
+						</div>
+						<div class="col-md-6">
+							{{ form.PagIBIGNo }}	
+						</div>
+						<br /><br />
+					</div>
+					<div class="row">
+						<div class="col-md-6">
+							<label>PhilHealth No.</label>
+						</div>
+						<div class="col-md-6">
+							{{ form.PhilHealthNo }}	
+						</div>
+						<br /><br />
+					</div>
+					
+					
+				</div>
+				
+				<div class="col-md-3">
+					&nbsp;
+				</div>
+				-->
+		{% endblock %}
+

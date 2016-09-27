@@ -1,0 +1,85 @@
+{% load staticfiles %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/ecs_css/login-page.css' %}" />
+
+
+<script type="text/javascript" src="{% static 'jquery-1.12.1/jquery-1.12.1.min.js' %}" ></script>
+<script type="text/javascript" src="{% static 'js/ecs_js/login.js' %}" ></script>
+<script type="text/javascript" src="{% static 'bootstrap-3.3.4-dist/js/bootstrap.js' %}" ></script>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('input#uname').val('');
+		$('input#pwd').val('');
+		
+		//touppercase
+		$("body").on("input",".uppercase", function(e) {
+		    if (e.which >= 97 && e.which <= 122) {
+		        var newKey = e.which - 32;
+		        // I have tried setting those
+		        e.keyCode = newKey;
+		        e.charCode = newKey;
+		    }
+
+		    $(this).val(($(this).val()).toUpperCase());
+		});
+		
+	});
+</script>
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>NCCC ECS</title>
+		
+	</head>
+
+	<body>
+		<div class="container-fluid">
+			<div class="row">
+				&nbsp;
+			</div>
+			<div class="row">
+				<hgroup id="headerbg">
+				  <h1>NCCC Electronic Countering System</h1>
+				</hgroup>
+			</div>
+			
+			<div class="row">
+				<form method="post" action="/ECS/authenticate/">
+				  {% csrf_token %}
+				  <div class="group">
+				    <input class="uppercase" type="text" name="uname" id="uname">
+				    <span class="highlight"></span>
+				    <span class="bar"></span>
+				    <label>Username</label>
+				  </div>
+				  <div class="group">
+				    <input type="password" name="pwd" id="pwd">
+				    <span class="highlight"></span><span class="bar"></span>
+				    <label>Password</label>
+				  </div>
+				  <button id="btnLogin" type="submit" class="button buttonBlue">
+				  	Login
+				    <div class="ripples buttonRipples">
+				    	<span class="ripplesCircle"></span>
+				    </div>
+				  </button>
+					<p align="center">&nbsp; {{ message }} &nbsp;</p>
+				</form>
+				
+			</div>
+			<div class="footer">
+				&nbsp;
+			</div>
+			
+		</div>
+	</body>
+</html>
+

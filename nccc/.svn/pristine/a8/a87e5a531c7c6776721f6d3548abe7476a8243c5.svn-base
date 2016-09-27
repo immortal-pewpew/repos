@@ -1,0 +1,195 @@
+{% load staticfiles %}
+{% load tags %}
+<link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.4-dist/css/bootstrap.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.4-dist/datepicker/css/datepicker.css' %}" />
+
+<script type="text/javascript" src="{% static 'js/jquery-1.9.1.js' %}" ></script>
+<script type="text/javascript" src="{% static 'js/main.js' %}" ></script>
+<script type="text/javascript" src="{% static 'bootstrap-3.3.4-dist/js/bootstrap.js' %}" ></script>
+<script type="text/javascript" src="{% static 'bootstrap-3.3.4-dist/datepicker/js/bootstrap-datepicker.js' %}" ></script>
+
+<link rel="stylesheet" type="text/css" href="{% static 'jquery-ui-1.11.4.custom/jquery-ui.css' %}" />
+<script type="text/javascript" src="{% static 'jquery-ui-1.11.4.custom/jquery-ui.js' %}" ></script>
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>NCCC ERM's DTR</title>
+		
+	</head>
+	<body>
+		<div id="wholepage" class="container">
+			<nav class="navbar navbar-inverse">
+				 <div class="container-fluid">
+				    <!-- Collect the nav links, forms, and other content for toggling -->
+				    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+				      	<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+				        <span class="sr-only">Toggle navigation</span>
+				        <span class="icon-bar"></span>
+				        <span class="icon-bar"></span>
+				        <span class="icon-bar"></span>
+				      </button>
+				      
+				      {% if isadmin == 2 or isadmin == 3 or isadmin == 4 %}
+				      	<a class="home navbar-brand" href="/ERM/addUser/">NCCC ERM's DTR</a>	
+				      {% else %}
+				      	<a class="home navbar-brand" href="/ERM/main/">NCCC ERM's DTR</a>
+				      {% endif %}
+				      
+				      <ul class="nav navbar-nav navbar-right">
+				        <li><p class="navbar-text navbar-right">Signed in as &nbsp;&nbsp;&nbsp;&nbsp;</p></li>
+				        <li class="dropdown">
+				          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><b>{{currUser}}, {{fname}} {{mname}} {{lname}}</b><span class="caret"></span></a>
+				          <ul class="dropdown-menu">
+				          	{% if isadmin == 0 %}
+				          	<li><a href="/ERM/profile/">My Profile</a></li>
+				          	<li><a href="/ERM/main/">My DTR</a></li>
+				          	<li><a href="/ERM/changeSched/">Change Schedule</a></li>
+				            {% elif isadmin == 1 %}
+				            <li><a href="/ERM/profile/">My Profile</a></li>
+				            <li><a href="/ERM/main/">My DTR</a></li>
+				          	<li><a href="/ERM/changeSched/">Change Schedule</a></li>
+				            <li role="separator" class="divider">&nbsp;</li>
+				          	<li><a href="/ERM/approval/">Approve DTR</a></li>
+				          	<li role="separator" class="divider">&nbsp;</li>
+				          	<li><a href="/ERM/assocpms/">PMS</a></li>
+				            {% elif isadmin == 2 %}
+				          	<li><a href="/ERM/addHoliday/">Holiday Masterlist</a></li>
+				            <li><a href="/ERM/addUser/">User Masterlist</a></li>
+				            <li><a href="/ERM/addSched/">Assign Schedules</a></li>
+				            <li role="separator" class="divider">&nbsp;</li>
+				            <li><a href="/ERM/periodreports/">Generate Reports</a></li>
+				            {% elif isadmin == 3 or isadmin == 4 %}
+				          	<li><a href="/ERM/addHoliday/">Holiday Masterlist</a></li>
+				            <li><a href="/ERM/addUser/">User Masterlist</a></li>
+				            <li><a href="/ERM/addSched/">Assign Schedules</a></li>
+				            <li role="separator" class="divider">&nbsp;</li>
+				            <li><a href="/ERM/periodreports/">Generate Reports</a></li>
+				            
+			          		<li role="separator" class="divider">&nbsp;</li>
+			          		<li><a href="/ERM/approval/">Approve DTR</a></li>
+			          		
+				            <li role="separator" class="divider">&nbsp;</li>
+				            <li><a class="outputxlslink" href="/ERM/outputtoxls">PMS</a></li>
+				            {% endif %}
+				            
+				            <li role="separator" class="divider">&nbsp;</li>
+				            <li><a id="pwdlink" href="/ERM/pwdpage/">Change Password</a></li>
+				            <li role="separator" class="divider">&nbsp;</li>
+				            <li><a href="/ERM/logout/">Logout</a></li>
+				            
+				          </ul>
+				        </li>
+				        
+				      </ul>
+				      
+				    </div><!-- /.navbar-collapse -->
+				  </div><!-- /.container-fluid -->
+			</nav>
+			
+			
+				
+			<div class="content">
+				<div class="row">
+					<div class="col-md-4">
+						&nbsp;
+					</div>
+					<div class="col-md-4" align="center">
+						<label id="textheader">Change Password</label>	
+						<br />
+					</div>
+					<div class="col-md-4">
+						&nbsp;
+					</div>
+				</div>
+				<div class="col-md-3">
+					&nbsp; 
+				</div>
+				<div class="col-md-6">
+					<form method="post" action="/ERM/changepwd/">
+					{% csrf_token %}
+					<div class="row">
+						<div class="col-md-6">
+							<label>Enter Old Password</label>
+						</div>
+						<div class="col-md-6">
+							{{ form.oldpwd }}	
+						</div>
+						<br /><br />
+					</div>
+					
+					<div class="row">
+						<div class="col-md-6">
+							<label>Enter New Password</label>
+						</div>
+						<div class="col-md-6">
+							{{ form.newpwd }}	
+						</div>
+						<br /><br />
+					</div>
+					
+					<div class="row">
+						<div class="col-md-6">
+							<label>Confirm New Password</label>
+						</div>
+						<div class="col-md-6">
+							{{ form.confirmnewpwd }}	
+						</div>
+						<br /><br />
+					</div>
+					
+					<div class="row">
+						<div class="col-md-12" align="right">
+							<input id="changepwd" type="submit" class="btn btn-primary btn-sm" value="Change" />	
+						</div>
+					</div>
+					</form>
+				</div>
+				
+				<div class="col-md-3">
+					&nbsp;
+				</div>
+			</div>
+			<div id="footer">
+				<label>New City Commercial Corporation (NCCC). NCCC ERM's DTR © NCCC 2015</label>
+			</div>
+		</div>
+	</body>
+</html>
+
+
+<div id="dialogchangepwd" title="Change Password" class="dialogbox">
+	<form method="post" action="/ERM/pwdcheck/" id="frmChangePwd">
+		{% csrf_token %}
+		<div class="row" style="margin: auto;">
+			<label id="pwdnote" style="color: red;">{{pwdmessage}}</label>
+			<br/><br/>
+			
+			<label style="font-family: Courier;">Old Password</label>
+			<input class="form-control input-sm" id="oldpwd" name="oldpwd" type="password" required>	
+			
+			<br/>
+			
+			<label style="font-family: Courier;">New Password</label>
+			<input class="form-control input-sm" id="newpwd" name="newpwd" required="required" type="password">	
+			
+			<br/>
+			
+			<label style="font-family: Courier;">Confirm New Password</label>
+			<input class="form-control input-sm" id="confirmnewpwd" name="confirmnewpwd" required="required" type="password">	
+		</div>
+		
+	</form>
+</div>
+
+
+<div id="dialogpwdchngsuccess" title="Password Change Successful" class="dialogbox">
+	<p>Password has been successfully changed.</p>
+	<input id="isadmin" type="hidden" value="{{isadmin}}"/> 
+</div>

@@ -1,0 +1,244 @@
+{% extends "rfp_templates/base.html" %}
+		{% load rfp_tags %}
+		{% block content %}
+				<div class="row">
+					<div class="col-md-1">
+					  &nbsp;
+					</div>
+					<div class="col-md-10">
+						<div class="row" align="center">
+							<label class="textheader">
+								Access Masterlist
+							</label>
+						</div>
+						<div class="row" align="right">
+							<input id="accesslink" type="image" class="btn btn-lg" title="New Access" src="/static/images/control_panel_access.png" />
+						</div>
+						
+						<div class="row" id="accessdiv">
+							<table id="accesstable" class="table tablesorter">
+								<thead>
+									<tr>
+										<th class="text-left">
+											USERNAME
+										</th>
+										<th class="text-left">
+											LAST
+										</th>
+										<th class="text-left">
+											FIRST
+										</th>
+										<th class="text-left">
+											MIDDLE
+										</th>
+										<th class="text-left filter-select" data-placeholder="All">
+											NBU
+										</th>
+										<th class="text-left filter-select" data-placeholder="All">
+											DEPARTMENT
+										</th>
+										<th class="text-left">
+											LOCATION
+										</th>
+										<th class="text-center" data-sorter="false" data-filter="false">
+											ACTION
+										</th>
+									</tr>
+								</thead>
+								<tbody>
+								{% for access in allaccess %}
+									<tr>
+										<td align="left">
+											<span style="color: green; font-weight: bold;">{{ access.user_id }}</span>
+										</td>
+										<td align="left">
+											<span style="font-weight: bold;">{{ access.user.lname }}</span>
+										</td>
+										<td align="left">
+											<span style="font-weight: bold;">{{ access.user.fname }}</span>
+										</td>
+										<td align="left">
+											<span style="font-weight: bold;">{{ access.user.mname }}</span>
+										</td>
+										<td align="left">
+											<span style="color: blue; font-weight: bold;">
+												{{ access.nbu.desc }}
+											</span>	
+										</td>
+										<td align="left">
+											<span style="color: blue; font-weight: bold;">
+												{{ access.department|getdeptdesc }}
+											</span>	
+										</td>
+										<td align="left">
+											<span style="color: blue; font-weight: bold;">
+												{{ access.location|getlocsdesc}}
+											</span>	
+										</td>
+										<td align="center">
+											<input id="{{access.id}}" type="image" class="img delaccess" title="Delete" src="/static/images/key_delete.png" />
+										</td>
+									</tr>
+								{% endfor %}
+								</tbody>
+							</table> 
+						</div>
+						
+						<div class="pager tablesorter-pager">
+							Page: 	<select aria-disabled="false" class="gotoPage">
+								
+									</select>		
+							<img aria-disabled="true" tabindex="0" src="/static/tablesorter-master/addons/pager/icons/first.png" class="first disabled" alt="First" title="First page">
+							<img aria-disabled="true" tabindex="0" src="/static/tablesorter-master/addons/pager/icons/prev.png" class="prev disabled" alt="Prev" title="Previous page">
+							
+							<span class="pagedisplay">1 - 20 / 45 (45)</span> <!-- this can be any element, including an input -->
+							
+							<img aria-disabled="false" tabindex="0" src="/static/tablesorter-master/addons/pager/icons/next.png" class="next" alt="Next" title="Next page">
+							<img aria-disabled="false" tabindex="0" src="/static/tablesorter-master/addons/pager/icons/last.png" class="last" alt="Last" title="Last page">
+							<select aria-disabled="false" class="pagesize">
+								<option value="25" selected>25</option>
+								<option value="50">50</option>
+								<option value="100">100</option>
+							</select>
+						</div>
+						
+						<!-- 
+						<div class="row" align="right">
+							<div class="pagination">
+							    <span class="step-links" style="font-family: Verdana; font-size: 12px;" >
+							    	
+							    	Go to page:
+							    	<input id="accesspager" type="text" class="numonly form-control input-sm" style="width: 40px; display: inline;" value="{{ allaccess.number }}"/>
+							    	of {{ allaccess.paginator.num_pages }}
+							    	
+							    	&nbsp;
+							        &nbsp;
+							        
+							        
+							        {% if allaccess.has_previous %}
+							            <a href="?page={{ allaccess.previous_page_number }}">
+							            	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true" title="Previous"></span>
+							            </a>
+							        {% else %}
+							        	<span class="glyphicon glyphicon-arrow-left restricted" aria-hidden="true"></span>
+							        {% endif %}
+									
+									&nbsp;
+							        
+							        {% if allaccess.has_next %}
+							            <a href="?page={{ allaccess.next_page_number }}">
+							            	<span class="glyphicon glyphicon-arrow-right" aria-hidden="true" title="Next"></span>
+							            </a>
+							        {% else %}
+							        	<span class="glyphicon glyphicon-arrow-right restricted" aria-hidden="true"></span>
+							        {% endif %}
+							    </span>
+						    </div>
+						</div>
+						-->	 
+					</div>
+					
+					<div class="col-md-1">
+					  &nbsp;
+					</div>
+				</div>
+		
+		
+<!-- NEW ACCESS DIALOG -->
+<div id="dialognewaccess" title="Access Information" class="dialogbox">
+	<form method="post" action="/RFP/grantaccess/" id="frmgrantaccess">
+		{% csrf_token %}
+		
+		<table style="width:100%; border-collapse:separate; border-spacing: 10px;" border="0">
+			<tbody>
+				<tr>
+					<td colspan="2">
+						
+						<input id="user_lookup" name="user_lookup" type="text" class="uppercase" style="width:100%; display:inline-block; margin-bottom:5px;" required />
+						<span id="usertag" class="label label-success tagtext" style="width:100%; display:inline-block; margin-bottom:5px;">
+						  <span id="usertag_value"></span>
+						  <a id="resetuser"><i class="remove glyphicon glyphicon-remove-sign glyphicon-white"></i></a> 
+						</span>
+						
+						<button id="btnPopulateUser" type="button" class="btn btn-sm btn-default" style="left;">
+					    	<span class="glyphicon glyphicon-search"></span> Find User
+					    </button>
+					
+					</td>
+					<td>
+						<label class="normaltext">Username:</label>
+						<input id="theuser" name="theuser" type="text" class="uppercase" style="width:100%;" readonly required />
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label class="normaltext">First Name:</label>
+						<input id="fname" name="fname" type="text" class="uppercase" style="width:100%;" readonly required />
+					</td>
+					<td>
+						<label class="normaltext">Middle Name:</label>
+						<input id="mname" name="mname" type="text" class="uppercase" style="width:100%;" readonly required />
+					</td>
+					<td>
+						<label class="normaltext">Last Name:</label>
+						<input id="lname" name="lname" type="text" class="uppercase" style="width:100%;" readonly required />
+					</td>
+				</tr>
+				
+				<tr>
+					<td colspan="2">
+						<label class="normaltext">NBU:</label>
+						{{formuser.usernbu}}
+					</td>
+					
+				</tr>
+				<tr>
+					<td colspan="2">
+						<label class="normaltext">Location:
+							<button id="btnPopulateLocs" type="button" class="btn btn-sm btn-default">
+						    	<span class="glyphicon glyphicon-import"></span> Populate Location
+						    </button>
+						</label>
+						
+						<input id="userlocs_lookup" name="userlocs_lookup" type="text" class="uppercase" style="width:100%;" required />
+						<span id="locstag" class="label label-success tagtext">
+						  <span id="locstag_value"></span>
+						  <a id="resetlocs"><i class="remove glyphicon glyphicon-remove-sign glyphicon-white"></i></a> 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label class="normaltext">Department:</label>
+						{{formuser.userdept}}
+					</td>
+				</tr>
+				
+			</tbody>
+			
+		</table>
+		
+		<hr style="height:3px;color:#808080;background-color:#808080;" />
+		
+		<div class="row" style="margin: auto;" align="right">
+			<button id="btnGrantAccess" type="submit" class="btn btn-sm btn-primary">
+		    	<span class="glyphicon glyphicon-ok-circle"></span> Grant Access
+		    </button>
+		</div>
+	</form>
+</div>
+<!-- ACCESS DIALOG END-->
+		
+		
+		
+<!-- REVOKE ACCESS DIALOG -->
+<div id="dialogrevokeaccess" title="Revoke Confirmation" class="dialogbox">
+	<label>Are you sure you want to revoke this access?</label>
+	<input id="revokeid" type="hidden" />
+</div>
+<!-- REVOKE ACCESS DIALOG END-->
+		
+		{% endblock %}
+			
+
+			

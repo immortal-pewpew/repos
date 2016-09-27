@@ -1,0 +1,114 @@
+<script type="text/javascript">
+	$('#loading').hide();
+     
+	$('input.padets').on('click', function(event) {
+		event.preventDefault();
+		var SOANo = $(this).attr('SOANo');
+		var SOAStatus = $(this).attr('Status');
+		
+		$.ajax({
+			url : "/ECS/padetprev/", // the endpoint
+			type : "post", // http method
+			data : {
+				SOANo : SOANo,
+				SOAStatus : SOAStatus
+			}, // data sent with the post request
+
+			// handle a successful response
+			success : function(data) {
+				$('#padetailsbody').html(data);
+			},
+
+			// handle a non-successful response
+			error : function(data) {
+
+			}
+		});
+	});
+
+//CLEAR MODAL DATA IF HIDDEN
+$('.modal').on('hidden.bs.modal', function () {
+  $('.modal-body').html('');
+});
+
+</script>
+
+
+	<div class="col-md-1">
+		&nbsp;
+	</div>
+	<div class="col-md-10">
+		{% if allSOA %}
+		<table class="table table-striped">
+			<tbody>
+				<tr>
+					<th class="tabletitle"> SOA No. </th>
+					<th class="tabletitle"> SOA Creation Date </th>
+					<th class="tabletitle"> Last Update </th>
+					<th class="tabletitle"> Status </th>
+					<th class="tabletitle"> Action </th>
+					
+				</tr>
+			</tbody>
+			{% for SOA in allSOA %}
+			<tr>
+				<td> {{ SOA.SOANo }} </td>
+				<td> {{ SOA.SOADate|date:"m/d/Y h:i:s A" }} </td>
+				<td> {{ SOA.SOALastUpdate|date:"m/d/Y h:i:s A" }} </td>
+				<td> {{ SOA.SOAStatus }} </td>
+				<td>
+					<form method="post" class="frmMargin0" action="/ECS/pa_html_to_pdf_directly/" target="_blank">
+					<input type="image" src="/static/images/document_info32.png" title="Details" class="img padets" SOANo="{{SOA.SOANo}}" data-toggle="modal" data-target="#pasoadetailsmodal" Status="{{SOA.SOAStatus}}"/>
+					
+					{% csrf_token %}
+					{% if SOA.SOAStatus == 'Closed/CRS' %}
+					<input type="hidden" name="SOANo" value="{{SOA.SOANo}}" />
+					<input type="image" src="/static/images/printer32.png" title="Print CRS" class="img" soanum="{{SOA.SOANo}}" />
+					{% endif %}
+					</form>
+				
+				</td>
+			</tr>
+			{% endfor %}
+		</table>
+		
+		<div class="row" align="right">
+			<div class="pagination">
+			    <span class="step-links" style="font-family: Verdana; font-size: 12px;" >
+			    	
+			    	Go to page:
+			    	<input id="papager" type="text" class="numonly form-control input-sm" style="width: 40px; display: inline;" value="{{ allSOA.number }}"/>
+			    	of {{ allSOA.paginator.num_pages }}
+			    	
+			    	&nbsp;
+			        &nbsp;
+			        
+			        
+			        {% if allSOA.has_previous %}
+			            <a href="?page={{ allSOA.previous_page_number }}">
+			            	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true" title="Previous"></span>
+			            </a>
+			        {% else %}
+			        	<span class="glyphicon glyphicon-arrow-left restricted" aria-hidden="true"></span>
+			        {% endif %}
+					
+					&nbsp;
+			        
+			        {% if allSOA.has_next %}
+			            <a href="?page={{ allSOA.next_page_number }}">
+			            	<span class="glyphicon glyphicon-arrow-right" aria-hidden="true" title="Next"></span>
+			            </a>
+			        {% else %}
+			        	<span class="glyphicon glyphicon-arrow-right restricted" aria-hidden="true"></span>
+			        {% endif %}
+			    </span>
+		    </div>
+		</div>
+		
+		{% else %}
+		<h1 style="text-align: center; ">No Records to display.</h1>
+		{% endif %}
+	</div>
+	<div class="col-md-1">
+		&nbsp;
+	</div>

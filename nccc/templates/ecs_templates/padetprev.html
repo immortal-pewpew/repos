@@ -1,0 +1,482 @@
+{% load staticfiles %}
+{% load ecs_tags %}
+{% load humanize %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/ecs_css/style.css' %}" />
+
+<script type="text/javascript">
+	$(function() {
+		
+	    //REASONS
+	    $("#dialogremarks").dialog({
+	      modal: true,
+	      closeOnEscape: false,
+	      width: 750,
+	      position: { my: 'top', at: 'top+100',of: window },
+	      autoOpen: false,
+	      buttons: {
+	        Ok: function() {
+	        	
+	        	var reason = $('input[name="remarksval"]:checked').val();
+	        	$('#actreason').val(reason);
+				$('#acttype').val("SendBack");
+				//
+				$("form#frmAction").submit();
+				
+				$(this).dialog("close");
+				
+	        },
+	        Cancel: function() {
+	        	$(this).dialog("close");
+	        },
+	        
+	      },
+	      beforeClose: function(){
+	        //event.preventDefault();
+	        
+	      }
+	      
+	    });
+	    
+	    
+	    
+	    
+	  //CONFIRM CLOSE
+	    $("#dialogconfirmclose").dialog({
+	      modal: true,
+	      closeOnEscape: false,
+	      position: { my: 'top', at: 'top+100',of: window },
+	      autoOpen: false,
+	      buttons: {
+	        Ok: function() {
+	        	$('#acttype').val("Close");
+	        	//
+	        	$("form#frmAction").submit();
+				//$("form#frmProcess").unbind('submit').submit();
+				
+				$(this).dialog("close");
+				
+	        },
+	        Cancel: function() {
+	        	$(this).dialog("close");
+	        },
+	        
+	      },
+	      beforeClose: function(){
+	        //event.preventDefault();
+	        
+	      }
+	      
+	    });
+	    
+	});
+
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+
+	//Send Back BUTTON CLICKED	
+	$("input#btnSendBack").on('click', function(event){
+		event.preventDefault();
+		$("#dialogremarks").dialog("open");
+		
+	});
+	
+	//Close BUTTON CLICKED
+	$("input#btnClose").on('click', function(event){
+		event.preventDefault();
+		$("#dialogconfirmclose").dialog("open");
+	});
+    	
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+
+	//csrf token
+	function getCookie(name) {
+	    var cookieValue = null;
+	    if (document.cookie && document.cookie != '') {
+	        var cookies = document.cookie.split(';');
+	        for (var i = 0; i < cookies.length; i++) {
+	            var cookie = jQuery.trim(cookies[i]);
+	            // Does this cookie string begin with the name we want?
+	            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+	                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+	                break;
+	            }
+	        }
+	    }
+	    return cookieValue;
+	}
+	var csrftoken = getCookie('csrftoken');
+	 
+	/*
+	The functions below will create a header with csrftoken
+	*/
+	 
+	function csrfSafeMethod(method) {
+	    // these HTTP methods do not require CSRF protection
+	    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+	}
+	function sameOrigin(url) {
+	    // test that a given url is a same-origin URL
+	    // url could be relative or scheme relative or absolute
+	    var host = document.location.host; // host + port
+	    var protocol = document.location.protocol;
+	    var sr_origin = '//' + host;
+	    var origin = protocol + sr_origin;
+	    // Allow absolute or scheme relative URLs to same origin
+	    return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+	        (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+	        // or any other URL that isn't scheme relative or absolute i.e relative.
+	        !(/^(\/\/|http:|https:).*/.test(url));
+	}
+	 
+	$.ajaxSetup({
+	    beforeSend: function(xhr, settings) {
+	        if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+	            // Send the token to same-origin, relative URLs only.
+	            // Send the token only if the method warrants CSRF protection
+	            // Using the CSRFToken value acquired earlier
+	            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+	        }
+	    }
+	});
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+	
+	
+</script>
+
+
+<div class="row" style="margin-left: 20px; margin-right: 20px; ">
+		<!-- 
+		<div class="row" style="height: 30px; line-height: 30px;">
+			<div style="float: left">
+				<label class="straightline" style="margin-left: 20px;">BILL TO:</label>
+			
+				<label class="straightline" style="margin-right: 100px;">{{soadets.SOABillTo.NBUDesc}}</label>
+				
+				<label>Comeback Date: &nbsp;</label> 
+				<label style="color: darkred;">{{soadets.CBDate|date:"m/d/Y"}}</label>
+				
+			</div>
+			
+			{% if soastatus == 'Processed' %}
+			<div style="float: right; margin-right: 20px;">
+				<form method="post" action="/ECS/toclose_sendback/" id="frmAction">
+				{% csrf_token %}
+					<input type="hidden" id="hSOANo" name="hSOANo" value="{{SOANo}}"/>
+					<input type="hidden" id="acttype" name="acttype" />
+					<input type="hidden" id="actreason" name="actreason" />
+					<input type="button" id="btnSendBack" class="btn-sm btn-warning " value="Send Back" style="font-weight: bold; color: black; margin-right: 5px;"/>
+					<input type="button" id="btnClose" class="btn-sm btn-success " value="Close SOA" style="font-weight: bold; color: black; margin-left: 5px; "/>
+				</form>
+			</div>
+			{% endif %}
+		</div>
+		-->
+		
+		<div class="row text-left">
+			<table style="width:100%;">
+				<tr>
+					<td align="left">
+						<label>SOA No.:</label>
+					</td>
+					<td align="left">
+						<label style="color:green; font-weight:bold;">{{SOANo}}</label>
+					</td>
+						
+					<td width="400px">
+						&nbsp;
+					</td>
+					
+					<td align="left">
+						<label>BILL TO:</label>
+					</td>
+					<td align="left">
+						<label id="nbulbl">{{ soadets.SOABillTo.NBUDesc }}</label>
+						<input type="hidden" id="nbu" name="nbu" value="{{soadets.SOABillTo.id}}" />
+					</td>
+				</tr>
+				
+				<tr>
+					<td align="left">
+						<label>SOA Date:</label>
+					</td>
+					<td align="left">
+						<label>{{soadets.SOADate|date:"m/d/Y"}}</label>
+					</td>
+					
+					<td>
+						&nbsp;
+					</td>
+					{% if soadets.CBDate %}
+					<td align="left">
+						<label>Comeback Date:</label>
+					</td>
+					<td align="left">
+						<label style="color: darkred;">{{soadets.CBDate|date:"m/d/Y"}}</label>
+					</td>
+					{% endif %}
+					
+				</tr>
+			</table>
+		</div>
+		
+		
+		<div class="row">
+			<table class="table table-striped" style="margin-bottom: 0px;">
+				<tr>
+					<th class="tabletitle text-center">
+						&nbsp;
+					</th>
+					<th class="tabletitle text-center" title="PO NUMBER">
+						PO No.
+					</th>
+					<th class="tabletitle text-center" title="RC DATE">
+						RC DATE
+					</th>
+					<th class="tabletitle text-center" title="RC AMOUNT">
+						RC AMT
+					</th>
+					<th class="tabletitle text-center" title="INVOICE NUMBER">
+						INV No.
+					</th>
+					<th class="tabletitle text-center" title="INVOICE DATE">
+						INV DATE
+					</th>
+					<th class="tabletitle text-center" title="INVOICE AMOUNT">
+						INV AMT
+					</th>
+					<th class="tabletitle text-center" title="INVOICE MATCHING AMOUNT">
+						IM AMT
+					</th>
+					<th class="tabletitle" title="PAYMENT AMOUNT">
+						PAY AMT
+					</th>
+					<th class="tabletitle text-center" title="INVOICE STATUS">
+						STATUS
+					</th>
+					<th class="tabletitle text-center" title="ENTRY COUNT">
+						CTR
+					</th>
+					{% if soahasDeniedPO %}
+						<th class="tabletitle text-center" title="DENY REASON">
+							REASON
+						</th>
+					{% endif %}
+					<th class="tabletitle text-center" title="INFS PRINTCODE">
+						PRINTCODE
+					</th>
+				</tr>
+				{% for det in dets %}
+				<tr>
+					<td>
+						<label style="color: gray;">
+							{{forloop.counter}}
+						</label>
+					</td>
+					<td>
+						<label class="fields"> 
+							{{det.PONo}}
+						</label>
+					</td>
+					<td>
+						<label class="fields"> 
+							{{det.PODate|date:"m/d/Y"}}
+						</label>
+					</td>
+					<td class="tdamount">
+						<label class="fields"> 
+							{{det.RRAmount|floatformat:"2"|intcomma}}
+						</label>
+					</td>
+					<td>
+						{% for inv in det.PONo|invsOfPO:det.SOANo_id %}
+							<label class="fields" style="display: block;">
+								{{inv.InvNo}}
+							</label>
+						{% endfor %}
+						
+					</td>
+					<td>
+						{% for inv in det.PONo|invsOfPO:det.SOANo_id %}
+							<label class="fields" style="display: block;">
+								{{inv.InvDate|date:"m/d/Y"}}
+							</label>
+						{% endfor %}
+					</td>
+					<td class="tdamount">
+						{% for inv in det.PONo|invsOfPO:det.SOANo_id %}
+							<label class="fields" style="display: block; color: blue;">
+								{{inv.Amount|intcomma}}
+							</label>
+						{% endfor %}
+					</td>
+					<td class="tdamount">
+						{% for inv in det.PONo|invsOfPO:det.SOANo_id %}
+							<label class="fields" style="display: block; color: darkgreen;">
+								{{ inv.IMAmount|floatformat:"2"|intcomma}}
+							</label>
+						{% endfor %}
+					</td>
+					<td class="tdamount">
+						{% for inv in det.PONo|invsOfPO:det.SOANo_id %}
+							<label class="fields" style="display: block; color: darkred;">
+								{{ inv.LowerAmt|floatformat:"2"|intcomma}}
+							</label>
+						{% endfor %}
+					</td>
+					<td>
+						{% for inv in det.PONo|invsOfPO:det.SOANo_id %}
+							<label class="fields" style="font-weight: bold; display: block; color:
+								{% if inv.IStatus == 'Open' %}
+									blue;
+								{% elif inv.IStatus == 'Denied' %}
+									red;
+								{% elif inv.IStatus == 'Processed' %}
+									green;
+								{% else %}
+									gray;
+								{% endif %}	
+							">
+								{{inv.IStatus}}
+							</label>
+						{% endfor %}
+					</td>
+					<td>
+						{% for inv in det.PONo|invsOfPO:det.SOANo_id %}
+							<label class="fields" style="font-weight: bold; display: block;">
+								{{inv.EntryCount}}
+							</label>
+						{% endfor %}
+					</td>
+					{% if det.DStatus == 'Denied' or det.DStatus == 'Processed' or det.DStatus == 'Closed' %}
+						
+						{% if soahasDeniedPO %}
+						<td>
+							<label>
+								{{det.DenyReason}}
+							</label>
+						</td>
+						{% endif %}
+					{% endif %}
+					<td>
+						{% if soastatus == 'Processed' or soastatus == 'Closed' %}
+							{% for inv in det.PONo|invsOfPO:det.SOANo_id %}
+								<label>
+									{{inv.PRINTCODE}}
+								</label>
+							{% endfor %}
+						{% endif %}
+					</td>
+				</tr>
+				{% endfor %}
+				
+				<tr style="border-top: 2px solid black; border-bottom: 5px solid #808080;">
+					<td colspan="5">
+						<label class="fields" style="display: block; font-weight: bold; letter-spacing: 10px;">
+							TOTAL
+						</label>
+					</td>
+					<td>
+						&nbsp;
+					</td>
+					<td class="tdamount">
+						<label class="fields" style="display: block; color: blue;">
+							{% if soadets|totalinvamt %}
+								{{soadets|totalinvamt|intcomma}}
+							{% endif %}
+						</label>
+					</td>
+					<td class="tdamount">
+						<label class="fields" style="display: block; color: darkgreen;">
+							{% if soadets|totalimamt %}
+								{{soadets|totalimamt|intcomma}}
+							{% endif %}
+						</label>
+					</td>
+					<td class="tdamount">
+						<label class="fields" style="display: block; color: darkred;">
+							{% if soadets|totalloweramt %}
+								{{soadets|totalloweramt|intcomma}}
+							{% endif %}
+						</label>
+					</td>
+					<td colspan="5">
+						&nbsp;
+					</td>
+				</tr>
+			</table>
+		</div>
+		{% if soastatus == 'Processed' %}
+			<div style="float: right; margin-top: 10px;">
+				<form method="post" action="/ECS/toclose_sendback/" id="frmAction">
+				{% csrf_token %}
+					<input type="hidden" id="hSOANo" name="hSOANo" value="{{SOANo}}"/>
+					<input type="hidden" id="acttype" name="acttype" />
+					<input type="hidden" id="actreason" name="actreason" />
+					<input type="button" id="btnSendBack" class="btn-sm btn-warning " value="Send Back" style="font-weight: bold; color: black; margin-right: 5px;"/>
+					<input type="button" id="btnClose" class="btn-sm btn-success " value="Close SOA" style="font-weight: bold; color: black; margin-left: 5px; "/>
+				</form>
+			</div>
+		{% endif %}
+		
+</div>
+
+
+
+
+<div id="dialogconfirmclose" title="Confirm" class="dialogbox">
+	<p>Are you sure to close this SOA?</p>
+</div>
+
+
+<div id="dialogremarks" title="Send Back Remarks" class="dialogbox">
+	<div class="row" style="margin-left: 20px;">
+		<label>
+			<input type="radio" name="remarksval" value="Payable amount is with an attached actual invoice but not included in APV or vice versa." checked />
+			<span style="padding-left: 8px;">Payable amount is with an attached actual invoice but not included in APV or vice versa.</span>
+		</label>
+	</div>
+	<div class="row" style="margin-left: 20px;">
+		<label>
+			<input type="radio" name="remarksval" value="No signature of authorized officer in the attached APV forms that require signatories. " />
+			<span style="padding-left: 8px;">No signature of authorized officer in the attached APV forms that require signatories.</span>
+		</label>
+	</div>
+	<div class="row" style="margin-left: 20px;">
+		<label>
+			<input type="radio" name="remarksval" value="Total amount of APV does not tally with check amount." />
+			<span style="padding-left: 8px;">Total amount of APV does not tally with check amount.</span>
+		</label>
+	</div>
+	<div class="row" style="margin-left: 20px;">
+		<label>
+			<input type="radio" name="remarksval" value="Wrong attachments for payment of non-trade items." />
+			<span style="padding-left: 8px;">Wrong attachments for payment of non-trade items.</span>
+		</label>
+	</div>
+	<div class="row" style="margin-left: 20px;">
+		<label>
+			<input type="radio" name="remarksval" value="Incomplete signature of attached forms for payment of non-trade items. (e.g. RFP, contract)" />
+			<span style="padding-left: 8px;">Incomplete signature of attached forms for payment of non-trade items. (e.g. RFP, contract)</span>
+		</label>
+	</div>
+	<div class="row" style="margin-left: 20px;">
+		<label>
+			<input type="radio" name="remarksval" value="No stamp in the documents which indicates Account for Liquidation (ASL) or Cash on Delivery." />
+			<span style="padding-left: 8px;">No stamp in the documents which indicates Account for Liquidation (ASL) or Cash on Delivery.</span>
+		</label>
+	</div>
+	<div class="row" style="margin-left: 20px;">
+		<label>
+			<input type="radio" name="remarksval" value="No taping is attached in the documents which indicates total amount of payable." />
+			<span style="padding-left: 8px;">No taping is attached in the documents which indicates total amount of payable.</span>
+		</label>
+	</div>
+	
+	<input type="hidden" id="SOAValue" value="" />
+</div>

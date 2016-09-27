@@ -1,0 +1,129 @@
+{% extends "erm_templates/DTR/base.html" %}
+		{% load erm_tags %}
+		{% block content %}
+				<div class="col-md-2">
+					&nbsp;
+				</div>
+				<div class="col-md-8" id="repdiv">
+					<div class="row">
+						<div class="col-md-12" align="center">
+							<label id="textheader">Performance Rating</label>	
+							<br />
+						</div>
+					</div>
+					
+					<div class="row" align="right">
+						<input class="outputxlslink" type="image" src="/static/images/export_excel.png" title="Output to Excel" style="display: inline-block; padding-right: 15px; line-height: 1.5; vertical-align: middle;" />
+						<input type="button" id="genunders" value="Generate" class="btn btn-sm btn-warning" />
+						<input type="button" id="postchckd" value="Post" class="btn btn-sm btn-success" />
+						
+					</div>
+					
+					<div class="row">
+						&nbsp;	
+					</div>
+					
+					<div class="row">
+						{% if allpms %}
+						<table class="table table-striped">
+							<tbody>								
+								<tr>
+									<th class="tabletitle">
+										Associate's Name
+									</th>
+									<th class="tabletitle">
+										Year
+									</th>
+									<th class="tabletitle">
+										Score
+									</th>
+									<th class="tabletitle">
+										Status
+									</th>
+									<th class="tabletitle">
+										Post?
+									</th>
+								</tr>
+							</tbody>
+							{% for pms in allpms %}
+								<tr>
+									<td>
+										{{ pms.User_id }} - {{ pms.User.LName }}, {{ pms.User.FName }} {{ pms.User.MName }}
+									</td>
+									<td align="center">
+										{{ pms.pmsYear }}
+									</td>
+									<td align="center">
+										{% if pms.pmsStatus == 'Posted' %}
+											{{pms.pmsScore}}
+										{% else %}
+										
+										<input type="text" id="score-{{pms.User_id}}-{{pms.pmsYear}}" class="form-control input-sm pmsScore numdot" style="width: 40px; padding: 5px;" score="{{ pms.pmsScore }}" placeholder="{{pms.pmsScore}}"/>
+											
+										{% endif %}
+									</td>
+									<td align="center">
+										{{pms.pmsStatus}}
+									</td>
+									<td align="center">
+										{% if pms.pmsStatus == 'Unposted' %}
+										<input id="{{pms.User_id}}-{{pms.pmsYear}}" name="chkposting" type="checkbox" class="form-control input-sm" value="{{pms.id}}" />
+										{% else %}
+										&nbsp;
+										{% endif %}
+									</td>
+								</tr>
+							{% endfor %}
+						</table>
+						
+						<div class="row" align="right">
+							<div class="pagination">
+							    <span class="step-links" style="font-family: Verdana; font-size: 12px;" >
+							    	
+							    	Go to page:
+							    	<input id="pmspager" type="text" class="numonly form-control input-sm" style="width: 40px; display: inline;" value="{{ allpms.number }}"/>
+							    	of {{ allpms.paginator.num_pages }}
+							    	
+							    	&nbsp;
+							        &nbsp;
+							        
+							        
+							        {% if allpms.has_previous %}
+							            <a href="?page={{ allpms.previous_page_number }}">
+							            	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true" title="Previous"></span>
+							            </a>
+							        {% else %}
+							        	<span class="glyphicon glyphicon-arrow-left restricted" aria-hidden="true"></span>
+							        {% endif %}
+									
+									&nbsp;
+							        
+							        {% if allpms.has_next %}
+							            <a href="?page={{ allpms.next_page_number }}">
+							            	<span class="glyphicon glyphicon-arrow-right" aria-hidden="true" title="Next"></span>
+							            </a>
+							        {% else %}
+							        	<span class="glyphicon glyphicon-arrow-right restricted" aria-hidden="true"></span>
+							        {% endif %}
+							    </span>
+						    </div>
+						</div>
+						
+						
+						
+						
+						{% else %}
+							<h1 style="text-align: center; ">No Records to display.</h1>
+						{% endif %}
+					</div>
+				</div>
+				<div class="col-md-2">
+					&nbsp;
+				</div>
+				
+				
+			{% endblock %}
+
+			
+			
+			

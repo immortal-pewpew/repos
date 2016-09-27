@@ -1,0 +1,308 @@
+{% extends "rfp_templates/base.html" %}
+		{% load rfp_tags %}
+		{% block content %}
+				<div class="row">
+					<div class="col-md-1">
+					  &nbsp;
+					</div>
+					<div class="col-md-10">
+						<div class="row" align="center">
+							<label class="textheader">
+								User Masterlist
+							</label>
+						</div>
+						<div class="row" align="right">
+							<input type="image" class="btn btn-lg usercreatelink" title="Create User" src="/static/images/user_add.png"/>
+						</div>
+						
+						<div class="row" id="userdiv">
+
+							<table id="usertable" class="tablesorter">
+								<thead>
+									<tr>
+										<th class="tabletitle">
+											USERNAME
+										</th>
+										<th class="tabletitle">
+											LAST
+										</th>
+										<th class="tabletitle">
+											FIRST
+										</th>
+										<th class="tabletitle">
+											MIDDLE
+										</th>
+										<th class="tabletitle" data-sorter="false" data-filter="false">
+											PWD EXPIRY
+										</th>
+										<th class="filter-select tabletitle" data-placeholder="All">
+											STATUS
+										</th>
+										<th class="filter-select tabletitle" data-placeholder="All">
+											USER TYPE
+										</th>
+										<th class="tabletitle" data-sorter="false" data-filter="false">
+											ACTION
+										</th>
+									</tr>
+								</thead>
+								<tbody>
+								{% for user in allusers %}
+									<tr>
+										<td align="left">
+											<span style="color: green; font-weight: bold;">{{ user.username }}</span>
+										</td>
+										<td align="left">
+											<span style="color: blue; font-weight: bold;">{{ user.lname }}</span>	
+										</td>
+										<td align="left">
+											<span style="color: blue; font-weight: bold;">{{ user.fname }}</span>
+										</td>
+										<td align="left">
+											<span style="color: blue; font-weight: bold;">{{ user.mname }}</span>
+										</td>
+										<td align="left">
+											<span style="color: blue; font-weight: bold;">{{ user.pwdexpiry|date:"M. d, Y" }}</span>
+										</td>
+										<td align="left">
+											<span style="color: blue; font-weight: bold;">
+												{% if user.userstatus %}
+													Active
+												{% else %}
+													Inactive
+												{% endif %}
+											</span>
+										</td>
+										<td align="left">
+											<span style="color: blue; font-weight: bold;">{{ user.userclass }}</span>
+										</td>
+										<td class="text-center">
+											<!-- 
+											<a role="button" id="edit{{user.username}}" title="View User Details" class="usereditlink" style="margin:0px 5px 0px 5px;">
+												<i class="glyphicon glyphicon-edit"></i>
+											</a>
+											-->
+											<input id="{{user.username}}" type="image" class="img editacctlink" title="View User Details" src="/static/images/user_edit.png" />
+											
+											<!--
+											&nbsp;
+											<a role="button" id="del{{user.username}}" title="Delete User" class="userdeletelink" style="margin:0px 5px 0px 5px;">
+												<i class="glyphicon glyphicon-remove"></i>
+											</a>
+											-->
+										</td>
+									</tr>
+								{% endfor %}
+								</tbody>
+							</table> 
+						</div>
+						
+						<div class="pager tablesorter-pager">
+							Page: 	<select aria-disabled="false" class="gotoPage">
+								
+									</select>		
+							<img aria-disabled="true" tabindex="0" src="/static/tablesorter-master/addons/pager/icons/first.png" class="first disabled" alt="First" title="First page">
+							<img aria-disabled="true" tabindex="0" src="/static/tablesorter-master/addons/pager/icons/prev.png" class="prev disabled" alt="Prev" title="Previous page">
+							
+							<span class="pagedisplay">1 - 20 / 45 (45)</span> <!-- this can be any element, including an input -->
+							
+							<img aria-disabled="false" tabindex="0" src="/static/tablesorter-master/addons/pager/icons/next.png" class="next" alt="Next" title="Next page">
+							<img aria-disabled="false" tabindex="0" src="/static/tablesorter-master/addons/pager/icons/last.png" class="last" alt="Last" title="Last page">
+							<select aria-disabled="false" class="pagesize">
+								<option value="25" selected>25</option>
+								<option value="50">50</option>
+								<option value="100">100</option>
+							</select>
+						</div>
+						
+						
+						<!-- 
+						<div class="row" align="right">
+							<div id="pager" class="pager">
+								<a href="?page=1">&lt;</a>
+							    
+							    {% if page.has_previous %}
+							        <a href="?page={{ page.previous_page_number }}">&lt;&lt;</a>
+							    {% endif %}
+							    
+							    <span class="pagedisplay">
+							        Page {{ page.number }} of {{ page.paginator.num_pages }}.
+							    </span>
+							    
+							    {% if page.has_next %}
+							        <a href="?page={{ page.next_page_number }}">&gt;&gt;</a>
+							    {% endif %}
+									<a href="?page={{ page.paginator.num_pages }}">&gt;</a>
+							</div>
+							
+							--
+							 
+							<div class="pagination">
+							    <span class="step-links" style="font-family: Verdana; font-size: 12px;" >
+							    	
+							    	Go to page:
+							    	<input id="userpager" type="text" class="numonly form-control input-sm" style="width: 40px; display: inline;" value="{{ allusers.number }}"/>
+							    	of {{ allusers.paginator.num_pages }}
+							    	
+							    	&nbsp;
+							        &nbsp;
+							        
+							        
+							        {% if allusers.has_previous %}
+							            <a href="?page={{ allusers.previous_page_number }}">
+							            	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true" title="Previous"></span>
+							            </a>
+							        {% else %}
+							        	<span class="glyphicon glyphicon-arrow-left restricted" aria-hidden="true"></span>
+							        {% endif %}
+									
+									&nbsp;
+							        
+							        {% if allusers.has_next %}
+							            <a href="?page={{ allusers.next_page_number }}">
+							            	<span class="glyphicon glyphicon-arrow-right" aria-hidden="true" title="Next"></span>
+							            </a>
+							        {% else %}
+							        	<span class="glyphicon glyphicon-arrow-right restricted" aria-hidden="true"></span>
+							        {% endif %}
+							    </span>
+						    </div>
+						    
+						</div>
+						 -->
+						
+					</div>
+					
+					<div class="col-md-1">
+					  &nbsp;
+					</div>
+				</div>
+	
+	
+	
+	
+	
+	
+<!-- ACCOUNT DIALOG -->
+<div id="dialogaccountinfo" title="Account Information" class="dialogbox">
+	<form method="post" action="/RFP/userinfo/" id="frmuserinfo">
+		{% csrf_token %}
+		<input id="processaction" name="processaction" type="hidden" value="" />
+		<input id="usertoupdate" name="usertoupdate" type="hidden" value="" />
+		
+		<table style="width:100%; border-collapse:separate; border-spacing: 10px;" >
+			<tbody>
+				<tr>
+					<td>
+						<label class="normaltext">First Name:</label>
+						<input id="fname" name="fname" type="text" class="uppercase" style="width:100%;" required />
+					</td>
+					<td>
+						<label class="normaltext">Middle Name:</label>
+						<input id="mname" name="mname" type="text" class="uppercase" style="width:100%;" required />
+					</td>
+					<td>
+						<label class="normaltext">Last Name:</label>
+						<input id="lname" name="lname" type="text" class="uppercase" style="width:100%;" required />
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label class="normaltext">User Class:</label>
+						{{ formuser.userclass }}		
+					</td>
+					<td colspan="2">
+						<div class="approver_group" style="display:inline-block;">
+							<label class="normaltext">User Role:</label>
+							{{ formuser.userrole }}		 
+						</div>
+						<div class="clerk_group" style="display:inline-block;">
+							<label class="normaltext">User Clerk:</label>
+							
+							<input id="clerk_lookup" name="clerk_lookup" type="text" class="uppercase" style="width:100%;" />
+							<span id="clerktag" class="label label-success tagtext">
+								<span id="clerktag_value"></span>
+								<a id="resetclerk"><i class="remove glyphicon glyphicon-remove-sign glyphicon-white"></i></a> 
+							</span>
+						</div>
+					</td>
+				</tr>
+				<tr class="approver_group">
+					<td colspan="2">
+						<label class="normaltext">Override Approving Limit?:</label>
+						<select id="limit_trigger" name="limit_trigger">
+							<option value="N" selected>No</option>
+							<option value="Y">Yes</option>
+						</select>
+						<div id="loa_applimit" style="display:inline-block;">
+							<input id="amount_limit" name="amount_limit" type="text" class="numdot amts" placeholder="Enter Amount" />
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<label class="normaltext">NBU:</label>
+						{{formuser.usernbu}}
+					</td>
+					<td>
+					
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<label class="normaltext">Location:
+							<button id="btnPopulateLocs" type="button" class="btn btn-sm btn-default">
+						    	<span class="glyphicon glyphicon-import"></span> Populate Location
+						    </button>
+						</label>
+						
+						<input id="userlocs_lookup" name="userlocs_lookup" type="text" class="uppercase" style="width:100%;" required />
+						<span id="locstag" class="label label-success tagtext">
+						  <span id="locstag_value"></span>
+						  <a id="resetlocs"><i class="remove glyphicon glyphicon-remove-sign glyphicon-white"></i></a> 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label class="normaltext">Department:</label>
+						{{formuser.userdept}}
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label class="normaltext">Status:</label>
+						<select id="userstatus" name="userstatus" required >
+							<option value="1">Active</option>
+							<option value="0">Inactive</option>
+						</select>
+					</td>
+					<td id="pwdreset">
+						<label class="normaltext">Reset Password:</label>
+						<input id="resetpwd" name="resetpwd" type="text" class="pwdresetfield" placeholder="Password" />
+					</td>
+				</tr>
+				
+			</tbody>
+			
+		</table>
+		
+		<hr style="height:3px;color:#808080;background-color:#808080;" />
+		
+		<div class="row" style="margin: auto;" align="right">
+			<button id="btnCreateAcct" type="submit" class="btn btn-sm btn-primary">
+		    	<span class="glyphicon glyphicon-ok-circle"></span> <span id="actiontext">Create</span>
+		    </button>
+		</div>
+	</form>
+</div>
+<!-- ACCOUNT DIALOG END-->
+	
+	
+	
+	
+	
+		{% endblock %}
+			
+
+

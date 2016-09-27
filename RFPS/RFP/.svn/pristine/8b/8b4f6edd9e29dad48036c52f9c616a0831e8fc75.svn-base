@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+		{% load tags %}
+				{% block content %}
+				<div id="filterbox" class="row" style="margin-left: 50px; margin-right: 50px; margin-top: 20px; ">
+					
+						<div style="display: inline-block; float: left; margin-left: 10px; margin-right: 20px;">
+							<button id="addrequestlink" type="button" class="btn-sm btn-warning"  style="font-weight: bold; display: inline-block; color: black; margin-right: 15px; ">
+								Request <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+							</button>
+							
+							
+							<img src="/static/images/calendar-search-result.png" style="height: 30px; display: inline-block;" />
+							
+							<select id="dtType" style="display: inline-block; font-weight: bold;" class="input-sm">
+								<option value="TRXDATE">Request Date</option>
+								<option value="CHECKDATE">Check Date</option>
+								<option value="APPROVEDATE">Approve Date</option>
+							</select>
+							
+							<input id="dtFrom" type="text" style="width: 85px; font-weight: bold; display: inline-block;" class=" input-sm datepickerx readonly" />
+							
+							<label style="display: inline-block;">To</label>
+							
+							<input id="dtTo" type="text" style="width: 85px; font-weight: bold; display: inline-block;" class="input-sm datepickerx readonly" />
+							
+							<input id="btnDTGo" type="button" style="display: inline-block; font-weight: bold; color: black;" class="btn-sm btn-warning" value="GO"/>
+						</div>
+						<div style="display: inline-block; float: left;">
+							<img src="/static/images/binocular.png" style="height: 30px; display: inline-block;" />	
+							
+							<label style="display: inline-block;">Search</label>
+							
+							<select id="searchtype" class="input-sm text-left" style="display: inline-block; font-weight: bold;">
+								<option value="" selected="selected">RFP No.</option>
+								<option value="NBU">NBU</option>
+								<option value="vendorName">Vendor ID</option>
+								<option value="CreatedBy_id">ERS No.</option>
+								<option value="CreatedBy_id">EJO No.</option>
+								<option value="CreatedBy_id">EPROMOS No.</option>
+							</select>
+							
+							<input id="txtKeyword" style="display: inline-block; font-weight: bold;" type="text" class=" input-sm" placeholder="Keyword" />
+							
+							<label style="display: inline-block;">Status</label>
+						
+							<!-- 
+							<select class=" input-sm text-left" id="bstatus" name="bstatus" style="display: inline-block; font-weight: bold;">
+								<option value="All" selected="selected">All</option>
+								<option value="1">Approved</option>
+								<option value="0">Work</option>
+								<option value="Closed">Closed</option>
+							</select>
+							 -->
+							 {{ formstatus.status }}
+							 
+							
+							<input id="btnGo" style="display: inline-block; font-weight: bold; color: black;" type="button" class="btn-sm btn-warning" value="GO"/>
+						</div>
+					
+				</div>
+				
+				<div class="row">&nbsp;</div>
+				
+				<div class="row" id="soaviews"  style="margin-left: 40px; margin-right: 40px; margin-top: 5px; ">
+					
+						{% if allRFP %}
+							<table class="table table-striped">
+								<tbody>
+									<tr>
+										<th class="tabletitle">
+											
+										</th>
+										<th class="tabletitle">
+											SOA Creation Date
+										</th>
+										<th class="tabletitle">
+											Created By
+										</th>
+										<th class="tabletitle">
+											Vendor Name
+										</th>
+										<th class="tabletitle">
+											Comeback Date
+										</th>
+										<th class="tabletitle">
+											Last Update
+										</th>
+										<th class="tabletitle">
+											Status
+										</th>
+										<th class="tabletitle text-center">
+											Action
+										</th>
+										<th class="tabletitle">
+											Processed By
+										</th>
+									</tr>
+								</tbody>
+								{% for SOA in allSOA %}
+									<tr>
+										<td align="left">
+											{{ SOA.SOANo }}
+										</td>
+										<td align="left">
+											{{ SOA.SOADate|date:"m/d/Y h:i:s A" }}
+										</td>
+										<td align="left">
+											{{ SOA.CreatedBy_id }}
+										</td>
+										<td align="left">
+											<!-- KUNG MAG LAGG E SAVE NALANG SA ISA KA COLUMN -->
+											<!--
+											{# SOA.UserName.vendorID|getvendorName #}
+											 -->
+											{{ SOA.CreatedBy.vendorName }}
+										</td>
+										<td align="left">
+											{{ SOA.CBDate|date:"m/d/Y" }}
+										</td>
+										<td align="left">
+											{{ SOA.SOALastUpdate|date:"m/d/Y h:i:s A" }}
+										</td>
+										
+										<td align="left" style="font-weight: bold; color: 
+											{% if SOA.SOAStatus == 'Open' %}
+												blue;
+											{% elif SOA.SOAStatus == 'Returned' %}
+												red;
+											{% elif SOA.SOAStatus == 'Processed' %}
+												green;
+											{% else %}
+												gray;
+											{% endif %}
+										">
+											{{ SOA.SOAStatus }}	
+										</td>
+										<td>
+											<form method="post" class="frmMargin0" action="/ECS/ca_html_to_pdf_directly/" target="_blank">
+											<input type="image" src="/static/images/document_info32.png" title="Details" class="img cadets" SOANo="{{SOA.SOANo}}" data-toggle="modal" data-target="#casoadetailsmodal" Status="{{SOA.SOAStatus}}"/>
+											{% csrf_token %}
+											<!-- 
+											{#% if SOA.SOAStatus == 'Processed' #}
+											<input type="hidden" name="SOANo" value="{{SOA.SOANo}}" />
+											<input type="image" src="/static/images/printer32.png" title="Print" class="img" soanum="{{SOA.SOANo}}" />
+											{# endif #}
+											 -->
+											</form>
+										</td>
+										{% if SOA.ProcessedBy_id %}
+											<td align="left">
+												{{ SOA.ProcessedBy_id }}
+											</td>
+										{% else %}
+											<td align="center">
+												-
+											</td>
+										{% endif %}
+									</tr>
+								{% endfor %}
+							</table>  
+							
+							
+							<div class="row" align="right">
+								<div class="pagination">
+								    <span class="step-links" style="font-family: Verdana; font-size: 12px;" >
+								    	
+								    	Go to page:
+								    	<input id="capager" type="text" class="numonly form-control input-sm" style="width: 40px; display: inline;" value="{{ allSOA.number }}"/>
+								    	of {{ allSOA.paginator.num_pages }}
+								    	
+								    	&nbsp;
+								        &nbsp;
+								        
+								        
+								        {% if allSOA.has_previous %}
+								            <a href="?page={{ allSOA.previous_page_number }}">
+								            	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true" title="Previous"></span>
+								            </a>
+								        {% else %}
+								        	<span class="glyphicon glyphicon-arrow-left restricted" aria-hidden="true"></span>
+								        {% endif %}
+										
+										&nbsp;
+								        
+								        {% if allSOA.has_next %}
+								            <a href="?page={{ allSOA.next_page_number }}">
+								            	<span class="glyphicon glyphicon-arrow-right" aria-hidden="true" title="Next"></span>
+								            </a>
+								        {% else %}
+								        	<span class="glyphicon glyphicon-arrow-right restricted" aria-hidden="true"></span>
+								        {% endif %}
+								    </span>
+							    </div>
+							</div>
+						
+						
+						{% else %}
+							<h3 style="text-align: center; height: 50%;">No Records to display.</h3>
+						{% endif %}
+					
+					
+					
+				</div>
+				{% endblock %}
+			
+
+
+
+

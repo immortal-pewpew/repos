@@ -1,0 +1,39 @@
+<script>
+	alert('{{ message }}');
+	{% if msgNum == 1 %}
+		window.location.replace("/ERM/addSched/");
+	{% elif msgNum == 2 or msgNum == 3 %}
+		window.location.replace("/ERM/addUser/");
+	{% elif msgNum >= 4 and msgNum <= 8 %}
+		window.location.replace("/ERM/pwdpage/");
+	{% elif msgNum == 9 or msgNum == 10 %}
+		window.location.replace("/ERM/main/");
+	{% elif msgNum == 11 or msgNum == 12 %}
+		window.location.replace("/ERM/approval/");
+	{% elif msgNum == 13 or msgNum == 15 %}
+		window.location.replace("/ERM/addHoliday/");
+	{% elif msgNum == 14 or msgNum == 24 %}
+		window.location.replace("/ERM/changeSched/");
+	{% elif msgNum == 16 %}
+		window.location.replace("/ERM/periodreports/");
+	{% elif msgNum == 17 or msgNum == 18 %}
+		window.location.replace("/ERM/main/");
+	{% elif msgNum == 19 %}
+		window.location.replace("/ERM/periodreports/");
+	{% elif msgNum == 20 %}
+		{% if isadmin == 2 %}
+			window.location.replace("/ERM/periodreports/");
+		{% else %}
+			window.location.replace("/ERM/assocpms/");
+		{% endif %}
+	{% elif msgNum == 21 %}
+		window.location.replace("/ERM/pwdpage/");
+	{% elif msgNum == 22 %}
+		window.location.replace("/ERM/periodreports/");
+	{% elif msgNum == 23 %}
+		window.location.replace("/ERM/addUser/");
+	{% endif %}
+		
+</script>
+
+

@@ -1,0 +1,41 @@
+
+		<div id="msgfield" class="row">
+		{% if allusermsgs %}
+			{% for msg in allusermsgs %}	
+				{% if msg.sender_id != user %}
+					
+					<div class="row">
+						<label style="font-size: 10px; font-family: Arial Black; font-weight: bold; color: #5CB85C;">{{msg.sender.UserName}}</label>
+					</div>
+					<div class="row">
+						<div class="msgdiv" style="background-color: #999;">
+							<span style="font-size: 11px; font-family: Arial; font-weight: bold;">{{msg.message}}</span> 
+						</div>	
+						
+					</div>
+					<div class="row">
+						<label style="font-size: 9px; font-style: Arial; color: #999; margin-top: 5px;">{{msg.dateOfSending|date:"D M d, Y"|upper}} AT {{ msg.dateOfSending|time:"h:i A"|upper }}</label>
+					</div>	
+					
+				{% else %}
+					
+					<div class="row">
+						<div class="msgdiv-fill">
+							&nbsp;
+						</div>
+						<div class="msgdiv" style="background-color: #5BC0DE; float:right;">
+							<span style="font-size: 11px; font-family: Arial; font-weight: bold;">{{msg.message}}</span> 
+						</div>	
+					</div>
+					
+					<div class="row" align="right">
+						<label style="font-size: 9px; font-style: Arial; color: #999; margin-top: 5px;">{{msg.dateOfSending|date:"D M d, Y"|upper}} AT {{ msg.dateOfSending|time:"h:i A"|upper }}</label>
+					</div>
+				{% endif %}
+			{% endfor %}
+			
+		{% else %}
+			<h4 style="text-align: center; ">No comments yet.</h4>
+		{% endif %}
+		</div>
+		

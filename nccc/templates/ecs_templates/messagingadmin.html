@@ -1,0 +1,103 @@
+{% extends "ecs_templates/base.html" %}
+
+			{% block content %}
+			<div id="bodycontent" class="bodydiv container-fluid content">
+				<div class="row" style="height: 30px; line-height: 30px; margin-left: 250px; margin-right: 250px; margin-top: 20px; ">
+							<img src="/static/images/binocular.png" style="height: 30px; display: inline-block; " />	
+							<label class="straightline">Search</label>
+					
+							<input id="txtmsgkeyword" type="text" class="input-sm" style="font-weight: bold;"/>
+					
+							<label style="display: inline: block;">by</label>
+					
+							<select class="input-sm text-left" id="msgby" name="msgby" style="font-weight: bold; display: inline-block;" >
+								<option value="UserName" selected="selected">UserName</option>
+								<option value="FullName">FullName</option>
+								<option value="vendorID">Vendor ID</option>
+								<option value="vendorName">Vendor Name</option>
+							</select>
+					
+							<input id="btnMsgGo" type="button" class="btn-sm btn-success" value="&nbsp;&nbsp;GO&nbsp;&nbsp;" style="display: inline-block; font-weight: bold; color: black;"/>
+				</div>
+				
+				<div class="row" id="msgviews" style="margin-left: 200px; margin-right: 200px; margin-top: 20px; ">
+						{% if allcontactswithconvo %}
+						<table class="table table-striped">
+							<tbody>
+								<tr>
+									
+									<th>
+										UserName
+									</th>
+									<th class="tabletitle" colspan="2">
+										FullName
+									</th>
+									<th>
+										Supplier
+									</th>
+								</tr>
+							</tbody>
+							{% for contact in allcontactswithconvo %}
+								<tr id="{{contact.UserName}}" class="msglink" role="button" data-toggle="modal" data-target="#msgmodal">
+									<td align="left" width="100px">
+										<span style="color: red; font-weight: bold;">{{contact.UserName}}</span>
+									</td>
+									<td align="center">
+										{% if contact.msgCount %}
+											<span class="badge progress-bar-warning">{{contact.msgCount}}</span>
+										{% else %}
+											&nbsp;
+										{% endif %}
+									</td>
+									<td align="left">
+										<span style="color: blue; font-weight: bold;">{{contact.FullName}}</span>
+									</td>
+									<td align="left">
+										<span style="color: green; font-weight: bold;">{{contact.vendorID}} — {{contact.vendorName}}</span>
+									</td>
+								</tr>
+							{% endfor %}
+						</table>  
+						
+						
+						<div class="row" align="right">
+							<div class="pagination">
+							    <span class="step-links" style="font-family: Verdana; font-size: 12px;" >
+							    	
+							    	Go to page:
+							    	<input id="msgpager" type="text" class="numonly form-control input-sm" style="width: 45px; display: inline;" value="{{ allcontactswithconvo.number }}"/>
+							    	of {{ allcontactswithconvo.paginator.num_pages }}
+							    	
+							    	&nbsp;
+							        
+							        
+							        {% if allcontactswithconvo.has_previous %}
+							            <a href="?page={{ allcontactswithconvo.previous_page_number }}">
+							            	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true" title="Previous"></span>
+							            </a>
+							        {% else %}
+							        	<span class="glyphicon glyphicon-arrow-left restricted" aria-hidden="true"></span>
+							        {% endif %}
+									
+									&nbsp;
+							        
+							        {% if allcontactswithconvo.has_next %}
+							            <a href="?page={{ allcontactswithconvo.next_page_number }}">
+							            	<span class="glyphicon glyphicon-arrow-right" aria-hidden="true" title="Next"></span>
+							            </a>
+							        {% else %}
+							        	<span class="glyphicon glyphicon-arrow-right restricted" aria-hidden="true"></span>
+							        {% endif %}
+							    </span>
+						    </div>
+						</div>
+						
+						{% else %}
+							<h4 style="text-align: center; ">No comments yet.</h4>
+						{% endif %}
+					
+				</div>
+				
+			</div>
+			{% endblock %}
+			

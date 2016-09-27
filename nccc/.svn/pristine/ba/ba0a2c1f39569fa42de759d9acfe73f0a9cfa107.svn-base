@@ -1,0 +1,23 @@
+<table class="table" >
+	<tbody>
+		<tr>
+			<th class="tabletitle">
+				#
+			</th>
+			<th class="tabletitle" align="left">
+				Reason
+			</th>
+			<th class="tabletitle" align="left">
+				Person
+			</th>
+		</tr>
+	</tbody>
+	{% for remark in remarksofSOA %}
+		
+		<tr>
+			<td>{{forloop.counter}}</td>
+			<td align="left">{{remark.remarkreason}}</td>
+			<td align="left">{{remark.remarksBy_id}}</td>
+		</tr>
+	{% endfor %}
+</table>

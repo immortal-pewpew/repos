@@ -1,0 +1,756 @@
+{% load erm_tags %}
+{% load staticfiles %}
+ 
+<link rel="stylesheet" type="text/css" href="{% static 'css/erm_css/style.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.4-dist/css/bootstrap.css' %}" />
+ 
+
+
+<!-- TABLE HERE -->
+<script type="text/javascript">
+
+$('input#hmonth').val($('select#viewmonth').val());
+$('input#hyear').val($('select#viewyear').val());
+$('input#hcutoff').val($('select#cutofftype').val());
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+var vl;
+var sil;
+var sl;
+var aa;
+var dt;
+
+$(function() {
+	$("#dialogconfirmLastYearVL").dialog({
+	      modal: true,
+	      autoOpen: false,
+	      closeOnEscape: false,
+		  position: { my: 'top', at: 'top+150',of: window },
+	      open: function(event, ui) { $(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+	      			}, 
+	      buttons: {
+	        Yes: function() {
+				$("#dialogconfirmLastYearVL").dialog("close");
+				callback(true);
+	        	},
+	        No: function() {
+	        	//event.preventDefault();
+	            $("#dialogconfirmLastYearVL").dialog("close");
+	            callback(false);
+	        	}
+			}
+	
+	});//dialog end
+	
+	function callback(response){
+		//----------------------------------------------//
+		//             AJAX for Leave Save              //
+		//----------------------------------------------//
+		
+		$.ajax({
+	        url : "/ERM/saveleave/", // the endpoint
+	        type : "post", // http method
+	        data : { vl: vl, sil: sil, sl:sl, aa: aa, dt: dt, response: response,}, // data sent with the post request
+			
+			// handle a successful response
+	        success : function(data) {
+	        	$('#summary').html(data);
+	        	},
+	
+	        // handle a non-successful response
+	        error : function(data) {
+	        	
+	        	}
+			 });
+		}
+	
+});
+
+$('input.save').hide();
+$('input.inputmask').prop('disabled', true);
+$('input.inputmask').mouseup(function(e){
+	e.preventDefault();
+});
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+//notes Trigger
+$('input.notesTrigger').on('click', function(event){
+	$('#nmodal').modal('show');
+	var datetoview = $(this).attr('id');
+	//alert(value);
+	
+	$.ajax({
+        url : "/ERM/viewnotes/", // the endpoint
+        type : "post", // http method
+        data : { datetoview: datetoview }, // data sent with the post request
+		
+		// handle a successful response
+        success : function(data) {
+        	$('#notesmodal').html(data);
+        	},
+
+        // handle a non-successful response
+        error : function(data) {
+        	
+        	}
+		 });
+
+	
+	
+});
+
+//btnClose
+$('#btnClose').on('click', function(event){
+	$('#nmodal').modal('hide');
+});
+
+//btntopX
+$('#btntopX').on('click', function(event){
+	$('#nmodal').modal('hide');
+});
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+// replace the 'n'th character of 's' with 't'
+		function replaceAt(s, n, t) {
+		    return s.substring(0, n) + t + s.substring(n + 1);
+		}
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+//If min is greater than 59 or 60up set it to 59min
+$('input.inputmask').blur(function(event) {
+	var str = $(this).val();
+	var numOfMinutes = $(this).val().substring(4,6);
+	if(numOfMinutes >= 60){
+		str1 = replaceAt(str,4,"5");
+		str2 = replaceAt(str1,5,"9");
+		$(this).val(str2);
+	
+	}
+});
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+//Change hoursWorkedValue every blur
+$('input.inputmask').on('blur', function(event){
+	var day = $(this).attr('id').slice(-2);
+	var theValue = $(this).val(); //value of leave input
+	
+	if(theValue.indexOf('_') === -1){
+		var hr = theValue.charAt(0);
+		var min = theValue.substring(4,6);
+		var totalmins = parseInt(min) + (parseInt(hr)*60);
+		
+		var strhwValue = $('input[id="hw'+ day +'"]').val();
+		var numOfHours = $('input[id="hw'+ day +'"]').val().charAt(0);
+		var numOfMinutes = $('input[id="hw'+ day +'"]').val().substring(4,6);
+		var totalminutesworked = parseInt(numOfMinutes) + (parseInt(numOfHours)*60);
+		
+		var addValue;
+		if ($('input[id="hidden'+ $(this).attr('id') + '"]').val() == "" ){
+			addValue = 0;
+		}
+		else {
+			addValue = parseInt($('input[id="hidden'+ $(this).attr('id') + '"]').val());
+		}
+		
+		newhwtotalmins = totalminutesworked - totalmins + addValue; 
+		
+		
+		//////////FOR LEAVE CREADITS///////////////
+		///////////////////////////////////////////
+		
+		//var rvl = $('input#hvlrem').val();
+		//var rsil = $('input#hsilrem').val();
+		//var rsl = $('input#hslrem').val();
+		
+		////////////////////////////////////////////
+		////////////////////////////////////////////
+		
+		
+		
+		/*
+		alert(rvl);
+		alert(rsil);
+		alert(rsl);
+		*/
+		
+		var theid = String($(this).attr('id'));
+		
+		//if ($(this).val().indexOf('vl') > -1) {
+		//if ($(this).attr('id').contains('vl')){
+		if (theid.indexOf('vl') > -1){
+		 	var fieldrem = parseInt($('input#hvlrem').val()) + addValue; //addValue to enable as long as di mulapas
+		 	//rvl = 7200 - parseInt($('input[id="htotalvl"]').val()) - totalmins;
+			/*
+			var usepastyrvl = $('input#chkusepastyrvl:checked').val();
+			if (usepastyrvl == 'Yes'){
+				var rempastyrvl = parseInt($('input#hpastyrvlrem').val());
+				if (totalmins > rempastyrvl){
+					security = 'Denied';
+				}
+			}
+			*/
+			
+		}
+		//else if ($(this).val().indexOf('sil') > -1) {
+		//else if ($(this).attr('id').contains('sil')){
+		else if (theid.indexOf('sil') > -1){
+			var fieldrem = parseInt($('input#hsilrem').val()) + addValue; //addValue to enable as long as di mulapas
+			//rsil = 4800 - parseInt($('input[id="htotalsil"]').val()) - totalmins;
+			//alert('SIL');
+		}
+		//else if ($(this).val().indexOf('sl') > -1) {
+		//else if ($(this).attr('id').contains('sl')){
+		else if (theid.indexOf('sl') > -1){
+			var fieldrem = parseInt($('input#hslrem').val()) + addValue; //addValue to enable as long as di mulapas
+			//rsl = 2400 - parseInt($('input[id="htotalsl"]').val()) - totalmins;
+			//alert('SL');
+		}
+
+		////////////////////////////////////////////
+		
+		
+		//if ((newhwtotalmins >= 0) && ((totalmins <= fieldrem) || ($(this).attr('id').contains('absent')))) {
+		if ((newhwtotalmins >= 0) && ((totalmins <= fieldrem) || (theid.indexOf('absent') > -1))) {
+		//if ((newhwtotalmins >= 0) && ((totalmins <= rvl)||(rvl==0)) && ((totalmins <= rsil)||(rsil==0)) && ((totalmins <= rsl)||(rsl==0))){
+		//if ((newhwtotalmins >= 0) && (rvl >= 0) && (rsil >= 0) && (rsl >= 0)){
+			finhr = newhwtotalmins/60;
+			mins = newhwtotalmins%60;
+			finmin = ("0" + mins).slice(-2);
+			
+			rephrchar = replaceAt(strhwValue,0,String(parseInt(finhr)));
+			repminchar = rephrchar.replaceAt(4, String(finmin));
+			
+			$('input[id="hw'+ day +'"]').val(repminchar);
+			$('input[id="hiddenhw'+ day +'"]').val(newhwtotalmins);
+			$('input[id="hidden'+ $(this).attr('id') + '"]').val(totalmins);
+			
+			}
+		else{
+			//convert to nhr nmin
+			pasttotalmins = parseInt($('input[id="hidden'+ $(this).attr('id') + '"]').val());
+			pasthr = pasttotalmins/60;
+			tomin = pasttotalmins%60;
+			pastmin = ("0" + tomin).slice(-2);
+			
+			rhrchar = replaceAt(theValue,0,String(parseInt(pasthr)));
+			rminchar = rhrchar.replaceAt(4, String(pastmin));
+			
+			$(this).val(rminchar);
+			}
+		}
+	else{
+		pasttotalmins = parseInt($('input[id="hidden'+ $(this).attr('id') + '"]').val());
+		pasthr = pasttotalmins/60;
+		tomin = pasttotalmins%60;
+		pastmin = ("0" + tomin).slice(-2);
+		
+		rhrchar = replaceAt(theValue,0,String(parseInt(pasthr)));
+		rminchar = rhrchar.replaceAt(4, String(pastmin));
+		
+		$(this).val(rminchar);
+	}
+	
+});
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+$("input#chkusepastyrvl").change(function() {    
+    window.location.reload();
+});
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+$('input.modify').on('click', function(event){
+	var day = $(this).attr('day');
+
+	$('input[id="vl'+ day +'"]').prop('disabled', false);
+	$('input[id="sil'+ day +'"]').prop('disabled', false);
+	$('input[id="sl'+ day +'"]').prop('disabled', false);
+	$('input[id="absent'+ day +'"]').prop('disabled', false);
+
+	$('input[id="save'+ day +'"]').show();
+	$(this).hide();
+});
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+$('input.save').on('click', function(event){
+	//event.preventDefault();
+	var day = $(this).attr('day');
+	var numOfHours = $('input[id="hw'+ day +'"]').val().charAt(0);
+	var numOfMinutes = $('input[id="hw'+ day +'"]').val().substring(4,6);
+	
+	var totalminutesworked = parseInt(numOfMinutes) + (parseInt(numOfHours)*60);
+	
+	$('input[id="vl'+ day +'"]').prop('disabled', true);
+	$('input[id="sil'+ day +'"]').prop('disabled', true);
+	$('input[id="sl'+ day +'"]').prop('disabled', true);
+	$('input[id="absent'+ day +'"]').prop('disabled', true);
+
+	$(this).hide();
+	$('input[id="modify'+ day +'"]').show();
+	//----------------------------------------------//
+	//              OK na here and up               //
+	//----------------------------------------------//
+	//Save and Update database Leave/Attendance data//
+	//----------------------------------------------//
+	vl = $('input[id="hiddenvl'+ day +'"]').val();
+	sil = $('input[id="hiddensil'+ day +'"]').val();
+	sl = $('input[id="hiddensl'+ day +'"]').val();
+	aa = $('input[id="hiddenabsent'+ day +'"]').val();
+	dt = $('input[id="hiddendt'+ day +'"]').val();
+	
+	/*
+	//var uid = 1; //change if naa na user control
+	var vl = $('input[id="hiddenvl'+ day +'"]').val();
+	var sil = $('input[id="hiddensil'+ day +'"]').val();
+	var sl = $('input[id="hiddensl'+ day +'"]').val();
+	var aa = $('input[id="hiddenabsent'+ day +'"]').val();
+	var dt = $('input[id="hiddendt'+ day +'"]').val();
+	*/
+	//////////////////////////////////////////////////
+	var vlconsumeyear = $('input[id="hiddenVLConsumeYear'+ day +'"]').val();
+	
+	//----------------------------------------------//
+	//           Default to 0 if no input           //
+	//----------------------------------------------//
+	
+	if (vl==''){
+		vl=0;
+	}
+	if (sil==''){
+		sil=0;
+	}
+	if (sl==''){
+		sl=0;
+	}
+	if (aa==''){
+		aa=0;
+	}
+	
+	//////////////////////////////////
+	// CONTROLLER FOR PREVIOUS YEAR VL
+	//var ctrlforprevyrvl = $('input#ctrlforprevyrvl').val();
+	//var thisyear = new Date().getFullYear();
+	//var response = false;
+	
+	//if (ctrlforprevyrvl > 0){
+	var remprevyrvl = parseInt($('input#hprevyrvlrem').val());
+	if ((vl <= remprevyrvl) && (vl != 0) ) {
+		//response = confirm("Consume Previous Year VL?");
+		$("#dialogconfirmLastYearVL").dialog("open");
+	}
+	else{
+		//----------------------------------------------//
+		//             AJAX for Leave Save              //
+		//----------------------------------------------//
+		response = false;
+		$.ajax({
+	        url : "/ERM/saveleave/", // the endpoint
+	        type : "post", // http method
+	        data : { vl: vl, sil: sil, sl:sl, aa: aa, dt: dt, response: response,}, // data sent with the post request
+			
+			// handle a successful response
+	        success : function(data) {
+	        	$('#summary').html(data);
+	        	},
+	
+	        // handle a non-successful response
+	        error : function(data) {
+	        	
+	        	}
+			 });
+	}
+	//}
+	///////////////////////////////////
+	
+	/*
+	//----------------------------------------------//
+	//             AJAX for Leave Save              //
+	//----------------------------------------------//
+	
+	$.ajax({
+        url : "/ERM/saveleave/", // the endpoint
+        type : "post", // http method
+        data : { vl: vl, sil: sil, sl:sl, aa: aa, dt: dt, response: response,}, // data sent with the post request
+		
+		// handle a successful response
+        success : function(data) {
+        	$('#summary').html(data);
+        	},
+
+        // handle a non-successful response
+        error : function(data) {
+        	
+        	//alert("Oops! Something went wrong with batch preview!");
+            
+        	}
+		 });
+	*/
+});
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+
+//csrf token
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+var csrftoken = getCookie('csrftoken');
+ 
+/*
+The functions below will create a header with csrftoken
+*/
+ 
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+function sameOrigin(url) {
+    // test that a given url is a same-origin URL
+    // url could be relative or scheme relative or absolute
+    var host = document.location.host; // host + port
+    var protocol = document.location.protocol;
+    var sr_origin = '//' + host;
+    var origin = protocol + sr_origin;
+    // Allow absolute or scheme relative URLs to same origin
+    return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+        (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+        // or any other URL that isn't scheme relative or absolute i.e relative.
+        !(/^(\/\/|http:|https:).*/.test(url));
+}
+ 
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+            // Send the token to same-origin, relative URLs only.
+            // Send the token only if the method warrants CSRF protection
+            // Using the CSRFToken value acquired earlier
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    }
+});
+
+String.prototype.replaceAt=function(index, character) {
+    return this.substr(0, index) + character + this.substr(index+character.length);
+};
+
+
+$('.inputmask').inputmask({
+	mask: '9hr 99min',
+});	
+	
+	
+</script>
+
+
+
+
+
+	
+		<br />
+		
+		<table class="table table-striped">
+			<thead>
+				<tr id="tabletitle">
+					<th colspan="2" class="info" align="center"><h6>DATE</h6></th>
+					<th class="info"><h6 title="Hours Worked">HRS WRKD</h6></th>
+					<th class="info"><h6 title="Vacation Leave">V.L.</h6></th>
+					<th class="info"><h6 title="Service Incentive Leave">S.I.L.</h6></th>
+					<th class="info"><h6 title="Sick Leave">S.L.</h6></th>							   			
+			    	<th class="info"><h6>ABSENT</h6></th>
+			    	<th class="info text-center"><h6>NOTES</h6></th>
+			    	<th class="info text-center"><h6>STATUS</h6></th>
+			    	<th class="info text-center"><h6>ACTION</h6></th>
+				</tr>
+			</thead>
+			{% for dtr in dtrlist %}
+		    	<tr>
+		    		<td id="datetext">
+		    			<h5>{{ dtr.attendanceDate|date:"M" }}  {{ dtr.attendanceDate|date:"d" }}</h5>
+		    		</td>
+		    		<td>
+		    			&nbsp;
+		    		</td>
+		    		
+		    		{% if currUser|isdayoff:dtr.attendanceDate == False and dtr.attendanceDate|isHoliday:branch == False %}
+		    		<td>
+		    			
+		    				<input id="hw{{dtr.attendanceDate|date:'d'}}" type="text" class="form-control input-sm inputmask" size="4px" value="{{ dtr.hoursWorked|divide:60 }}hr {{ dtr.hoursWorked|modulo:60 }}min" disabled />
+		    				<input id="hiddenhw{{dtr.attendanceDate|date:'d'}}" type="hidden" value="{{ dtr.hoursWorked }}" />
+		    			
+		    		</td>
+		    		<td>
+		    			
+		    				<input id="vl{{dtr.attendanceDate|date:'d'}}" type="text" class="form-control input-sm inputmask" size="4px" value="{{ dtr.Leave.VacationL|divide:60 }}hr {{ dtr.Leave.VacationL|modulo:60 }}min"
+		    				placeholder="0hr 00min" disabled />
+		    				<input id="hiddenvl{{dtr.attendanceDate|date:'d'}}" type="hidden" value="{{ dtr.Leave.VacationL }}" />
+		    				<input id="hiddenVLConsumeYear{{dtr.attendanceDate|date:'d'}}" type="hidden" value="{{ dtr.Leave.VLConsumeYear }}" />
+			    			
+		    		</td>
+		    		<td>
+		    			
+		    				<input id="sil{{dtr.attendanceDate|date:'d'}}" type="text" class="form-control input-sm inputmask" size="4px" value="{{ dtr.Leave.ServiceIncentiveL|divide:60 }}hr {{ dtr.Leave.ServiceIncentiveL|modulo:60 }}min" 
+		    				placeholder="0hr 00min" disabled />
+		    				<input id="hiddensil{{dtr.attendanceDate|date:'d'}}" type="hidden" value="{{ dtr.Leave.ServiceIncentiveL }}" />
+		    			
+		    		</td>
+		    		<td>
+		    			
+		    				<input id="sl{{dtr.attendanceDate|date:'d'}}" type="text" class="form-control input-sm inputmask" size="4px" value="{{ dtr.Leave.SickL|divide:60 }}hr {{ dtr.Leave.SickL|modulo:60 }}min" 
+		    				placeholder="0hr 00min" disabled />
+		    				<input id="hiddensl{{dtr.attendanceDate|date:'d'}}" type="hidden" value="{{ dtr.Leave.SickL }}" />
+		    			
+		    		</td>
+		    		<td>
+		    			
+		    				<input id="absent{{dtr.attendanceDate|date:'d'}}" type="text" class="form-control input-sm inputmask absent" size="4px" value="{{ dtr.Leave.AAbsent|divide:60 }}hr {{ dtr.Leave.AAbsent|modulo:60 }}min" 
+		    				placeholder="0hr 00min" disabled />
+		    				<input id="hiddenabsent{{dtr.attendanceDate|date:'d'}}" type="hidden" value="{{ dtr.Leave.AAbsent }}" />
+		    			
+		    		</td>
+		    		
+		    		{% else %}
+		    		<td colspan="5">
+		    			{% if currUser|isdayoff:dtr.attendanceDate == True %}
+			    			<h5 style="display: inline-block;">
+			    				<label class="label label-default">Day-off</label>
+			    			</h5>
+		    			{% endif %}
+		    			{% if dtr.attendanceDate|isHoliday:branch == True %}
+		    				<h5 style="display: inline-block;">
+			    				<label class="label label-primary">{{ dtr.attendanceDate|getHolidayDesc }}</label>
+			    			</h5>
+		    			{% endif %}
+		    		</td>
+		    		{% endif %}
+		    		
+		    		<input id="hiddendt{{dtr.attendanceDate|date:'d'}}" type="hidden" value="{{ dtr.attendanceDate|date:'m/d/Y' }}" />
+		    		
+		    		<td align="center">
+		    			<input title="Notes" class="notesTrigger" type="image" id="{{dtr.attendanceDate|date:'Y-m-d'}}" src="/static/images/wishlist_add.png" />
+		    		</td>
+		    		<td align="center">
+	    				
+    					{% if dtr.status == 1 %}
+    						<img alt="Locked" title="Locked" class="img-responsive" height="20px" width="20px" src="/static/images/lock.png" />
+    					{% elif dtr.status == 2 %}
+    						<img alt="Pending" title="Waiting for Approval" class="img-responsive" height="20px" width="20px" src="/static/images/lock_go.png" />
+    					{% else %}
+    						<img alt="Open" title="Open" class="img-responsive" height="20px" width="20px" src="/static/images/nameboard_open.png" />
+    					{% endif %}
+	    				
+		    		</td>
+		    		<td align="center">
+		    			{% if currUser|isdayoff:dtr.attendanceDate == False and dtr.attendanceDate|isHoliday:branch == False %}
+		    				{% if dtr.status == 1 or dtr.status == 2 %} 
+		    				<input title="Modify" type="image"  src="/static/images/update.png" day="{{dtr.attendanceDate|date:'d'}}" class="modify restricted" disabled />
+		    				<input title="Save" type="image"  src="/static/images/save_as.png" day="{{dtr.attendanceDate|date:'d'}}" class="save restricted" disabled />
+		    				{% else %}
+		    				<input title="Modify" type="image" id="modify{{dtr.attendanceDate|date:'d'}}" src="/static/images/update.png" day="{{dtr.attendanceDate|date:'d'}}" class="modify" />
+		    				<input title="Save" type="image" id="save{{dtr.attendanceDate|date:'d'}}" src="/static/images/save_as.png" day="{{dtr.attendanceDate|date:'d'}}" class="save" />
+		    				{% endif %}
+		    			{% endif %}
+		    		</td>
+		    		
+		    	</tr>
+		    {% endfor %}
+		</table>
+		
+		<br />
+		
+		<div class="row" id="summary">
+			<div class="col-md-8">
+				<!--Leave Credits-->
+				<div class="row">
+					<div class="col-md-6">
+						<h4>Leave Credits:</h4>
+					</div>
+					<div class="col-md-6">
+						&nbsp;
+					</div>
+				</div>
+				<!--Remaining-->
+				<div class="row" align="right">
+					<div class="col-md-6">
+						&nbsp;
+					</div>
+					<div class="col-md-3">
+						<label style="color: blue;">Used &nbsp;&nbsp;&nbsp;&nbsp;</label>
+					</div>
+					<div class="col-md-3">
+						<label style="color: blue;">Remaining</label>
+					</div>
+					<br/>
+				</div>
+				
+				<!-- <input id="ctrlforprevyrvl" type="hidden" value="{{VLPrevYearRem}}" /> -->
+				
+				<!--VL Previous Year-->
+				{% if not VLPrevYearRem == 0 %}
+				<div class="row" align="right">
+					<div class="col-md-6">
+						<label style="color: #00b9ff;">Previous Year VL:</label>
+					</div>
+					<div class="col-md-3">
+						<label id="prevyrvl" style="color: red;">{{ VLConsumedPrevYear|divide:60 }}hr {{ VLConsumedPrevYear|modulo:60 }}min</label>
+						<input id="hprevyrvl" type="hidden" value="{{VLConsumedPrevYear}}" />
+					</div>
+					<div class="col-md-3">
+						<label id="prevyrvlrem" style="color: limegreen;">{{ VLPrevYearRem|divide:60 }}hr {{ VLPrevYearRem|modulo:60 }}min</label>
+						<input id="hprevyrvlrem" type="hidden" value="{{VLPrevYearRem}}" />
+					</div>	
+				</div>
+				{% endif %}
+				<!--VL-->
+				<div class="row" align="right">
+					<div class="col-md-6">
+						Vacation Leave:
+					</div>
+					<div class="col-md-3">
+						<label id="totalvl">{{ VacationL|divide:60 }}hr {{ VacationL|modulo:60 }}min</label>
+						<input id="htotalvl" type="hidden" value="{{VacationL}}" />
+					</div>
+					<div class="col-md-3">
+						<label id="vlrem">{{ yearnum|VLR:currUser|divide:60 }}hr {{ yearnum|VLR:currUser|modulo:60 }}min</label>
+						<input id="hvlrem" type="hidden" value="{{yearnum|VLR:currUser}}" />
+					</div>
+				</div>
+				<!--SIL-->
+				<div class="row" align="right">
+					<div class="col-md-6">
+						Service Incentive Leave:
+					</div>
+					<div class="col-md-3">
+						<label id="totalsil">{{ ServiceIncentiveL|divide:60 }}hr {{ ServiceIncentiveL|modulo:60 }}min</label>
+						<input id="htotalsil" type="hidden" value="{{ServiceIncentiveL}}" />
+					</div>
+					<div class="col-md-3">
+						<label id="silrem">{{ yearnum|SILR:currUser|divide:60 }}hr {{ yearnum|SILR:currUser|modulo:60 }}min</label>
+						<input id="hsilrem" type="hidden" value="{{yearnum|SILR:currUser}}" />
+					</div>
+				</div>
+				<!--SL-->
+				<div class="row" align="right">
+					<div class="col-md-6">
+						Sick Leave:
+					</div>
+					<div class="col-md-3">
+						<label id="totalsl">{{ SickL|divide:60 }}hr {{ SickL|modulo:60 }}min</label>
+						<input id="htotalsl" type="hidden" value="{{SickL}}" />
+					</div>
+					<div class="col-md-3">
+						<label id="slrem">{{ yearnum|SLR:currUser|divide:60 }}hr {{ yearnum|SLR:currUser|modulo:60 }}min</label>
+						<input id="hslrem" type="hidden" value="{{yearnum|SLR:currUser}}" />
+					</div>
+				</div>
+				<br />
+				<!-- SUMMARY -->
+				<div class="row">
+					<div class="col-md-6">
+						<h4>Summary</h4>	
+					</div>
+						
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						&nbsp;
+					</div>
+					<div class="col-md-3" align="right">
+						<label style="color: blue;">Earned &nbsp;&nbsp;</label>
+					</div>
+					<div class="col-md-3" align="right">
+						&nbsp;
+					</div>
+					<br />
+				
+				</div>		
+				<div class="row" align="right">
+					<div class="col-md-6">
+						Total Hours Worked:
+					</div>
+					<div class="col-md-3">
+						<label id="totalhw">{{ earnedtime|divide:60 }}hr {{ earnedtime|modulo:60 }}min</label>
+						<input id="htotalhw" type="hidden" value="{{earnedtime}}" />
+					</div>
+					<div class="col-md-3">
+						&nbsp;
+					</div>
+				</div>
+				{% if not AAbsent = 0 %}
+				<div class="row" align="right">
+					<div class="col-md-6">
+						Total Absent Hours:
+					</div>
+					<div class="col-md-3">
+						<label id="totalaa" style="color: red;">{{ AAbsent|divide:60 }}hr {{ AAbsent|modulo:60 }}min</label>
+						<input id="htotalaa" type="hidden" value="{{AAbsent}}" />
+					</div>
+					<br /> <br /> <br/>
+				</div>
+				{% endif %}
+				
+			</div>
+			<div class="col-md-4">
+				<form method="post" 
+					{% if not approver == None %}	
+						action="/ERM/submitdtr/"
+					{% else %}
+						action="/ERM/dtr1appr/"
+					{% endif %}
+				>
+			
+				{% csrf_token %}
+					<div class="row">
+						<div class="col-md-12" align="right">
+							<input type="hidden" id="hmonth" name="hmonthnum" value="{{monthnum}}"/>
+							<input type="hidden" id="hyear" name="hyearnum" value="{{yearnum}}"/>
+							<input type="hidden" id="hcutoff" name="hcutoff"/>
+							{% if dtrstatus == 1 or dtrstatus == 2 %}
+							<input type="submit" class="btn btn-md btn-warning" value="Submit DTR" disabled />
+							{% else %}
+							<input id="DTRSubmission" type="submit" class="btn btn-md btn-warning" value="Submit DTR" />
+							{% endif %}	
+						</div>
+					</div>
+				</form>
+			</div>
+			
+				
+		</div>
+	
+			

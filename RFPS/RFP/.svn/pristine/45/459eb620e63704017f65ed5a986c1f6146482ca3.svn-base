@@ -1,0 +1,45 @@
+{% load staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}" />
+
+
+<script type="text/javascript" src="{% static 'js/jquery-1.9.1.js' %}" ></script>
+<script type="text/javascript" src="{% static 'js/login.js' %}" ></script>
+
+
+<!DOCTYPE html>
+
+<html>
+	<head>
+		
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>NCCC e-Request For Payment System</title>
+		
+	</head>
+
+	<body>
+		
+		<div class="login">
+			<div class="login-header">
+				<h1 id="titletext">
+					Request for Payment
+				</h1>
+			</div>
+			<div class="login-form">
+			    <form method="post" action="/rfp/authenticate/">
+			    	{% csrf_token %}
+			    	<input type="text" class="uppercase" name="username" placeholder="Username" required="required" />
+			        <input type="password" name="password" placeholder="Password" required="required" />
+			        <button type="submit" class="btn btn-primary btn-block btn-large">Login.</button>
+			    </form>
+			    <center>
+			    <span style="color: red; font-weight: bold;">{{message}}</span>
+			    </center>
+			</div>
+		</div>
+		
+	</body>
+</html>
+
+
+  
+

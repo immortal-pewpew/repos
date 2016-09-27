@@ -1,0 +1,201 @@
+{% extends "erm_templates/DTR/base.html" %}
+		{% load erm_tags %}
+		{% block content %}
+				<div class="row">
+					<div class="col-md-1">
+						&nbsp;
+					</div>
+					<div class="col-md-10">
+						<div class="row rcornerparent" style="margin: 0px; padding: 4px; margin-bottom: 10px;">
+							
+							<div class="rcornerchild" style="padding: 3px; margin: 2px; float: left; ">
+								<!-- <div class="col-md-12"> -->
+									<img src="/static/images/binocular.png" style="height: 25px; vertical-align: middle;" />	
+								<!-- </div>
+								<div class="col-md-7"> -->
+									<input id="txtApprovalSearch" type="text" class="form-control input-sm" placeholder="Search" style="width: auto !important; display: inline-block; vertical-align: middle;" />
+								<!-- </div>
+								<div class="col-md-3"> -->
+									<input type="button" class="btn btn-sm btn-success SearchBtn" value="&nbsp;GO&nbsp;" style="font-weight: bold;" searchtype="textsearch" />
+								<!-- </div> -->
+							</div>
+							
+							<div class="rcornerchild" align="right" style="padding: 3px; margin: 2px; float: left; ">
+								<!-- <div class="col-md-4"> -->
+									<label style="font-size: 12px; vertical-align: middle; margin-bottom: 0px;">
+										Month
+									</label>
+									<select class="form-control input-sm text-left" id="dtrentrymonth" name="dtrentrymonth" style="width: auto !important; display: inline-block; vertical-align: middle;">
+										<option value="All" selected="selected">All</option>
+										<option value="January">January</option>
+										<option value="February">February</option>
+										<option value="March">March</option>
+										<option value="April">April</option>
+										<option value="May">May</option>
+										<option value="June">June</option>
+										<option value="July">July</option>
+										<option value="August">August</option>
+										<option value="September">September</option>
+										<option value="October">October</option>
+										<option value="November">November</option>
+										<option value="December">December</option>
+									</select>	
+								<!-- </div> -->
+								<!-- <div class="col-md-4"> -->
+									<label style="font-size: 12px; vertical-align: middle; margin-bottom: 0px;">
+										Year
+									</label>
+									{{dtrformyear.year}}
+								<!-- </div> -->
+								<!-- <div class="col-md-4"> -->
+									<label style="font-size: 12px; vertical-align: middle; margin-bottom: 0px;">
+										Cutoff
+									</label>
+									<select id="dtrentrycutoff" class="form-control input-sm text-left" style="width: auto !important; display: inline-block; vertical-align: middle;">
+										<option value="All" selected="selected">All</option>
+										<option value="1st">1st</option>
+										<option value="2nd">2nd</option>
+									</select>
+									
+									<input type="button" class="SearchBtn btn btn-sm btn-success" value="&nbsp;GO&nbsp;" style="font-weight: bold;" searchtype="periodsearch" />	
+								<!-- </div> -->
+							</div>
+							
+							<div class="rcornerchild" align="right" style="padding: 3px; margin: 2px; float: left; ">
+								<!-- <div class="col-md-8"> -->
+									<label style="font-size: 12px; vertical-align: middle; margin-bottom: 0px;">
+										Status
+									</label>
+									<select class="form-control input-sm text-left" id="dtrentrystatus" name="dtrentrystatus" style="width: auto !important; display: inline-block; vertical-align: middle;">
+										<option value="All" selected="selected">All</option>
+										<option value="1">Approved</option>
+										<option value="2">For Approval</option>
+										<option value="3">Denied</option>
+									</select>		
+								<!-- </div> -->
+								<!-- <div class="col-md-4"> -->
+									<input type="button" class="btn btn-sm btn-success SearchBtn" value="&nbsp;GO&nbsp;" style="font-weight: bold;" searchtype="statussearch" />
+								<!-- </div> -->
+							</div>
+							
+							
+							
+					
+						</div>
+						<div id="apprcontent">
+							<div class="row">
+								<table class="table table-hover table-striped tblmodal">
+									<tbody class="table-striped">
+									    <tr>
+									    	<td class="info" align="left">&nbsp;</td>
+											<td class="info" align="left"><h4>ID</h4></td>
+											<td class="info" align="left"><h4>Full Name</h4></td>
+											<td class="info" align="left"><h4>Month</h4></td>
+											<td class="info" align="left"><h4>Year</h4></td>
+											<td class="info" align="center"><h4>Cutoff</h4></td>
+									    	<td class="info" align="center"><h4>Status</h4></td>
+									    	<td class="info" align="center"><h4>Action</h4></td>
+									    </tr>
+								    </tbody>
+								    
+								    <tbody id="table_row">
+								    {% if toapprove_list %}
+								    	{% for batch in toapprove %}
+								    	
+										<tr>
+											<td width="25px" align="center">
+												<span style="color: gray;">{{forloop.counter|toapprovenumbering:toapprove.number}}</span>
+											</td>
+												
+											<td align="left">
+												<span style="color: green; font-weight: bold;">
+													{{ batch.User_id }}
+												</span>
+											</td>
+											<td align="left">
+												<span style="color: blue; font-weight: bold;">
+													{{ batch.User__LName }}, {{ batch.User__FName }} {{ batch.User__MName }}
+												</span>
+											</td>
+											<td align="left">{{ batch.Batch__BMonth }}</td>
+											<td align="left">{{ batch.Batch__BYear }}</td>
+											<td align="center">{{ batch.Batch__CutOff }}</td>
+											<td align="center">
+												{% if batch.status == 0 %}
+									        		<img alt="New Entry" title="Not yet Submitted" class="img-responsive" height="25px" width="25px" src="/static/images/pending.png" />
+									        	{% elif batch.status == 1 %}
+									        		<img alt="Approved" title="Approved" class="img-responsive" height="20px" width="20px" src="/static/images/accept.png" />
+									        	{% elif batch.status == 2 %}
+									        		<img alt="Pending" title="For Approval" class="img-responsive" height="20px" width="20px" src="/static/images/question.png" />							        	
+									        	{% elif batch.status == 3 %}
+									        		<img alt="Denied" title="Denied" class="img-responsive" height="20px" width="20px" src="/static/images/delete.png" />							        	
+									        	{% endif %}
+											</td>
+											<td align="center">
+												<input type="button" class="btn btn-primary btn-xs btndtrdetails" value="VIEW DTR" uid="{{ batch.User_id }}" month="{{batch.Batch__BMonth}}" year="{{batch.Batch__BYear}}" cutoff="{{batch.Batch__CutOff}}" status="{{batch.status}}" data-toggle="modal" data-target="#bmodal"/>
+											</td>
+										</tr>
+									 	{% endfor %}
+									{% else %}
+										<tr>
+											<td colspan="8" align="center">
+												<h4>No Records to Display.</h4>
+											</td>
+										</tr>
+									{% endif %} 	
+									</tbody>
+									
+										
+									
+								</table>
+							</div>
+							
+							<div class="row" align="right">
+								<div class="pagination">
+								    <span class="step-links" style="font-family: Verdana; font-size: 12px;" >
+								    	
+								    	Go to page:
+								    	<input id="approvalpager" type="text" class="numonly form-control input-sm" style="width: 40px; display: inline;" value="{{ toapprove.number }}"/>
+								    	of {{ toapprove.paginator.num_pages }}
+								    	
+								    	&nbsp;
+								        &nbsp;
+								        
+								        
+								        {% if toapprove.has_previous %}
+								            <a href="?page={{ toapprove.previous_page_number }}">
+								            	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true" title="Previous"></span>
+								            </a>
+								        {% else %}
+								        	<span class="glyphicon glyphicon-arrow-left restricted" aria-hidden="true"></span>
+								        {% endif %}
+										
+										&nbsp;
+								        
+								        {% if toapprove.has_next %}
+								            <a href="?page={{ toapprove.next_page_number }}">
+								            	<span class="glyphicon glyphicon-arrow-right" aria-hidden="true" title="Next"></span>
+								            </a>
+								        {% else %}
+								        	<span class="glyphicon glyphicon-arrow-right restricted" aria-hidden="true"></span>
+								        {% endif %}
+								    </span>
+							    </div>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-1">
+						&nbsp;
+					</div>
+				</div>
+							
+		{% endblock %}
+				
+		
+				
+		
+	
+
+
+
+

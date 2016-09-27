@@ -1,0 +1,159 @@
+{% load staticfiles %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/ecs_css/style.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.4-dist/css/bootstrap.css' %}" />
+<!-- <link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.4-dist/datepicker/css/datepicker.css' %}" /> -->
+
+<script type="text/javascript" src="{% static 'jquery-1.12.1/jquery-1.12.1.min.js' %}" ></script>
+<!-- <script type="text/javascript" src="{% static 'js/main.js' %}" ></script> -->
+<script type="text/javascript" src="{% static 'bootstrap-3.3.4-dist/js/bootstrap.js' %}" ></script>
+<!-- <script type="text/javascript" src="{% static 'bootstrap-3.3.4-dist/datepicker/js/bootstrap-datepicker.js' %}" ></script> -->
+
+<script type="text/javascript">
+	$(window).load(function(){
+        $('#bmodal').modal('show');
+        $("#Davao").prop("checked", true);
+    });
+    
+   
+</script>
+	
+
+
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+		<link rel="icon" href="/static/icons/ecs.ico">
+		<title>NCCC ECS</title>
+
+	</head>
+
+	<body>
+
+	</body>
+</html>
+
+<!--MODAL FOR BRANCH HERE -->
+	<div id="bmodal" data-backdrop="static" aria-hidden="true" class="modal fade">
+	  <div class="modal-dialog modal-sm">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        
+	        <h3 class="modal-title" align="center">
+		        	<span class="label textheader">
+		        		SELECT BRANCH
+		        	</span>
+		        </h3>
+	      </div>
+		  		<div id="branchmodal" class="modal-body">
+			       <form method="post" action="/ECS/setbranch/" >
+			       	{% csrf_token %}
+			       	
+	            	<div data-toggle="buttons">
+						<div class="btn btn-primary active" style="display: block;">
+						    <input type="radio" id="Davao" name="branch" value="DVO" checked/> DAVAO
+						</div>
+						<div class="btn btn-primary" style="display: block;">
+						    <input type="radio" id="Tagum" name="branch" value="TGM" /> TAGUM
+						</div>
+						<div class="btn btn-primary" style="display: block;">
+						    <input type="radio" id="Manila" name="branch" value="MNL"> MANILA
+						</div>
+						<div class="btn btn-primary" style="display: block;">
+						    <input type="radio" id="Palawan" name="branch" value="PAL"> PALAWAN
+						</div>
+						<div style="display: block;">
+							&nbsp;
+						</div>
+						<!-- 
+						<div align="right">
+							<script>
+							$('button#btnOK').on('click', function(event){
+								var branch = $('input[name=branch]:checked').val();
+								
+								
+								$.ajax({
+							        url : "/ECS/setbranch/", // the endpoint
+							        type : "post", // http method
+							        data : { branch:branch }, // data sent with the post request
+									
+									// handle a successful response
+							        success : function(data) {
+							        	window.location.replace('/ECS/sumain/');
+							        	},
+							
+							        // handle a non-successful response
+							        error : function(data) {
+							        	
+							        	}
+									 });
+								});
+								////////////////////////////////////////////////////////////////////////
+								////////////////////////////////////////////////////////////////////////
+								////////////////////////////////////////////////////////////////////////
+								
+								//csrf token
+								function getCookie(name) {
+								    var cookieValue = null;
+								    if (document.cookie && document.cookie != '') {
+								        var cookies = document.cookie.split(';');
+								        for (var i = 0; i < cookies.length; i++) {
+								            var cookie = jQuery.trim(cookies[i]);
+								            // Does this cookie string begin with the name we want?
+								            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+								                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+								                break;
+								            }
+								        }
+								    }
+								    return cookieValue;
+								}
+								var csrftoken = getCookie('csrftoken');
+								 
+								/*
+								The functions below will create a header with csrftoken
+								*/
+								 
+								function csrfSafeMethod(method) {
+								    // these HTTP methods do not require CSRF protection
+								    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+								}
+								function sameOrigin(url) {
+								    // test that a given url is a same-origin URL
+								    // url could be relative or scheme relative or absolute
+								    var host = document.location.host; // host + port
+								    var protocol = document.location.protocol;
+								    var sr_origin = '//' + host;
+								    var origin = protocol + sr_origin;
+								    // Allow absolute or scheme relative URLs to same origin
+								    return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+								        (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+								        // or any other URL that isn't scheme relative or absolute i.e relative.
+								        !(/^(\/\/|http:|https:).*/.test(url));
+								}
+								 
+								$.ajaxSetup({
+								    beforeSend: function(xhr, settings) {
+								        if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+								            // Send the token to same-origin, relative URLs only.
+								            // Send the token only if the method warrants CSRF protection
+								            // Using the CSRFToken value acquired earlier
+								            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+								        }
+								    }
+								});
+						</script>
+						</div>
+						-->
+					</div>
+					<div align="right">
+						<button type="submit" class="btn btn-success" id="btnOK">&nbsp;&nbsp;&nbsp;OK&nbsp;&nbsp;&nbsp;</button>
+					</div>
+				  </form>	
+				</div>
+		       
+	    </div><!--/.modal-content -->
+	   </div><!-- /.modal-dialog --> 
+	 </div><!-- /.modal -->

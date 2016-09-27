@@ -1,0 +1,187 @@
+<script type="text/javascript">
+	$('input.sudets').on('click', function(event) {
+		var SOANo = $(this).attr('SOANo');
+		var SOAStatus = $(this).attr('Status');
+
+		$.ajax({
+			url : "/ECS/sudetprev/", // the endpoint
+			type : "post", // http method
+			data : {
+				SOANo : SOANo,
+				SOAStatus : SOAStatus
+			}, // data sent with the post request
+
+			// handle a successful response
+			success : function(data) {
+				$('#sudetailsbody').html(data);
+			},
+
+			// handle a non-successful response
+			error : function(data) {
+
+			}
+		});
+	});
+
+	//delete SOA for SU
+	$('input.soadel').on('click', function(event){
+		event.preventDefault();
+		var SOANo = $(this).attr('SOANo');
+		
+		$("#dialogdel").dialog('option', 'buttons', {
+	        "Delete": function() {
+	            $(this).dialog("close");
+	            //DELETE CLICKED
+	            $.ajax({
+		        url : "/ECS/SOAdeleteact/", // the endpoint
+		        type : "post", // http method
+		        data : { SOANo:SOANo }, // data sent with the post request
+				
+				// handle a successful response
+		        success : function(data) {
+		        	//alert(data);
+		        	$('#deltext').text(data);
+		        	  $(function() {
+					    $( "#dialogdelsuc" ).dialog({
+					      modal: true,
+					      buttons: {
+					        Ok: function() {
+					        	$( this ).dialog( "close" );
+					        	window.location.replace("/ECS/sumain/");
+					        }
+					        
+					      },
+					      beforeClose: function(){
+					        window.location.replace("/ECS/sumain/");
+					      }
+					      
+					    });
+					  });
+		        	},
+		
+		        // handle a non-successful response
+		        error : function(data) {
+		        	
+		        	}
+				 });
+	            
+	            
+	        },
+	        "Cancel": function() {
+	            $(this).dialog("close");
+	        }
+	    });
+	    $("#dialogdel").dialog("open");
+	    return false;
+	    
+		
+	});
+
+//CLEAR MODAL DATA IF HIDDEN
+$('.modal').on('hidden.bs.modal', function () {
+  $('.modal-body').html('');
+});
+
+</script>
+
+	
+		{% if allSOA %}
+		<table class="table table-striped">
+			<tbody>
+				<tr>
+					<th class="tabletitle">
+						SOA No
+					</th>
+					<th class="tabletitle">
+						SOA Creation Date
+					</th>
+					<th class="tabletitle">
+						Created By
+					</th>
+					<th class="tabletitle">
+						Supplier
+					</th>
+					<th class="tabletitle">
+						Comeback Date
+					</th>
+					<th class="tabletitle">
+						Last Update
+					</th>
+					<th class="tabletitle">
+						Status
+					</th>
+					<th class="tabletitle text-center">
+						Action
+					</th>
+					
+				</tr>
+			</tbody>
+			{% for SOA in allSOA %}
+				<tr>
+					<td align="left">
+						{{ SOA.SOANo }}
+					</td>
+					<td align="left">
+						{{ SOA.SOADate|date:"m/d/Y h:i:s A" }}
+					</td>
+					<td align="left">
+						{{ SOA.CreatedBy_id }}
+					</td>
+					<td align="left">
+						{{ SOA.CreatedBy.vendorName }} 
+					</td>
+					<td align="left">
+						{% if SOA.CBDate %}
+							{{ SOA.CBDate|date:"m/d/Y" }}
+						{% else %}
+							-
+						{% endif %}
+					</td>
+					<td align="left">
+						{{ SOA.SOALastUpdate|date:"m/d/Y h:i:s A" }}
+					</td>
+					<td align="left" style="font-weight: bold; color: 
+						{% if SOA.SOAStatus == 'Open' %}
+							blue;
+						{% elif SOA.SOAStatus == 'Returned' %}
+							red;
+						{% elif SOA.SOAStatus == 'Processed' %}
+							green;
+						{% else %}
+							gray;
+						{% endif %}
+					">
+						{{ SOA.SOAStatus }}	
+					</td>
+					<td align="left">
+						<input type="image" src="/static/images/document_info32.png" title="Details" class="img sudets" SOANo="{{SOA.SOANo}}" data-toggle="modal" data-target="#susoadetailsmodal"/>
+					
+						<form method="post" action="/ECS/su_html_to_pdf_directly/" target="_blank" style="display:inline-block; height:5px;">
+					 	{% csrf_token %}
+							{% if SOA.SOAStatus != 'Returned' %}
+							<input type="hidden" value="{{SOA.SOANo}}" name="printSOANo">
+							<input type="image" src="/static/images/printer32.png" title="Print" class="img" SOANo="{{SOA.SOANo}}" />
+							{% endif %}
+						</form>
+						
+						<form method="post" action="/ECS/export_to_xls/" style="display:inline-block; height:5px;">
+						{% csrf_token %}
+							{% if SOA.SOAStatus != 'Returned' %}
+							<input type="hidden" value="{{SOA.SOANo}}" name="xlsSOANo">
+							<input SOANo="{{SOA.SOANo}}" class="toxls img" src="/static/images/export_excel.png" title="Export to Excel" type="image">
+							{% endif %}
+						</form>
+						
+					</td>
+					
+				</tr>
+			{% endfor %}
+			
+		</table>
+		{% else %}
+			<h1 style="text-align: center; ">No Records to display.</h1>
+		{% endif %}
+		
+		
+		  
+	

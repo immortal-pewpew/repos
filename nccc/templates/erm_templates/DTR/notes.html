@@ -1,0 +1,62 @@
+<script>
+$('input#btnAddNotes').on('click', function(event){
+	//$('#nmodal').modal('show');
+	event.preventDefault();
+	var date = $(this).attr('date');
+	var theMessage = $('#theMessage').val();
+	
+	$.ajax({
+        url : "/ERM/addnotes/", // the endpoint
+        type : "post", // http method
+        data : { theMessage:theMessage, date:date }, // data sent with the post request
+		
+		// handle a successful response
+        success : function(data) {
+        	$('#notesandremarks').html(data);
+        	$('#theMessage').val('');
+        	},
+
+        // handle a non-successful response
+        error : function(data) {
+        	
+        	}
+		 });
+
+	
+	
+});
+</script>
+
+<div class="row">
+	<div class="col-md-1">
+		&nbsp;
+	</div>
+	<div class="col-md-10">
+		<div class="row">
+			<div class="col-md-12" id="notesandremarks">
+				<h5>
+					{% if message == '' or message == None %}
+						No attached note.<br /><br />
+					{% else %}
+						{{ message|linebreaks}} <br /><br />
+					{% endif %}
+				</h5>	
+			</div>
+		</div>
+		<div class="row">
+			<form method="post">
+				{% csrf_token %}
+				<div class="col-md-10">
+					<textarea id="theMessage" class="form-control"></textarea>	
+				</div>
+				<div class="col-md-2">
+					<input id="btnAddNotes" date="{{datetoview}}" type="submit" class="btn btn-success " value="Write" />	
+				</div>
+			</form>
+		</div>
+		
+	</div>
+	<div class="col-md-1">
+		&nbsp;
+	</div>
+</div>

@@ -1,0 +1,295 @@
+{% load staticfiles %}
+{% load ecs_tags %}
+
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/ecs_css/style.css' %}" />
+
+<script type="text/javascript">
+	
+	if($('input#hisadmin').val() == 0 ){
+		/////INITIALIZE TEXTFIELDS//////////////
+		$("input[type='text']").prop('disabled',true);
+		//$('input#btnSetnbu').prop('disabled',true);
+		$('input.addInv').prop('disabled',true);
+	}
+	
+	
+	
+	//POPOVER INITIALIZATION
+	$("input.POfield").popover({					    							   		
+	 	placement:'bottom',
+	});
+	
+	//DATE INITIALIZATION
+	$( "input.datepickerx" ).datepicker({
+		format: 'mm/dd/yyyy',
+		changeMonth: true,
+        changeYear: true,
+        showButtonPanel: true,
+        yearRange: "-50:+0",
+	});
+	
+	//IF SUBMITTING FORM CREATE
+	$("form#frmCreate").on('submit', function(event){
+		event.preventDefault();
+		//$("#dialogconfirmcreate").dialog("open");//transfer sa baba try
+	//});
+	
+	//$("input#btnCreate").on('click', function(event){
+		var Status = $("input#hStatus").val();
+		var insertedpo = $("input#hponums").val().split(",").map(Number);
+		
+		
+		//DELETE THE 0
+		if (insertedpo == 0){
+			//Because we already know that index 0 is the index of the value 0
+    		insertedpo.splice(0, 1);
+			}
+		
+		if (insertedpo == ''){
+			event.preventDefault();
+			$("#dialoginputerror").dialog("open");
+			}
+		else{
+			var nbu = $('input#hnbu').val();
+			$.ajax({
+		        url : "/ECS/evalallPO/", // the endpoint
+		        type : "post", // http method
+		        data : { insertedpo:insertedpo, nbu:nbu }, // data sent with the post request
+				
+				beforeSend: function(xhr, settings) {
+			        if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+			            // Send the token to same-origin, relative URLs only.
+			            // Send the token only if the method warrants CSRF protection
+			            // Using the CSRFToken value acquired earlier
+			            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+			        }
+			        
+			        //put loading bar here
+			        $('#loading').show();
+			        
+			   	},
+				
+				// handle a successful response
+		        success : function(data) {
+		        	$('#loading').hide();
+		        	if(data == 'Okay'){
+		        		$("#dialogconfirmcreate").dialog("open");
+		        		}
+		        	/*
+		        	else if(data == 0){
+		        		$("#dialogTermNotFoundError").dialog("open");
+		        		}
+		        	*/
+		        	else if(data == 'Connection Error!'){
+		        		$("#dialogConnerror").dialog("open");
+		        		}
+		        	},
+		
+		        // handle a non-successful response
+		        error : function(data) {
+		        	window.location.reload();
+		        	}
+				 });
+			}
+			
+	});
+	
+	
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+//csrf token
+function getCookie(name) {
+var cookieValue = null;
+if (document.cookie && document.cookie != '') {
+var cookies = document.cookie.split(';');
+for (var i = 0; i < cookies.length; i++) {
+var cookie = jQuery.trim(cookies[i]);
+// Does this cookie string begin with the name we want?
+if (cookie.substring(0, name.length + 1) == (name + '=')) {
+cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+break;
+}
+}
+}
+return cookieValue;
+}
+var csrftoken = getCookie('csrftoken');
+
+/*
+The functions below will create a header with csrftoken
+*/
+
+function csrfSafeMethod(method) {
+// these HTTP methods do not require CSRF protection
+return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+function sameOrigin(url) {
+// test that a given url is a same-origin URL
+// url could be relative or scheme relative or absolute
+var host = document.location.host; // host + port
+var protocol = document.location.protocol;
+var sr_origin = '//' + host;
+var origin = protocol + sr_origin;
+// Allow absolute or scheme relative URLs to same origin
+return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+(url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+// or any other URL that isn't scheme relative or absolute i.e relative.
+!(/^(\/\/|http:|https:).*/.test(url));
+}
+
+$.ajaxSetup({
+beforeSend: function(xhr, settings) {
+if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+// Send the token to same-origin, relative URLs only.
+// Send the token only if the method warrants CSRF protection
+// Using the CSRFToken value acquired earlier
+xhr.setRequestHeader("X-CSRFToken", csrftoken);
+}
+}
+});
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////	
+</script>
+
+
+<div class="row">
+	<div class="col-md-2">&nbsp;</div>
+	<div class="col-md-8">
+		<br/>
+		<form id="frmCreate" method="post" action="/ECS/SOAinsertact/">
+			{% csrf_token %}
+			<input type="hidden" id="hisadmin" value="{{isadmin}}"/>
+			<input type="hidden" id="hStatus" value="0"/>
+			<input type="hidden" id="hponums" name="allenteredpo"/>
+			<div class="row text-center">
+				<label class="textheader">
+					{% if isadmin == 0 %}
+						New SOA Entry
+					{% else %}
+						New SOA Adjustment
+					{% endif %}
+				</label>
+			</div>
+			<div class="row text-center">
+				<label style="color: red;">Please enter SOA details.</label>
+				<br/><br/>
+			</div>
+			<div class="row">
+				{% if isadmin == 0 %}
+				<div style="float: left; display: block; height: 30px; vertical-align: middle; margin-left: 5px; margin-right: 5px;">
+					<label>BILL TO:</label>
+				</div>
+				<div style="float: left; display: block; height: 30px; vertical-align: middle; margin-left: 5px; margin-right: 5px;">
+					{{ form.nbu }}
+					<input type="hidden" id="hnbu" name="hnbu" />
+				</div>
+				<div style="float: left; display: block; height: 30px; vertical-align: middle; margin-left: 5px; margin-right: 15px;">
+					<input id="btnSetnbu" type="button" class="btn-primary btn-sm" value="Set" style="padding-top: 0px; padding-bottom: 0px;" />
+				</div>
+				{% elif isadmin == 1 %}
+				<div style="float: left; display: block; height: 30px; vertical-align: middle; margin-left: 15px; margin-right: 5px;">
+					<label>VENDOR ID:</label>
+				</div>
+				<div style="float: left; display: block; height: 30px; vertical-align: middle; margin-left: 5px; margin-right: 5px;">
+					<input id="vendorID" class="text-right uppercase" name="vendorID" type="text" placeholder="######" size="10px" style="font-size: 12px;" required/>
+				</div>
+				{% endif %}
+			</div>
+			<br>
+			<div class="row">
+				<table class="table table-striped" >
+					<tr>
+						<th class="tabletitle text-center">
+							PO No.
+						</th>
+						<th class="tabletitle text-center">
+							RC DATE
+						</th>
+						<th class="tabletitle text-center">
+							INVOICE No.
+						</th>
+						<th class="tabletitle text-center">
+							INVOICE DATE
+						</th>
+						<th class="tabletitle text-center">
+							AMOUNT(VAT IN)
+						</th>
+						<th>
+							&nbsp;
+						</th>
+					</tr>
+					{% for x in 10|get_range %}
+				
+					<tr>
+						<td>
+							<input id="PONo{{forloop.counter}}" class="form-control input-sm text-center POfield numonly disabler" type="text" placeholder="PO Number" name="PONo{{forloop.counter}}" fnum="{{forloop.counter}}" />
+							<input type="hidden" id="holdpo{{forloop.counter}}" />
+							
+							<!-- <input id="hrramt{{forloop.counter}}" name="RRAmt{{forloop.counter}}" type="hidden" /> -->
+							<input id="htotalpoamt{{forloop.counter}}" name="htotalpoamt{{forloop.counter}}" type="hidden" value="0"/>
+							
+							<input id="InvRowindex{{forloop.counter}}" name="InvRowindex{{forloop.counter}}" type="hidden" value="1" />
+						</td>
+						<td>
+							<input id="podate{{forloop.counter}}" type="text" class="form-control input-sm text-center disabler readonly datepickerx"  placeholder="MM/DD/YYYY" name="PODate{{forloop.counter}}" fnum="{{forloop.counter}}"/>
+							<input id="hpodate{{forloop.counter}}" type="hidden" name="hPODate{{forloop.counter}}" />
+						</td>
+						<td>
+							<div id="multInvNo{{forloop.counter}}">
+								<div id="InvNo{{forloop.counter}}-1">
+									<input class="form-control input-sm text-center disabler InvNofield fieldreq numonly" type="text" placeholder="Invoice No." name="InvNo{{forloop.counter}}-1" fnum="{{forloop.counter}}" rownum="1" />
+								</div>
+							</div>
+						</td>
+						<td>
+							<div id="multInvDate{{forloop.counter}}">
+								<div id="InvDate{{forloop.counter}}-1">
+									<input class="form-control input-sm datepickerx text-center disabler readonly InvDatefield fieldreq" type="text" placeholder="MM/DD/YYYY" name="InvDate{{forloop.counter}}-1" fnum="{{forloop.counter}}" rownum="1" />
+								</div>
+							</div>
+						</td>
+						<td class="tdamount">
+							<div id="multAmount{{forloop.counter}}">
+								<div id="Amount{{forloop.counter}}-1">
+									<input class="form-control input-sm text-right amts numdot disabler Amountfield fieldreq" type="text" placeholder="Amount" name="Amount{{forloop.counter}}-1" fnum="{{forloop.counter}}" rownum="1" />
+									<input id="holdamt{{forloop.counter}}-1" type="hidden" value="0"/>
+								</div>
+							</div>
+						</td>
+						<td>
+							<div id="multActBtn{{forloop.counter}}">
+								<div id="ActBtn{{forloop.counter}}-1">
+									<input id="add{{forloop.counter}}" fnum="{{forloop.counter}}" type="image" src="/static/images/add.png" style="height: 30px; padding-top: 5px; padding-bottom: 5px;" class="addInv" rownum="1" ctr="1" /><br />
+								</div>
+							</div>
+						</td>
+					</tr>
+				
+					{% endfor %}
+					
+					<tr>
+						<td colspan="6" style="background: darkgray;">
+							<hr/>
+						</td>	
+					</tr>
+					
+				</table>
+			</div>
+			<div class="row" align="right">
+				<input id="btnCreate" class="btn btn-success" type="submit" value="Create" />
+			</div>
+			
+		</form>
+		<br/>
+	</div>
+	<div class="col-md-2">&nbsp;</div>	
+		
+</div>
+
+
+

@@ -1,0 +1,262 @@
+{% load staticfiles %}
+{% load humanize %}
+
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/ecs_css/style.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.4-dist/css/bootstrap.css' %}" />
+
+<script type="text/javascript" src="{% static 'jquery-1.12.1/jquery-1.12.1.min.js' %}" ></script>
+<script type="text/javascript" src="{% static 'bootstrap-3.3.4-dist/js/bootstrap.js' %}" ></script>
+
+<!DOCTYPE html>
+
+<html>
+	<head>
+		
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<link rel="icon" href="/static/icons/ecs.ico">
+		<title>NCCC ECS</title>
+		
+		<style>
+		    @page {
+		        size: a5 landscape;
+		        margin: 1cm;
+		    
+		    	@frame footer {
+                    -pdf-frame-content: footerContent;
+                    bottom: 0cm;
+                    
+                    height: 4cm;
+                }
+		    }
+		</style>
+	</head>
+
+	<body>
+		
+					<div class="row">
+						<div class="row" align="center">
+							<h1 style="text-decoration: underline;">NCCC - COUNTER RECEIPT</h1>
+						</div>
+						
+						<div class="row">
+							<table border="0" cellspacing="5" width="100%" cellspacing="5">
+								<tr>
+									<td width="60px" valign="middle">
+										&nbsp;
+									</td>
+									<td width="180px" valign="middle">
+										<b>User Code:</b>		
+									</td>
+									<td valign="middle">
+										<h2 style="color: green;">{{soainfo.UserCode_id}}</h2>		
+									</td>
+									
+									<td width="500px" valign="middle">
+										&nbsp;
+									</td>
+									<td width="180px" valign="middle">
+										<b>SOA No.:</b>		
+									</td>
+									<td valign="middle">
+										<h2 style="color: darkred;">{{SOANo}}</h2>		
+									</td>
+								</tr>
+								
+								<tr>
+									<td width="60px" valign="middle">
+										&nbsp;
+									</td>
+									<td width="180px" valign="middle">
+										<b>User Name:</b>		
+									</td>
+									<td valign="middle">
+										<h2 style="color: green;">{{soainfo.UserCode.UserName}}</h2>		
+									</td>
+									
+									<td width="500px" valign="middle">
+										&nbsp;
+									</td>
+									<td width="180px" valign="middle">
+										<b>SOA Date:</b>		
+									</td>
+									<td valign="middle">
+										<h2 style="color: darkred;">{{soainfo.SOADate|date:"m/d/Y"}}</h2>		
+									</td>
+								</tr>
+								
+								<tr>
+									<td width="60px" valign="middle">
+										&nbsp;
+									</td>
+									<td width="180px" valign="middle">
+										<b>Bill To:</b>	
+									</td>
+									<td valign="middle" colspan="4">
+										<h2>{{soainfo.SOABillTo.NBUDesc}}</h2>		
+									</td>
+								</tr>
+							</table>
+						</div>
+						<div class="row">
+							<table border="0" cellspacing="1" cellpadding="1">
+								<tr>
+									<th class="tabletitle" style="background: skyblue; vertical-align: middle; z-index: -100;">
+										PO DATE
+									</th>
+									<th class="tabletitle" valign="middle" style="background: skyblue;">
+										PO No.
+									</th>
+									<th class="tabletitle" valign="middle" style="background: skyblue;">
+										INVOICE DATE
+									</th>
+									<th class="tabletitle" valign="middle" style="background: skyblue;">
+										INVOICE No.
+									</th>
+									<th colspan="2" class="tabletitle" valign="middle" style="background: skyblue;">
+										AMOUNT
+									</th>
+								</tr>
+								{% for det in detinfo %}
+							
+								<tr>
+									<td align="center" valign="middle">
+										<b>{{det.PODate|date:"m/d/Y"}}</b>
+									</td>
+									<td align="center" valign="middle">
+										<b>{{det.PONo}}</b>
+									</td>
+									<td align="center" valign="middle">
+										<b>{{det.InvDate|date:"m/d/Y"}}</b>
+									</td>
+									<td align="center" valign="middle">
+										<b>{{det.InvNo}}</b>
+									</td>
+									<td class="tdamount" align="right" valign="middle">
+										<b>{{det.Amount|intcomma}}</b>
+									</td>
+									<td width="30px">
+										&nbsp;
+									</td>
+								</tr>
+							
+								{% endfor %}
+								
+								<tr>
+									<td colspan="6">
+										<hr/>
+									</td>	
+								</tr>
+								<tr>
+									<td align="center">
+										<h3>TOTAL</h3>
+									</td>
+									<td colspan="4" align="right">
+										<h3 style="color: red;">P &nbsp; {{totalamount|intcomma}}</h3>
+									</td>
+									<td width="30px">
+										&nbsp;
+									</td>
+								</tr>
+								<tr>
+									<td colspan="6">
+										<hr/>
+									</td>	
+								</tr>
+							</table>
+						</div>
+						
+						<div class="row">
+							&nbsp;
+						</div>
+					</div>
+					
+			
+					
+					<div id="footerContent" class="row">
+						<table class="text-left" cellspacing="1" cellpadding="1">
+							<tr rowspan="2" style="line-height: 30px; height: 30px;">
+								<td width="10%">
+									&nbsp;
+								</td>
+								<td width="10%" align="right">
+									<label>&nbsp;</label>
+								</td>
+								<td width="25%" style="vertical-align: bottom;">
+									&nbsp;
+								</td>
+								<td width="15%">
+									&nbsp;
+								</td>
+								<td width="10%" align="right">
+									<label>Issued by:</label>
+								</td>
+								<td width="20%" style="vertical-align: bottom; text-decoration: underline;">
+									{{soainfo.APVPerson.UserName}}
+								</td>
+								<td width="10%">
+									&nbsp;
+								</td>
+							</tr>
+							<tr rowspan="2" style="line-height: 30px; height: 30px;">
+								<td width="10%">
+									&nbsp;
+								</td>
+								<td width="10%" align="right">
+									<label>&nbsp;</label>
+								</td>
+								<td width="25%" style="vertical-align: bottom;">
+									&nbsp;
+								</td>
+								<td width="15%">
+									&nbsp;
+								</td>
+								<td width="10%" align="right">
+									<label>Issued Date:</label>
+								</td>
+								<td width="20%" style="vertical-align: bottom; text-decoration: underline;">
+									{{soainfo.IDate|date:"m/d/Y h:i:s A"}}
+								</td>
+								<td width="10%">
+									&nbsp;
+								</td>
+							</tr>
+							<tr style="line-height: 30px; height: 30px;">
+								<td width="10%">
+									&nbsp;
+								</td>
+								<td width="10%" align="right">
+									<label>&nbsp;</label>
+								</td>
+								<td width="25%" style="vertical-align: bottom;">
+									&nbsp;
+								</td>
+								<td width="15%">
+									&nbsp;
+								</td>
+								<td width="10%" align="right">
+									<label>Comeback Date:</label>
+								</td>
+								<td width="20%" style="vertical-align: bottom; text-decoration: underline;">
+									{{soainfo.CRSCBDate|date:"m/d/Y"}}
+								</td>
+								<td width="10%">
+									&nbsp;
+								</td>
+							</tr>
+						</table>
+					</div>
+					
+
+						
+			
+		
+			
+			
+			
+	
+	
+	</body>
+
+</html>
+

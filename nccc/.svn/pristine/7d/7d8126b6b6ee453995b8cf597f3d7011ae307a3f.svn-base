@@ -1,0 +1,477 @@
+{% load staticfiles %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/ecs_css/style.css' %}" />
+
+<link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.4-dist/css/bootstrap.min.css' %}" />
+
+<script type="text/javascript" src="{% static 'jquery-1.12.1/jquery-1.12.1.min.js' %}" ></script>
+
+<!-- GIPULIHAN NA NAKO SILA AS MINIFIED UG JQUERY 1.12.1 NA ANG AKO GAMIT-->
+<script type="text/javascript" src="{% static 'js/ecs_js/main.js' %}" ></script>
+<script type="text/javascript" src="{% static 'bootstrap-3.3.4-dist/js/bootstrap.min.js' %}" ></script>
+
+<!--  CHOSEN JS -->
+<link rel="stylesheet" type="text/css" href="{% static 'chosen_v1.6.2/chosen.min.css' %}" />
+<script type="text/javascript" src="{% static 'chosen_v1.6.2/chosen.jquery.min.js' %}" ></script>
+
+
+<link rel="stylesheet" type="text/css" href="{% static 'jquery-ui-1.11.4.custom/jquery-ui.min.css' %}" />
+<script type="text/javascript" src="{% static 'jquery-ui-1.11.4.custom/jquery-ui.min.js' %}" ></script>
+
+<script type="text/javascript" src="{% static 'jasny-bootstrap/js/jasny-bootstrap.min.js' %}" ></script>
+
+
+
+
+
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<link rel="icon" href="/static/icons/ecs.ico">
+		<title>NCCC ECS</title>
+	</head>
+
+	<body>
+		<div id="loading" style="z-index: 9999;" role="dialog">
+		    <h2 style="color: red;">Verifying</h2>
+			<img id="loading-image" src="/static/images/ajax-loader.gif" alt="Processing..." />
+		</div>
+		
+		<div class="container-fluid wholepage">
+			<nav class="navbar navbar-inverse">
+				 <div class="container-fluid">
+				    <!-- Collect the nav links, forms, and other content for toggling -->
+				    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+				      	<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+				        <span class="sr-only">Toggle navigation</span>
+				        <span class="icon-bar"></span>
+				        <span class="icon-bar"></span>
+				        <span class="icon-bar"></span>
+				      </button>
+				      <a id="home" class="navbar-brand" 
+				      	{% if isadmin == 0 %}
+				      		href="/ECS/sumain/"
+				      	{% elif isadmin == 1 %}
+				      		href="/ECS/camain/"
+				      	{% elif isadmin == 2 %}
+				      		href="/ECS/pamain/"
+				      	{% elif isadmin == 3 %}
+				      		href="/ECS/mumain/"
+				      	{% elif isadmin == 4 %}
+				      		href="/ECS/users/"
+				      	{% endif %}
+				      >NCCC ECS</a>
+				      
+				      <ul class="nav navbar-nav navbar-right">
+				        <li><p class="navbar-text navbar-right">Signed in as &nbsp;&nbsp;&nbsp;&nbsp;</p></li>
+				        <li class="dropdown">
+				          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+				          	<b>{{user}}, {{ FullName }} — 
+				          	{% if isadmin == 0 %}
+				          		{{vendorName}}
+				          	{% else %}
+				          		{{nbudesc}}
+				          	{% endif %}
+				          	</b><span class="caret"></span>
+				          </a>
+				          <ul class="dropdown-menu">
+				          	{% if isadmin == 0 %}
+				          		<li><a href="/ECS/sumain/">SOA Transactions</a></li>
+				          		<li><a href="/ECS/subranch/">Switch Branch</a></li>
+					          	<li>
+					          		<a id="{{user}}" class="msglink" role="button" data-toggle="modal" data-target="#msgmodal">Messages 
+					          			{% if numOfUnread != 0 %}
+					          				<span class="badge progress-bar-warning">{{numOfUnread}}</span>
+					          			{% endif %}
+					          		</a>
+					          	</li>
+					        {% elif isadmin == 1 %}
+				            	<li><a href="/ECS/camain/">SOA Transactions</a></li>
+				            	<li><a href="/ECS/suSOACreation/" id="SOACreation">Adjustments</a></li>
+				            	<li><a href="/ECS/selectnbu/">Switch NBU</a></li>
+					       	{% elif isadmin == 2 %}
+				            	<li><a href="/ECS/pamain/">SOA Transactions</a></li>
+				            	<li><a href="/ECS/selectnbu/">Switch NBU</a></li>
+					        {% elif isadmin == 3 %}
+				            	<li><a href="/ECS/mumain/">SOA Transactions</a></li>
+					            <li><a href="/ECS/selectnbu/">Switch NBU</a></li>
+					            <li role="separator" class="divider">&nbsp;</li>
+					            <li><a href="/ECS/users/">Users Masterlist</a></li>
+					            <li><a href="/ECS/access/">Access Masterlist</a></li>
+					            <li><a href="/ECS/holidays/">Holidays Masterlist</a></li>
+					            <li role="separator" class="divider">&nbsp;</li>
+					            <li><a href="/ECS/messagingadmin/">Messages</a></li>
+					            <li><a id="reportlink" role="button">Reports</a></li>
+				            {% elif isadmin == 4 %}
+					            <li><a href="/ECS/users/">Users Masterlist</a></li>
+					            <li><a href="/ECS/access/">Access Masterlist</a></li>
+					            <li><a href="/ECS/holidays/">Holidays Masterlist</a></li>
+				            {% endif %}
+				            	<li role="separator" class="divider">&nbsp;</li>
+				            	<li><a class="pwdlink" role="button">Change Password</a></li>
+				            	<li role="separator" class="divider">&nbsp;</li>
+				            	<li><a href="/ECS/logout/">Logout</a></li>
+				          </ul>
+				        </li>
+				        
+				      </ul>
+				      
+				    </div><!-- /.navbar-collapse -->
+				  </div><!-- /.container-fluid -->
+			</nav>
+			
+			<div id="bodycontent" class="bodydiv container-fluid content">
+				{% block content %}	
+				{% endblock %}
+			</div>
+			<div class="footer">
+				New City Commercial Corporation (NCCC). NCCC Electronic Countering System © NCCC 2016<br/>
+				<a href="/ECS/downloads/">Forms & Downloads</a> | <a href="/ECS/terms/">Terms & Conditions</a><br/>
+				<span id="stat"><!-- STATS: Total: %(total_time).2fs Python: %(python_time).2fs DB: %(db_time).2fs Queries: %(db_queries)d ENDSTATS --></span>
+			</div>
+		</div>
+		
+		
+	</body>
+</html>
+
+
+<div id="musoadetailsmodal" data-backdrop="static" tabindex="-1" aria-hidden="true" class="modal fade">
+  <div class="modal-dialog viewmodal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button id="btntopX" type="button" class="close" aria-label="Close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+        <h3 class="modal-title" align="center">
+	        	<span class="label textheader">
+	        		SOA Details
+	        	</span>
+	        </h3>
+      </div>
+	      <div id="mudetailsbody" class="modal-body">
+	        
+	        
+        	<div class="row" align="center">
+	        	<img src="/static/images/circleloadinganimation.gif" width="200px" heignt="200px" />
+	     	</div>
+	     
+	        
+	      </div>
+     
+    </div>
+   </div> 
+ </div>
+
+<div id="dialogchangepwd" title="Change Password" class="dialogbox">
+	<form method="post" id="frmChangePwd">
+		{% csrf_token %}
+		<div class="row" style="margin: auto;">
+			<label id="pwdnote" style="color: red;">All input fields required.</label>
+			<br/><br/>
+			
+			<label style="font-family: Courier;">Old Password</label>
+			<input class="form-control input-sm" id="oldpwd" name="oldpwd" type="password" required />	
+			
+			<br/>
+			
+			<label style="font-family: Courier;">New Password</label>
+			<input class="form-control input-sm" id="newpwd" name="newpwd" type="password" required />	
+			
+			<br/>
+			
+			<label style="font-family: Courier;">Confirm New Password</label>
+			<input class="form-control input-sm" id="confirmnewpwd" name="confirmnewpwd" type="password" required />	
+		</div>
+		
+	</form>
+</div>
+
+
+<div id="dialogpwdchngsuccess" title="Password Change Successful" class="dialogbox">
+	<p>Password has been successfully changed.</p>
+	<input id="isadmin" type="hidden" value="{{isadmin}}"/> 
+</div>
+	 
+
+
+<div id="dialogcreateacct" title="Create New Account" class="dialogbox">
+	<form method="post" action="/ECS/createacct/" id="frmcreateacct">
+		{% csrf_token %}
+		<div class="row" style="margin: auto;">
+			<label id="newacctnote" style="color: red; margin-bottom: 25px;">Enter new account details.</label>
+			
+			<label class="normaltext">Account Type</label>
+			<select id="newaccttype" name="newaccttype" class="normaltext" style="margin-bottom: 20px;">
+				<option value="0">Supplier</option>
+				<option value="1">APV Associate</option>
+				<option value="2">Disbursement Associate</option> 
+			</select>
+			
+			<label class="normaltext">Account Username</label>
+			<input class="normaltext uppercase" id="newacctusername" name="newacctusername" type="text" style="margin-bottom: 20px; width: 50%;" required />
+				
+			<label class="normaltext">Full Name</label>
+			<input class="normaltext uppercase" id="newacctfullname" name="newacctfullname" type="text" style="margin-bottom: 20px; width: 100%;" required />
+			
+			<div id="vendorIDfield">
+				<label class="normaltext">Vendor</label>
+				<!-- 
+				<input class="normaltext uppercase vendor_lookup" id="newacctvendorID" name="newacctvendorID" type="text" required />
+				 -->
+				{{formvendor.vendorid}}
+				
+			</div>
+		
+		</div>
+		
+	</form>
+</div>
+
+<div id="dialognewaccess" title="Create New Access" class="dialogbox">
+	<form method="post" action="/ECS/addaccess/" id="frmaddaccess">
+		{% csrf_token %}
+		<div class="row" style="margin: auto;">
+			<label id="newacctnote" style="color: red; margin-bottom: 25px;">Enter new access details.</label>
+			
+			<label class="normaltext">NCCC Personnel:</label>
+			{{ form.ncccperson }}
+			
+			<label class="normaltext">NBU:</label>
+			{{ form.nbuaccess }}
+		</div>
+	</form>
+</div>
+
+<div id="dialogreports" title="Generate Reports" class="dialogbox">
+	<form method="post" action="/ECS/genreports/" id="frmgenreport">
+		{% csrf_token %}
+		<div class="row" style="margin: auto;">
+			<label id="reportnote" style="color: red; margin-bottom: 25px;">Enter Report Information.</label>
+			
+			<label class="normaltext">Choose Report Type:</label>
+			<select id="reporttype" name="reporttype" class="normaltext" style="margin-bottom: 20px;">
+				<option value="1">Paid Invoices Variance</option>
+				<option value="2">Comeback Date Variance</option>
+				<option value="3">Un-countered Delivered PO</option>
+				<option value="4">Invoices Processed Per User</option>
+				<option value="5">Invoice Status Per Vendor</option>
+				<option value="6">Un-processed Due Statement of Account</option>
+			</select>
+			
+			<label class="normaltext">NBU:</label>
+			{{ formnbu.nbu }}
+			
+			<label class="normaltext date1">Date From:</label>
+			<input id="dt1" name="dt1" class="normaltext datepickerx readonly date1" type="text" style="margin-bottom: 20px;" />
+			
+			<label id="date2" class="normaltext">Date To:</label>
+			<input id="dt2" name="dt2" class="normaltext datepickerx readonly" type="text" />
+			
+		</div>
+	</form>
+</div>
+
+
+<div id="dialogeditacct" title="User Details" class="dialogbox">
+	<form method="post" action="/ECS/updateacct/" id="frmupdateacct">
+		{% csrf_token %}
+		<div class="row" style="margin: auto;">
+			<label class="normaltext">Username:</label>
+			<input class="normaltext uppercase" type="text" id="useracct" style="margin-bottom: 20px; width: 50%;" disabled />
+			<input id="editacctusername" name="editacctusername" type="hidden" />
+			
+			<label class="normaltext">Full Name:</label>
+			<input class="normaltext uppercase" id="editacctfullname" name="editacctfullname" type="text" style="margin-bottom: 20px; width: 100%;" required />
+			
+			<label class="normaltext">Status:</label>
+			<select id="editacctstatus" name="editacctstatus" class="normaltext" style="margin-bottom: 20px;">
+				<option value="Active">Active</option>
+				<option value="Inactive">Inactive</option>
+			</select>
+			
+			<label class="normaltext">Password:</label>
+			<input class="pwdresetfield" id="editacctpwd" name="editacctpwd" type="text" placeholder="Password" style="width: 50%;" />
+			
+		</div>
+		
+	</form>
+</div>
+
+
+<div id="casoadetailsmodal" data-backdrop="static" aria-hidden="true" class="modal fade">
+  <div class="modal-dialog viewmodal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button id="btntopX" type="button" class="close" aria-label="Close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+        <h3 class="modal-title" align="center">
+	        	<span class="label textheader">
+	        		SOA Details
+	        	</span>
+	        </h3>
+      </div>
+	      <div id="cadetailsbody" class="modal-body">
+	        
+	        
+        	<div class="row" align="center">
+	        	<img src="/static/images/circleloadinganimation.gif" width="200px" heignt="200px" />
+	     	</div>
+	     
+	        
+	      </div>
+     
+    </div>
+   </div> 
+</div>
+
+<div id="msgmodal" data-backdrop="static" tabindex="-1" aria-hidden="true" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button id="msgtopX" type="button" class="close" aria-label="Close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+        <h3 class="modal-title" align="center">
+	        	<span class="label textheader">
+	        		Messages
+	        	</span>
+	        </h3>
+      </div>
+	      <div id="msgbody" class="modal-body" style="max-height: 550px; overflow: auto;">
+	        	
+        	<div class="row" align="center">
+	        	<img src="/static/images/circleloadinganimation.gif" width="200px" heignt="200px" />
+	     	</div>
+	        	
+	      </div>     		
+    </div>
+  </div> 
+</div>
+
+
+<div id="dialogdel" title="Delete Confirmation" class="dialogbox">
+	<p>Are you sure you want to delete this Statement of Account and its content?</p>
+</div>
+
+<div id="dialogdeleteaccess" title="Delete Confirmation" class="dialogbox">
+	<p>Are you sure to delete this access?</p>
+	<input id="deleteID" type="hidden" />
+</div>
+
+<div id="dialogdelsuc" title="Successful!" class="dialogbox">
+	<p id="deltext">&nbsp;</p>
+</div>
+
+
+<div id="susoadetailsmodal" data-backdrop="static" aria-hidden="true" class="modal fade">
+  <div class="modal-dialog viewmodal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button id="btntopX" type="button" class="close" aria-label="Close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+        <h3 class="modal-title" align="center">
+	        	<span class="label textheader">
+	        		SOA Details
+	        	</span>
+	        </h3>
+      </div>
+	      <div id="sudetailsbody" class="modal-body">
+	        
+	        <div class="row" align="center">
+	        	<img src="/static/images/circleloadinganimation.gif" width="200px" heignt="200px" />
+	     	</div>
+	        
+	      </div>
+     
+    </div>
+   </div> 
+ </div>
+ 
+ 
+<div id="pasoadetailsmodal" data-backdrop="static" aria-hidden="true" class="modal fade">
+  <div class="modal-dialog viewmodal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button id="btntopX" type="button" class="close" aria-label="Close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+        <h3 class="modal-title" align="center">
+	        	<span class="label textheader">
+	        		SOA Details
+	        	</span>
+	        </h3>
+      </div>
+	      <div id="padetailsbody" class="modal-body">
+	        
+	        
+        	<div class="row" align="center">
+	        	<img src="/static/images/circleloadinganimation.gif" width="200px" heignt="200px" />
+	     	</div>
+	     
+	        
+	      </div>
+     
+    </div>
+   </div> 
+ </div>
+ 
+ 
+<div id="dialogaddholiday" title="Holiday Proclamation" class="dialogbox">
+	<form method="post" id="frmaddholiday">
+		{% csrf_token %}
+		<div class="row" style="margin: auto;">
+			<label id="holidaynote" style="color: red;">Enter Holiday Details.</label>
+			<br/><br/>
+			
+			<label class="normaltext">Holiday Decription</label>
+			<textarea class="normaltext" id="holidayDesc" name="holidayDesc" style="margin-bottom: 20px; width: 95%;">
+			
+			</textarea>
+			<!-- <input class="form-control input-sm" id="holidayDesc" name="holidayDesc" type="text" required /> -->
+			
+			<label class="normaltext">Date of Holiday</label>
+			<input class="normaltext datepickerx readonly" id="dateOfHoliday" name="dateOfHoliday" type="text" style="margin-bottom: 20px;" />
+				
+			<label class="normaltext">Type of Holiday</label>
+			<select class="normaltext" id="typeOfHoliday" name="typeofHoliday" style="margin-bottom: 20px;">
+				<option value="Regular/Legal">Regular/Legal</option>
+				<option value="Special Non-working">Special Non-working</option>
+			</select>
+			
+			<label class="normaltext">Scheme of Holiday</label>
+			<select class="normaltext" id="schemeOfHoliday" name="schemeofHoliday">
+				<option value="ALL">All</option>
+				<option value="DVO">Davao</option>
+				<option value="TGM">Tagum</option>
+				<option value="MNL">Manila</option>
+				<option value="PAL">Palawan</option>
+			</select>
+			
+			
+		</div>
+		
+	</form>
+</div>
+
+ 
+<div id="dialoginputerror" title="Error! Entries required." class="dialogbox">
+	<p id="inputsome">Input some entry.</p>
+</div>
+
+<div id="dialogconfirmupdate" title="Update Confirmation" class="dialogbox">
+	<p>Are you sure you want to update this SOA?</p>
+</div>
+
+<div id="dialogconfirmcreate" title="Create Confirmation" class="dialogbox">
+	<p>Are you sure you want to create this SOA?</p>
+</div>
+
+
+<div id="dialogConnerror" title="Connection Error!" class="dialogbox">
+	<p>There is an error with the connection.</p>
+</div>
+
+<div id="dialogTermNotFoundError" title="Payment Term not Found!" class="dialogbox">
+	<p>PO does not have a payment Term. </p>
+</div>
+
+<div id="dialognotes" title="Remarks" class="dialogbox">
+	<div id="remarksdiv">
+	</div>
+</div>
+

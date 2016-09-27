@@ -1,0 +1,65 @@
+{% load staticfiles %}
+{% load erm_tags %}
+
+
+	<div id="apprcontent">
+		<div class="row">
+			<table class="table table-hover table-striped tblmodal">
+				<tbody class="table-striped">
+				    <tr>
+				    	<td class="info" align="left">&nbsp;</td>
+						<td class="info" align="left"><h4>ID</h4></td>
+						<td class="info" align="left"><h4>Full Name</h4></td>
+						<td class="info" align="left"><h4>Month</h4></td>
+						<td class="info" align="left"><h4>Year</h4></td>
+						<td class="info" align="center"><h4>Cutoff</h4></td>
+				    	<td class="info" align="center"><h4>Status</h4></td>
+				    	<td class="info" align="center"><h4>Action</h4></td>
+				    </tr>
+			    </tbody>
+			    
+			    <tbody id="table_row">
+			    	{% for batch in toapprove_list %}
+			    	
+					<tr>
+						<td width="25px" align="center">
+							<span style="color: gray;">{{forloop.counter}}</span>
+						</td>
+							
+						<td align="left">
+							<span style="color: green; font-weight: bold;">
+								{{ batch.User_id }}
+							</span>
+						</td>
+						<td align="left">
+							<span style="color: blue; font-weight: bold;">
+								{{ batch.User__LName }}, {{ batch.User__FName }} {{ batch.User__MName }}
+							</span>
+						</td>
+						<td align="left">{{ batch.Batch__BMonth }}</td>
+						<td align="left">{{ batch.Batch__BYear }}</td>
+						<td align="center">{{ batch.Batch__CutOff }}</td>
+						<td align="center">
+							{% if batch.status == 0 %}
+				        		<img alt="New Entry" title="Not yet Submitted" class="img-responsive" height="25px" width="25px" src="/static/images/pending.png" />
+				        	{% elif batch.status == 1 %}
+				        		<img alt="Approved" title="Approved" class="img-responsive" height="20px" width="20px" src="/static/images/accept.png" />
+				        	{% elif batch.status == 2 %}
+				        		<img alt="Pending" title="For Approval" class="img-responsive" height="20px" width="20px" src="/static/images/question.png" />							        	
+				        	{% elif batch.status == 3 %}
+				        		<img alt="Denied" title="Denied" class="img-responsive" height="20px" width="20px" src="/static/images/delete.png" />							        	
+				        	{% endif %}
+						</td>
+						<td align="center">
+							<input type="button" class="btn btn-primary btn-xs btndtrdetails" value="VIEW DTR" uid="{{ batch.User_id }}" month="{{batch.Batch__BMonth}}" year="{{batch.Batch__BYear}}" cutoff="{{batch.Batch__CutOff}}" status="{{batch.status}}" data-toggle="modal" data-target="#bmodal"/>
+						</td>
+					</tr>
+				 	{% endfor %}
+				 	
+				</tbody>
+			</table>
+		</div>
+		
+		
+	</div>
+				

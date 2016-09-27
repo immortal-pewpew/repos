@@ -1,0 +1,198 @@
+from django import forms
+#import datetime
+#import pyodbc
+from .models import NBU, User, Tax, WTax, Expense_Type, Status
+
+
+#cnxn = pyodbc.connect('DSN=mms_sku;UID=ICTAPPS;PWD=s3cur3344')
+#cursor = cnxn.cursor()
+
+
+#NBUForm
+class NBUForm(forms.Form):
+    def __init__(self,*args, **kwargs):
+        super(NBUForm, self).__init__(*args, **kwargs)
+        
+        allnbu = NBU.objects.order_by('id')
+        nbuChoices = [(None,'--- SELECT NBU ---')]
+        #nbuChoices = []
+        for x in allnbu:
+            nbuChoices.append((x.id, x.desc)) 
+    
+        self.fields['nbu'] = forms.ChoiceField(choices=nbuChoices,
+                                    widget=forms.Select
+                                    (attrs={'id':'nbu','name':'nbu','class':' text-left','style':'font-size: 12px;','required':'required'})
+                                    )
+
+#TaxForm
+class TaxForm(forms.Form):
+    def __init__(self,*args, **kwargs):
+        super(TaxForm, self).__init__(*args, **kwargs)
+        
+        alltax = Tax.objects.order_by('id')
+        #vatChoices = [(None,'----------------------------')]
+        taxChoices = []
+        for x in alltax:
+            taxChoices.append((x.id, x.desc)) 
+    
+        self.fields['tax'] = forms.ChoiceField(choices=taxChoices,
+                                    widget=forms.Select
+                                    (attrs={'id':'tax','name':'tax','class':' text-left','style':'font-size: 12px;','required':'required'})
+                                    )
+
+#WTaxForm
+class WTaxForm(forms.Form):
+    def __init__(self,*args, **kwargs):
+        super(WTaxForm, self).__init__(*args, **kwargs)
+        
+        allwtax = WTax.objects.order_by('id')
+        #wtaxChoices = [(None,'----------------------------')]
+        wtaxChoices = []
+        for x in allwtax:
+            wtaxChoices.append((x.id, x.desc)) 
+    
+        self.fields['wtax'] = forms.ChoiceField(choices=wtaxChoices,
+                                    widget=forms.Select
+                                    (attrs={'id':'wtax','name':'wtax','class':' text-left','style':'font-size: 12px;','required':'required'})
+                                    )
+
+#Expense_TypeForm
+class Expense_TypeForm(forms.Form):
+    def __init__(self,*args, **kwargs):
+        super(Expense_TypeForm, self).__init__(*args, **kwargs)
+        
+        allexpensetype = Expense_Type.objects.order_by('id')
+        #wtaxChoices = [(None,'----------------------------')]
+        expense_typeChoices = []
+        for x in allexpensetype:
+            expense_typeChoices.append((x.id, x.desc)) 
+    
+        self.fields['expense_type'] = forms.ChoiceField(choices=expense_typeChoices,
+                                    widget=forms.Select
+                                    (attrs={'id':'expense_type','name':'expense_type','class':' text-left','style':'font-size: 12px;','required':'required'})
+                                    )
+
+#StatusForm
+class StatusForm(forms.Form):
+    def __init__(self,*args, **kwargs):
+        super(StatusForm, self).__init__(*args, **kwargs)
+        
+        allstatus = Status.objects.order_by('id')
+        statusChoices = [(None,'ALL')]#ALL is 10
+        #statusChoices = []
+        for x in allstatus:
+            statusChoices.append((x.id, x.desc)) 
+    
+        self.fields['status'] = forms.ChoiceField(choices=statusChoices,
+                                    widget=forms.Select
+                                    (attrs={'id':'status','name':'status','class':'input-sm text-left','style':'font-size: 12px; font-weight: bold;','required':'required'})
+                                    )
+
+
+
+
+
+
+
+
+####################################################################################
+
+
+
+
+
+
+class AccessForm(forms.Form):
+    def __init__(self,*args, **kwargs):
+        super(AccessForm, self).__init__(*args, **kwargs)
+        
+        allncccactiveusers = User.objects.filter(User_isadmin__in=[1,2],Status='Active').order_by('UserName')
+        
+        ncccchoices = []
+        for x in allncccactiveusers:
+            ncccchoices.append((x.UserName, x.UserName + " - " + x.FullName)) 
+    
+        self.fields['ncccperson'] = forms.ChoiceField(choices=ncccchoices,
+                                    widget=forms.Select
+                                    (attrs={'id':'ncccperson','class':'normaltext','style':'margin-bottom: 20px;','required':'required'})
+                                    )
+        #########################################
+        allnbu = NBU.objects.all().order_by('id')
+        
+        nbuchoices = []
+        for n in allnbu:
+            nbuchoices.append((n.id, n.NBUDesc)) 
+        
+        self.fields['nbuaccess'] = forms.ChoiceField(choices=nbuchoices,
+                                    widget=forms.Select
+                                    (attrs={'id':'nbuaccess','class':'normaltext','required':'required'})
+                                    )
+        
+#------------------------------------------------------------------#
+#------------------------------------------------------------------#
+#------------------------------------------------------------------#
+'''
+class BranchForm(forms.Form):
+    def __init__(self,*args, **kwargs):
+        super(BranchForm, self).__init__(*args, **kwargs)
+        
+        
+        allbranch = Branch.objects.all()
+        branchChoices = [(None,'All')]
+        for x in allbranch:
+            branchChoices.append((x.id, x.BDesc)) 
+    
+        self.fields['branch'] = forms.ChoiceField(choices=branchChoices,
+                                    widget=forms.Select
+                                    (attrs={'id':'branch','class':'form-control input-sm text-left',})
+                                    )
+'''
+#------------------------------------------------------------------#
+class ChangePwdForm(forms.Form):
+    oldpwd = forms.CharField(widget=forms.PasswordInput
+                (attrs={'id':'oldpwd','class':'form-control input-sm','required':'required'})
+                    )  
+                                             
+    newpwd = forms.CharField(widget=forms.PasswordInput
+                (attrs={'id':'newpwd','class':'form-control input-sm','required':'required'})
+                    )  
+                     
+    confirmnewpwd = forms.CharField(widget=forms.PasswordInput
+                (attrs={'id':'confirmnewpwd','class':'form-control input-sm','required':'required'})
+                    )  
+#------------------------------------------------------------------#    
+'''
+class POForm(forms.Form):
+    
+    def __init__(self, currUser,*args, **kwargs):
+        super(POForm, self).__init__(*args, **kwargs)
+        query = "SELECT * FROM POMRCH WHERE POSTAT='6' AND POVNUM='" + currUser + "' ORDER BY PONUMB"
+        cursor.execute(query)
+        allPO = cursor.fetchall()
+        
+        POChoices = [(None,'------------')]
+        for x in allPO:
+            POChoices.append((x.PONUMB, x.PONUMB)) 
+    
+        self.fields['POS'] = forms.ChoiceField(choices=POChoices,
+                                    widget=forms.Select
+                                    (attrs={'id':'PO','class':'form-control input-sm text-center','required':'required'})
+                                    )
+    PONo = forms.CharField(
+            widget=forms.TextInput
+                (attrs={'id':'PONo','class':'form-control input-sm text-center POfield','placeholder':'PO Number','required':'required'})
+                    )  
+
+    invdate = forms.DateField(
+            widget=forms.DateInput
+                (attrs={'id':'invdate','class':'form-control input-sm datepicker text-center','placeholder':'Invoice Date','required':'required'})
+                    )  
+    
+    invno = forms.IntegerField(widget=forms.NumberInput
+                (attrs={'id':'invno','class':'form-control input-sm text-center','placeholder':'Invoice No.','required':'required'})
+                    )  
+    
+    invamt = forms.DecimalField(widget=forms.TextInput
+                (attrs={'id':'invamt','class':'form-control input-sm text-right','placeholder':'Invoice No.','required':'required'})
+                    )
+'''    

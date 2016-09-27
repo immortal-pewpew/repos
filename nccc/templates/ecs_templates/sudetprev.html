@@ -1,0 +1,745 @@
+{% load staticfiles %}
+{% load ecs_tags %}
+{% load humanize %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/ecs_css/style.css' %}" />
+
+<script type="text/javascript">
+	
+	//INITIALIZE FOR REFRESH (F5)
+	$("#updform :input.disabler").attr("disabled", true);
+	$("#updform :input[type=image]").attr("disabled", true);
+	$("#updform :input#btnEdit").attr('disabled',false);
+	$("#updform :input#btnEdit").attr('hidden',false);
+	$("#updform :input#btnUpdate").attr('hidden',true);
+	//$("#updform :input#btnCancel").attr('disabled',false);
+	
+	
+	//EDIT CLICK
+	$("input#btnEdit").on('click', function(event){
+		event.preventDefault();
+		$("#updform :input.disabler").attr("disabled", false);
+		$("#updform :input[type=image]").attr("disabled", false);
+		//$("#updform :input.POdate").attr("disabled", true);
+		$("#updform :input#btnEdit").attr('disabled',true);
+		$("#updform :input#btnEdit").attr('hidden',true);
+		$("#updform :input#btnUpdate").attr('hidden',false);
+		
+		$('input#btnPrint').attr('disabled',true);
+	});
+	/*
+	$("input#btnCancel").on('click', function(event){
+		event.preventDefault();
+		window.location.reload();
+	});
+	*/
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+
+	
+	//POPOVER INITIALIZATION
+	$("input.POfield").popover({					    							   		
+	 	placement:'bottom',
+	});
+	
+	
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+	
+	
+
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+	
+	//DATE INITIALIZATION
+	$( ".datepickerx" ).datepicker({
+		format: 'mm/dd/yyyy',
+	});
+	
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+
+
+	
+
+
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+	
+	
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+	
+	//IF SUBMITTING FORM UPDATE	
+	//$("input#btnUpdate").on('click', function(event){
+	$("form#updform").on('submit', function(event){
+		event.preventDefault();
+		var Status = $("input#hStatus").val();
+		var insertedpo = $("input#hponums").val().split(",").map(Number);
+		var nbu = $('#hnbu').val();
+		
+		//DELETE THE 0
+		if (insertedpo == 0){
+			//Because we already know that index 0 is the index of the value 0
+    		insertedpo.splice(0, 1);
+			};
+		
+		if (insertedpo == ''){
+			event.preventDefault();
+			$("#dialoginputerror").dialog("open");
+			}
+		else{
+			$.ajax({
+		        url : "/ECS/evalallPOpterm/", // the endpoint
+		        type : "post", // http method
+		        data : { insertedpo:insertedpo, nbu:nbu }, // data sent with the post request
+				
+				beforeSend: function(xhr, settings) {
+			        if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+			            // Send the token to same-origin, relative URLs only.
+			            // Send the token only if the method warrants CSRF protection
+			            // Using the CSRFToken value acquired earlier
+			            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+			        }
+			        
+			        //put loading bar here
+			        $('#loading').show();
+			        
+			   	},
+				
+				// handle a successful response
+		        success : function(data) {
+		        	$('#loading').hide();
+		        	if(data == 1){
+		        		$("#dialogconfirmupdate").dialog("open");
+		        		}
+		        	else{
+		        		$("#dialogptermerror").dialog("open");
+		        		}
+		        	},
+		
+		        // handle a non-successful response
+		        error : function(data) {
+		        	
+		        }
+		        	
+				 });
+				
+			}
+	});
+	
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+
+	//AUTOHIDE POPOVER	
+	$(".POfield").on('click', function(event){
+		$(this).popover('hide');
+	});
+
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+
+/*
+	//PO FIELD ON BLUR
+	$(".POfield").on('blur', function(event){
+		var PONo = $(this).val();
+		var fnum = $(this).attr('fnum');
+		var Status = parseInt($("input#hStatus").val());
+		var oldpo = $("input#holdpo" + fnum).val();
+		var insertedpo = $("input#hponums").val().split(",").map(Number); 
+		var nbu = $("input#hnbu").val();
+		var nbuOncmb = nbu;
+		
+		//DELETE THE 0
+		if (insertedpo == 0){
+			//Because we already know that index 0 is the index of the value 0
+    		insertedpo.splice(0, 1);
+		}
+		
+		var index = insertedpo.indexOf(parseInt(oldpo)); 
+		if (index > -1)
+			{
+				insertedpo.splice(index,1);
+			}
+		
+		
+		if (PONo != '') {
+			$.ajax({
+	        url : "/ECS/get0/", // the endpoint
+	        type : "post", // http method
+	        data : { PONo:PONo, nbu:nbu, nbuOncmb:nbuOncmb}, // data sent with the post request
+			
+			beforeSend: function(xhr, settings) {
+			        if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+			            // Send the token to same-origin, relative URLs only.
+			            // Send the token only if the method warrants CSRF protection
+			            // Using the CSRFToken value acquired earlier
+			            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+			        }
+			        
+			        //put loading bar here
+			        //$('#loading').show();
+			        
+			   	},
+			   	
+			// handle a successful response
+	        success : function(data) {
+	        	$('#loading').hide();
+	        	if (data.response == '' || data.response == 'Existed' || data.response == 'billto not same'){
+	        		var jElement = $("input#PONo" + fnum);
+    				if(!jElement.hasClass('highlight')){
+    					jElement.addClass('highlight');
+    					$("input#hStatus").val(Status+1);
+    					$("input.disabler").prop('disabled',true);
+    					$("input#btnUpdate").prop('disabled',true);
+    					$("input#PONo" + fnum).prop('disabled',false);
+    					}
+    				
+    				$("input#podate" + fnum).val('');
+    				$("input#hpodate" + fnum).val('');
+	        		
+	        		///////////////////////////////////////
+    				//MESSAGE SETTING FOR POPOVER INVALID/IN DB	
+					if (data.response == 'Existed'){
+						var errormsg = 'PO no. already processed.';
+					    }
+					else if(data.response == 'billto not same'){
+						var errormsg = 'NBU not same!';
+						}
+			    	else{
+					    var errormsg = 'Invalid Entry!';
+					    }
+    				
+    				$("input#PONo" + fnum).attr("data-content", errormsg);
+    				$("input#PONo" + fnum).popover('show');
+    				///////////////////////////////////////
+	        		}
+	        	else{
+	        		if(insertedpo.indexOf(parseInt(PONo)) > -1)
+	        			{
+	        			//naay dupe
+	        			var jElement = $("input#PONo" + fnum);
+    					if(!jElement.hasClass('highlight')){
+	    					jElement.addClass('highlight');
+	    					$("input#hStatus").val(Status+1);
+	    					$("input.disabler").prop('disabled',true);
+	    					$("input#btnUpdate").prop('disabled',true);
+    						$("input#PONo" + fnum).prop('disabled',false);
+    						}
+	        			
+	        			///////////////////////////////////////	
+    					//MESSAGE SETTING FOR POPOVER DUPLICATE
+    					var errormsg = 'Duplicate entry not allowed.';
+    					
+    					$("input#PONo" + fnum).attr("data-content", errormsg);
+    					$("input#PONo" + fnum).popover('show');
+    					///////////////////////////////////////
+	        			}
+	        		
+	        		else{	
+		        		var jElement = $("input#PONo" + fnum);
+	    				if(jElement.hasClass('highlight')){
+	    					jElement.removeClass('highlight');
+	    					$("input#hStatus").val(Status-1);
+	    					$("input.disabler").prop('disabled',false);
+	    					$("input#btnUpdate").prop('disabled',false);
+	    					}
+	    			
+		        		$("input#podate" + fnum).val(data.response);
+		        		$("input#hpodate" + fnum).val(data.response);
+		        		
+		        		/*
+		        		//SET NBU
+		        		$("input#hnbu").val(data.nbu);
+		        		document.getElementById('nbulbl').innerHTML = data.nbudesc;
+		        		
+		        		
+		        		
+		        		//SET amount from rr
+		        		$("input#hrramt" + fnum).val(data.rramount);
+						
+		        		
+		        		insertedpo.push(PONo);
+		        		$("input#holdpo" + fnum).val(PONo);
+		        		$("input#hponums").val(insertedpo);
+	        			}
+	        		}
+	        	
+	        	},
+	
+	        // handle a non-successful response
+	        error : function(data) {
+	        	
+	        	}      
+		 	});
+		}
+		else{
+			
+			var jElement = $("input#PONo" + fnum);
+			if(jElement.hasClass('highlight')){
+    			jElement.removeClass('highlight');
+    			$("input#hStatus").val(Status-1);
+    			$("input.disabler").prop('disabled',false);
+    			$("input#btnUpdate").prop('disabled',false);
+    			
+    			}
+			$("input#hponums").val(insertedpo);  			
+			$("input#podate" + fnum).val('');
+			$("input#hpodate" + fnum).val('');
+			
+		}
+	});
+*/
+
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+	
+	$("input#btnPrint").on('click', function(event){
+		$(this).hide();
+		$('#btnEdit').hide();
+		$('#btnUpdate').hide();
+		$('#Submitindicator').val('YES');
+		/*
+		$(this).attr('disabled',true);	 
+		$('#btnEdit').attr(disabled,true);
+		$('#btnUpdate').attr(disabled,true);
+		*/
+	});
+
+
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+	
+	$('#susoadetailsmodal').on('hidden.bs.modal', function (e) {
+		if ($('input#Submitindicator').val() == 'YES')
+			{
+			$(e.target).removeData('bs.modal');
+			window.location.reload();
+			}
+	});
+		
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+		
+	//INPUT REQUIRE IF A FIELD IS TYPED	
+	$("input[type='text']").on('blur', function(event){
+    	 var fnum = $(this).attr('fnum');
+    	 
+    	 if($("input#podate" + fnum).val() == '' && $("input#PONo" + fnum).val() == '' 
+    	 		&& $("input#invdate" + fnum).val() == '' 
+    	 		&& $("input#invno" + fnum).val() == '' 
+    	 		&& $("input#invamt" + fnum).val() == '')
+    	 	{
+    	 		
+		    	 $("input#podate" + fnum).prop('required', false);
+		    	 $("input#PONo" + fnum).prop('required', false);
+		    	 $("input#invdate" + fnum).prop('required', false);
+		    	 $("input#invno" + fnum).prop('required', false);
+		    	 $("input#invamt" + fnum).prop('required', false);
+    	 	}
+    	 else {
+    	 		 //$('input#btnUpdate').unbind();
+		    	 $("input#podate" + fnum).prop('required', true);
+		    	 $("input#PONo" + fnum).prop('required', true);
+		    	 $("input#invdate" + fnum).prop('required', true);
+		    	 $("input#invno" + fnum).prop('required', true);
+		    	 $("input#invamt" + fnum).prop('required', true);
+    	 	}
+    });
+
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+
+
+/**************************************************************************************/
+/**************************************************************************************/
+/**************************************************************************************/
+
+	//AMOUNT FORMATTER
+	$('input.amts').keyup(function(event) {
+    	var x = $(this).val();
+    	$(this).val(x.toString().replace(/,/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+	});
+
+/**************************************************************************************/
+/**************************************************************************************/
+/**************************************************************************************/
+	
+	//AVOID 2 dots	
+	$(".numdot").keydown(function (e) {
+        var theVal = $(this).val().replace(/,/g, "");
+        var dotctr = (theVal.match(/\./g) || []).length;
+        
+        if ((dotctr == 1 && e.keyCode == 110) || (dotctr == 1 && e.keyCode == 190))
+        	{
+        	e.preventDefault();
+        	}
+        else{
+        	return;
+        }
+	});
+
+
+/**************************************************************************************/
+/**************************************************************************************/
+/**************************************************************************************/
+
+	//NUM ONLY and dots. only
+	$(".numdot").keydown(function (e) {
+        // Allow: backspace, delete, tab, escape, enter and .
+        if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||
+             // Allow: Ctrl+A, Command+A
+            (e.keyCode == 65 && ( e.ctrlKey === true || e.metaKey === true ) ) || 
+             // Allow: home, end, left, right, down, up
+            (e.keyCode >= 35 && e.keyCode <= 40)) {
+                // let it happen, don't do anything
+                return;
+	            
+                
+        }
+        // Ensure that it is a number and stop the keypress
+        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+            e.preventDefault();
+        }
+    });
+
+/**************************************************************************************/
+/**************************************************************************************/
+/**************************************************************************************/
+
+	//NUM ONLY with copy paste	
+	$(".numonly").keydown(function (e) {
+        // Allow: backspace, delete, tab, escape, enter and . is not allowed, allowed C & V
+        if ($.inArray(e.keyCode, [46, 8, 9, 27, 13]) !== -1 ||
+             // Allow: Ctrl+A, Command+A
+            (e.keyCode == 65  && ( e.ctrlKey === true || e.metaKey === true ) ) || 
+             // Allow: Ctrl+C, Command+C
+            (e.keyCode == 67  && ( e.ctrlKey === true || e.metaKey === true ) ) ||
+             // Allow: Ctrl+V, Command+V
+            (e.keyCode == 86  && ( e.ctrlKey === true || e.metaKey === true ) ) ||
+             // Allow: home, end, left, right, down, up
+            (e.keyCode >= 35 && e.keyCode <= 40)) {
+                 // let it happen, don't do anything
+                 return;
+        }
+        // Ensure that it is a number and stop the keypress
+        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+            e.preventDefault();
+        }
+    });
+	
+	
+/**************************************************************************************/
+/**************************************************************************************/
+/**************************************************************************************/
+    
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+
+	//csrf token
+	function getCookie(name) {
+	    var cookieValue = null;
+	    if (document.cookie && document.cookie != '') {
+	        var cookies = document.cookie.split(';');
+	        for (var i = 0; i < cookies.length; i++) {
+	            var cookie = jQuery.trim(cookies[i]);
+	            // Does this cookie string begin with the name we want?
+	            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+	                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+	                break;
+	            }
+	        }
+	    }
+	    return cookieValue;
+	}
+	var csrftoken = getCookie('csrftoken');
+	 
+	/*
+	The functions below will create a header with csrftoken
+	*/
+	 
+	function csrfSafeMethod(method) {
+	    // these HTTP methods do not require CSRF protection
+	    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+	}
+	function sameOrigin(url) {
+	    // test that a given url is a same-origin URL
+	    // url could be relative or scheme relative or absolute
+	    var host = document.location.host; // host + port
+	    var protocol = document.location.protocol;
+	    var sr_origin = '//' + host;
+	    var origin = protocol + sr_origin;
+	    // Allow absolute or scheme relative URLs to same origin
+	    return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+	        (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+	        // or any other URL that isn't scheme relative or absolute i.e relative.
+	        !(/^(\/\/|http:|https:).*/.test(url));
+	}
+	 
+	$.ajaxSetup({
+	    beforeSend: function(xhr, settings) {
+	        if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+	            // Send the token to same-origin, relative URLs only.
+	            // Send the token only if the method warrants CSRF protection
+	            // Using the CSRFToken value acquired earlier
+	            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+	        }
+	    }
+	});
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+	
+</script>
+
+
+
+<div class="row">
+	<div class="col-md-1">&nbsp;</div>
+	<div class="col-md-10">
+		<div class="row" align="right">
+			{% if soastatus == 'Work' or soastatus == 'Pending' %}
+			<div class="row text-center">
+				<label style="color: red;">Note: PO numbers entered must have the same payment term per SOA.</label>
+			</div>
+			<!-- <form method="post" action="/ECS/su_html_to_pdf_directly/" target="_blank"> -->
+			<form method="post" action="/ECS/For_APV_Checking/">
+				{% csrf_token %}
+				<input type="hidden"  name="SOANo" value="{{SOANo}}"/>
+				<input id="btnSubmit" title="Submit for APV Checking" type="image" src="/static/images/document_next.png" style="height: 40px; width: 40px;" />
+				<input type="hidden" id="Submitindicator" />
+			</form>
+			{% endif %}
+		</div>
+		
+		<div class="row">
+			<form method="post" action="/ECS/SOAupdateact/" id="updform">
+				{% csrf_token %}
+				<input type="hidden" id="hStatus" value="0"/>
+				<input value="{{allPOfrmDB}}" type="hidden" id="hponums" name="allenteredpo"/>
+				
+				<input type="hidden" name="hSOANo" value="{{SOANo}}"/>
+				
+				
+				
+				
+				<div class="row text-left">
+					<table style="width:100%;">
+						<tr>
+							<td align="left">
+								<label>SOA No.:</label>
+							</td>
+							<td align="left">
+								<label style="color:green; font-weight:bold;">{{SOANo}}</label>
+							</td>
+								
+							<td width="400px">
+								&nbsp;
+							</td>
+							
+							<td align="left">
+								<label>BILL TO:</label>
+							</td>
+							<td align="left">
+								<label id="nbulbl">{{ soadets.SOABillTo.NBUDesc }}</label>
+								<input type="hidden" id="nbu" name="nbu" value="{{soadets.SOABillTo.id}}" />
+							</td>
+						</tr>
+						
+						<tr>
+							<td align="left">
+								<label>SOA Date:</label>
+							</td>
+							<td align="left">
+								<label>{{soadets.SOADate|date:"m/d/Y"}}</label>
+							</td>
+							
+							<td>
+								&nbsp;
+							</td>
+							{% if soadets.CBDate %}
+							<td align="left">
+								<label>Comeback Date:</label>
+							</td>
+							<td align="left">
+								<label style="color: darkred;">{{soadets.CBDate|date:"m/d/Y"}}</label>
+							</td>
+							{% endif %}
+							
+						</tr>
+					</table>
+				</div>
+				
+				
+				
+				<div class="row">
+					<table class="table table-striped" >
+						<tr>
+							<th class="tabletitle text-center">
+								&nbsp;
+							</th>
+							<th class="tabletitle text-center">
+								PO No.
+							</th>
+							<th class="tabletitle text-center">
+								RC DATE
+							</th>
+							<th class="tabletitle text-center">
+								INVOICE No.
+							</th>
+							<th class="tabletitle text-center">
+								INVOICE DATE
+							</th>
+							<th class="tabletitle text-center">
+								AMOUNT
+							</th>
+							<th class="tabletitle text-center">
+								STATUS
+							</th>
+							{% if thereisDeniedPO %}
+							<th class="tabletitle text-center">
+								REASON
+							</th>
+							{% endif %}
+							<th class="tabletitle text-center">
+								PRINTCODE
+							</th>
+						</tr>
+						
+						
+						{% for det in dets %}
+						
+						<tr>
+							<td>
+								<label style="color: gray;">
+									{{forloop.counter}}
+								</label>
+							</td>
+							<td>
+								<label class="fields">
+									{{det.PONo}}
+								</label>
+								<input value="{{det.PONo}}" class="form-control input-sm text-center POfield numonly disabler" type="hidden" name="PONo{{forloop.counter}}" fnum="{{forloop.counter}}" />
+							</td>
+							<td>
+								<label class="fields">
+									{{det.PODate|date:"m/d/Y"}}
+								</label>
+								<input value="{{det.PODate|date:"m/d/Y"}}" type="hidden" name="hPODate{{forloop.counter}}" />
+							</td>
+							
+							<td>
+								{% for inv in det.PONo|invsOfPO:det.SOANo_id %}
+									<label class="fields" style="display: block;">
+										{{inv.InvNo}}
+									</label>
+									<input value="{{inv.InvNo}}" class="form-control input-sm text-center disabler" type="hidden" name="InvNo{{forloop.counter}}" fnum="{{forloop.counter}}" />
+								{% endfor %}
+							</td>
+							<td>
+								{% for inv in det.PONo|invsOfPO:det.SOANo_id %}
+									<label class="fields" style="display: block;">
+										{{inv.InvDate|date:"m/d/Y"}}
+									</label>
+									<input value="{{inv.InvDate|date:'m/d/Y'}}" class="form-control input-sm datepickerx text-center disabler readonly" type="hidden" placeholder="MM/DD/YYYY" name="InvDate{{forloop.counter}}" fnum="{{forloop.counter}}"/>
+								{% endfor %}
+							</td>
+							<td class="tdamount">
+								{% for inv in det.PONo|invsOfPO:det.SOANo_id %}
+									<label class="fields" style="display: block; color: blue;">
+										{{inv.Amount|intcomma}}
+									</label>
+									<input value="{{inv.Amount|intcomma}}" class="form-control input-sm text-right amts numdot disabler" type="hidden" name="Amount{{forloop.counter}}" fnum="{{forloop.counter}}" />
+								{% endfor %}
+							</td>
+							<td>
+								{% for inv in det.PONo|invsOfPO:det.SOANo_id %}
+									<label class="fields" style="font-weight: bold; display: block; color:
+										{% if inv.IStatus == 'Open' %}
+											blue;
+										{% elif inv.IStatus == 'Denied' %}
+											red;
+										{% elif inv.IStatus == 'Processed' %}
+											green;
+										{% else %}
+											gray;
+										{% endif %}	
+									">
+										{{inv.IStatus}}
+									</label>
+								{% endfor %}
+							</td>
+							{% if thereisDeniedPO %}
+							<td>
+								<label class="fields">
+									{{det.DenyReason}}
+								</label>
+							</td>
+							{% endif %}
+							<td>
+								{% for inv in det.PONo|invsOfPO:det.SOANo_id %}
+								<label class="fields">
+									{{inv.PRINTCODE}}
+								</label>
+								{% endfor %}
+							</td>
+						</tr>
+						{% endfor %}
+						
+						<tr style="border-top: 2px solid black; border-bottom: 5px solid #808080;">
+							<td colspan="4">
+								<label class="fields" style="display: block; font-weight: bold; letter-spacing: 10px;">
+									TOTAL
+								</label>
+							</td>
+							<td>
+								&nbsp;
+							</td>
+							<td class="tdamount">
+								<label class="fields" style="display: block; color: blue;">
+									{% if soadets|totalinvamt %}
+										{{soadets|totalinvamt|intcomma}}
+									{% endif %}
+								</label>
+							</td>
+							
+							<td colspan="2">
+								&nbsp;
+							</td>
+						</tr>
+						
+						
+						
+					</table>
+				</div>
+			</form>
+		</div>
+		
+	</div>
+	<div class="col-md-1">&nbsp;</div>	
+</div>
+
+
+
+
+
+

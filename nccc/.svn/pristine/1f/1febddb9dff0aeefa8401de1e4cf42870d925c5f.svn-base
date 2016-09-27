@@ -1,0 +1,133 @@
+{% extends "ecs_templates/base.html" %}
+		{% load ecs_tags %}
+
+			{% block content %}
+			<div id="bodycontent" class="bodydiv container-fluid content">
+			
+				<div class="row">
+					<div class="col-md-2">
+					  &nbsp;
+					</div>
+					<div class="col-md-8">
+						<div class="row" align="center">
+							<label class="textheader">
+								Holidays Masterlist
+							</label>
+						</div>
+						<div class="row" align="right">
+							<input id="holidaylink" type="button" class="btn btn-sm btn-warning" value="&nbsp;&nbsp;ADD&nbsp;&nbsp;" />
+						</div>
+						<div class="row">
+							&nbsp;
+						</div>
+						<div class="row">
+							<table class="table table-striped">
+								<tbody>
+									<tr>
+										<th>
+											&nbsp;
+										</th>
+										<th class="tabletitle">
+											Date
+										</th>
+										<th class="tabletitle">
+											Description
+										</th>
+										<th class="tabletitle">
+											Type
+										</th>
+										<th class="tabletitle">
+											Scheme
+										</th>
+										
+									</tr>
+								</tbody>
+								{% for holiday in holidays %}
+									<tr>
+										<td width="25px" align="center">
+											{{forloop.counter|holidaynumbering:holidays.number}}
+										</td>
+										<td align="left">
+											{{ holiday.dateOfHoliday|date:"F d, Y" }}
+										</td>
+										<td align="left">
+											{{ holiday.holidayDesc }}
+										</td>
+										<td align="left">
+											{{ holiday.typeOfHoliday }}
+										</td>
+										<td align="left">
+											{% if holiday.schemeOfHoliday == "DVO" %}
+												Davao Holidays
+											{% elif holiday.schemeOfHoliday == "TGM" %}
+												Tagum Holidays
+											{% elif holiday.schemeOfHoliday == "MNL" %}
+												Manila Holidays
+											{% elif holiday.schemeOfHoliday == "PAL" %}
+												Palawan Holidays
+											{% else %}
+												ALL
+											{% endif %}
+										</td>
+										
+									</tr>
+								{% endfor %}
+							</table> 
+							
+							</div>
+							
+							<div class="row" align="right">
+								<div class="pagination">
+								    <span class="step-links" style="font-family: Verdana; font-size: 12px;" >
+								    	
+								    	Go to page:
+								    	<input id="hpager" type="text" class="numonly form-control input-sm" style="width: 40px; display: inline;" value="{{ holidays.number }}"/>
+								    	of {{ holidays.paginator.num_pages }}
+								    	
+								    	&nbsp;
+								        &nbsp;
+								        
+								        
+								        {% if holidays.has_previous %}
+								            <a href="?page={{ holidays.previous_page_number }}">
+								            	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true" title="Previous"></span>
+								            </a>
+								        {% else %}
+								        	<span class="glyphicon glyphicon-arrow-left restricted" aria-hidden="true"></span>
+								        {% endif %}
+										
+										&nbsp;
+								        
+								        {% if holidays.has_next %}
+								            <a href="?page={{ holidays.next_page_number }}">
+								            	<span class="glyphicon glyphicon-arrow-right" aria-hidden="true" title="Next"></span>
+								            </a>
+								        {% else %}
+								        	<span class="glyphicon glyphicon-arrow-right restricted" aria-hidden="true"></span>
+								        {% endif %}
+								    </span>
+							    </div>
+							</div>
+							 
+						
+					</div>
+					<div class="col-md-2">
+					  &nbsp;
+					</div>
+					
+					
+					
+					
+				</div>
+				
+			</div>
+			{% endblock %}
+			
+
+
+
+
+
+
+
+

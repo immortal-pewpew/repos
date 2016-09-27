@@ -1,0 +1,343 @@
+{% load rfp_tags %}
+{% load humanize %}
+ 
+
+<style type="text/css">
+	@media print {     
+		@page {       
+			size: auto;         
+			margin: 0mm;   
+			}
+		#footerContent{
+			position: absolute;
+	       	bottom: 5mm;
+	       	align: center;
+	       	width: 100%;
+			}       
+		html {       
+			background-color: #000000;       
+			margin: 0px;      
+			}     
+		body {       
+			border: solid 0px #333;       
+			margin: 5mm 5mm 5mm 5mm;        
+			font-family: "Courier New", Courier, monospace; 
+			}
+		table{
+			font-size: 7pt;
+			}
+		th{
+			text-align:left;
+			}
+		thead > tr > th{
+			border: 1px solid black;
+			padding:0 5px 0 5px;
+			}
+		.tbldetails > tbody > tr > td{
+			border-left: 1px solid black;
+			border-right:1px solid black;
+			padding:0 5px 0 5px;
+			}
+		.tbldetails > tfoot > tr > td{
+			border-top: 1px solid black;
+			border-bottom: 1px solid black;
+			}
+		.tdunderlined{
+			border-bottom:1.5px solid black;
+		}
+		
+	}
+	
+</style>
+
+<div class="container-fluid">
+	<div class="row" align="center">
+		<h3>NCCC e-Request For Payment</h3>
+	</div>
+	<div class="row" align="center">
+		<table style="width:80%; padding-bottom:10px;">
+			<tr>
+				<td>
+					eRFP No.:			
+				</td>
+				<td style="font-weight:bold;" class="tdunderlined">
+					{{rfpdata.rfpno}}
+				</td>
+				<td width="100px">
+					&nbsp;
+				</td>
+				<td>
+					Date:
+				</td>
+				<td class="tdunderlined">
+					{{rfpdata.createdate|date:"m/d/Y"}}
+				</td>
+			</tr>
+			<tr>
+				<td>
+					Company:
+				</td>
+				<td style="font-weight:bold;" class="tdunderlined">
+					{{rfpdata.nbu.desc}}
+				</td>
+				<td>
+					&nbsp;
+				</td>
+				<td>
+					Doc. No.:
+				</td>
+				<td class="tdunderlined">
+					{{rfpdata.docnumber}}
+				</td>
+			</tr>
+		</table>
+		
+		<table style="width:80%; padding-bottom:10px;">
+			<tr>
+				<td>
+					Vendor Name:
+				</td>
+				<td style="font-weight:bold;" class="tdunderlined">
+					{{rfpdata.vendorname}}
+				</td>
+				<td width="50px">
+					&nbsp;
+				</td>
+				<td colspan="2">
+					&nbsp;
+				</td>
+			</tr>
+			<tr>
+				<td>
+					Check Payee:
+				</td>
+				<td style="font-weight:bold;" class="tdunderlined">
+					{{rfpdata.checkpayee}}
+				</td>
+				<td>
+					&nbsp;
+				</td>
+				<td>
+					Cash with Order?:
+				</td>
+				<td class="tdunderlined">
+					{% if rfpdata.cwo == 0 %}
+						No
+					{% elif rfpdata.cwo == 1 %}
+						Yes
+					{% endif %}
+				</td>
+			</tr>
+			<tr>
+				<td style="padding-top:10px;">
+					Account No.:
+				</td>
+				<td style="padding-top:10px; font-weight:bold;" class="tdunderlined">
+					{{bankdata.bankaccountno}}
+				</td>
+				<td style="padding-top:10px;">
+					&nbsp;
+				</td>
+				<td style="padding-top:10px;">
+					eRS No.:
+				</td>
+				<td style="padding-top:10px;" class="tdunderlined">
+					{{rfpdata.ersnumber}}
+				</td>
+			</tr>
+			<tr>
+				<td>
+					Account Name:
+				</td>
+				<td style="font-weight:bold;" class="tdunderlined">
+					{{bankdata.bankaccountname}}
+				</td>
+				<td>
+					&nbsp;
+				</td>
+				<td>
+					eJO No.:
+				</td>
+				<td class="tdunderlined">
+					{{rfpdata.ejonumber}}
+				</td>
+			</tr>
+			<tr>
+				<td>
+					Account Type:
+				</td>
+				<td style="font-weight:bold;" class="tdunderlined">
+					{{bankdata.bankaccounttype}}
+				</td>
+				<td>
+					&nbsp;
+				</td>
+				<td>
+					eProMoS No.:
+				</td>
+				<td class="tdunderlined">
+					{{rfpdata.epromosnumber}}
+				</td>
+			</tr>
+			<tr>
+				<td>
+					Bank Name:
+				</td>
+				<td style="font-weight:bold;" class="tdunderlined">
+					{{bankdata.bankname}}
+				</td>
+				<td>
+					&nbsp;
+				</td>
+				<td>
+					Expense Type:
+				</td>
+				<td class="tdunderlined">
+					{{rfpdata.expensetype.desc}}
+				</td>
+			</tr>
+		</table>
+		
+		
+		<table style="width:100%; padding-bottom:10px;" cellspacing="0" cellpadding="0" class="tbldetails">
+			<thead>
+				<tr>
+					<th class="tdunderlined">
+						Department
+					</th>
+					<th class="tdunderlined">
+						Location
+					</th>
+					<th class="tdunderlined">
+						Account Description
+					</th>
+					<th class="tdunderlined">
+						Gross Amount
+					</th>
+					<th class="tdunderlined">
+						VAT
+					</th>
+					<th class="tdunderlined">
+						EWT
+					</th>
+					<th class="tdunderlined">
+						NET Amount
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+			{% for aa in aadata %}
+				<tr>
+					<td>
+						{#aa.department|getdeptdesc#}
+						{{aa.department|fill3}}
+					</td>
+					<td>
+						{#aa.location|getlocsdesc#}
+						{{aa.location|fill5}}
+					</td>
+					<td>
+						{% getaccttypedesc rfpdata.nbu_id aa.department aa.location aa.accounttype as The_AcctTypeDesc %}
+						{{ The_AcctTypeDesc }}
+					</td>
+					<td align="right">
+						{{aa.grossamount|intcomma}}
+					</td>
+					<td align="right">
+						{{aa.vatamount|intcomma}}
+					</td>
+					<td align="right">
+						{{aa.wtaxamount|intcomma}}
+					</td>
+					<td align="right">
+						{{aa.netamount|intcomma}}
+					</td>
+				</tr>
+			{% endfor %}
+			</tbody>
+			<tfoot>
+				<tr>
+					<td style="font-weight:bold; border-left:1.5px solid black; padding-left:50px;" colspan="6" class="tdunderlined">
+						TOTAL
+					</td>
+					<td style="font-size:10px; font-weight:bold; border-right:1px solid black; padding-right:5px;" align="right">
+						{{totalamount|intcomma}}
+					</td>
+				</tr>
+				<tr>
+					<td colspan="7" style="padding-left:10px; border-bottom:none; border-top:none; border-left:1px solid black; border-right:1px solid black;">
+						AMOUNT IN WORDS
+					</td>
+				</tr>
+				<tr>
+					<td colspan="7" style="border-bottom:2px solid black; border-top:none; border-left:1px solid black; border-right:1px solid black;" align="center">
+						{{totalamount|towords}}
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+	
+	
+	<div id="footerContent" class="row" align="center">
+		<table style="width:90%;">
+			<tr>
+				<td>
+					Prepared by:
+				</td>
+				<td width="35px">
+					&nbsp;
+				</td>
+				<td>
+					Checked by:
+				</td>
+				<td width="35px">
+					&nbsp;
+				</td>
+				<td>
+					Approved by:
+				</td>
+			</tr>
+			<tr>
+				<td colspan="5">
+					&nbsp;
+				</td>
+			</tr>
+			<tr>
+				<td align="center">
+					{{rfpdata.preparedby.fname}} {{rfpdata.preparedby.mname}} {{rfpdata.preparedby.lname}}
+				</td>
+				<td>
+					&nbsp;
+				</td>
+				<td align="center">
+					{{rfpdata.checkedby.fname}} {{rfpdata.checkedby.mname}} {{rfpdata.checkedby.lname}}
+				</td>
+				<td>
+					&nbsp;
+				</td>
+				<td align="center">
+					{{rfpdata.approvedby.fname}} {{rfpdata.approvedby.mname}} {{rfpdata.approvedby.lname}}
+				</td>
+			</tr>
+			<tr>
+				<td style="border-top: 2px solid black;" align="center">
+					Name/Signature/Date
+				</td>
+				<td>
+					&nbsp;
+				</td>
+				<td style="border-top: 2px solid black;"  align="center">
+					Name/Signature/Date
+				</td>
+				<td>
+					&nbsp;
+				</td>
+				<td style="border-top: 2px solid black;" align="center">
+					Name/Signature/Date
+				</td>
+			</tr>
+		</table>
+	</div>
+	
+</div>

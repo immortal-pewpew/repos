@@ -1,0 +1,106 @@
+{% extends "erm_templates/DTR/base.html" %}
+		{% load erm_tags %}
+		{% block content %}
+			<div class="row">
+				<div class="col-md-1">
+					&nbsp;
+				</div>
+				<div class="col-md-10" id="repdiv">
+					<div class="row">
+						<div class="col-md-12" align="center">
+							<label id="textheader">Generate Reports</label>	
+							<br />
+						</div>
+					</div>
+					
+					<div class="row">
+						<form method="post" action="/ERM/genreports/" id="frmReport">
+						<div class="col-md-2">
+							&nbsp;
+						</div>
+						<div class="col-md-6">
+							
+							<!-- <form method="post" action="/ERM/viewrep/"> -->
+							{% csrf_token %}
+							<div class="row">
+								<div class="col-md-12">
+									<div class="col-md-6">
+											<label style="vertical-align:middle; margin: 0px;">Associate &nbsp;&nbsp;&nbsp;</label>	
+											<select id="cmbgenby" class="form-control input-sm" style="display: inline-block; width: 80px;" >
+												<option value="id" selected>ID</option>
+												<option value="LName">Last</option>
+												<option value="FName">First</option>
+											</select>
+										
+									</div>
+									<div class="col-md-6">
+										{{ form.users }}	
+									</div>		
+								</div>
+								<br /><br />	
+							</div>
+								
+							<div class="row">
+								<div class="col-md-12">
+									<div class="col-md-6">
+										<label>Year</label>
+									</div>
+									<div class="col-md-6">
+										{{ form.year }}	
+									</div>
+								</div>		
+								<br /><br />
+							</div>
+								
+							<div class="row">
+								<div class="col-md-12">								
+									<div class="col-md-6">
+										<label>Month</label>
+									</div>
+									<div class="col-md-6">
+										{{ form.month }}	
+									</div>
+								</div>		
+								<br /><br />				
+							</div>
+								
+							<div class="row">
+								<div class="col-md-12">
+									<div class="col-md-6">
+										<label>Cutoff</label>
+									</div>
+									<div class="col-md-6">
+										{{ form.cutoff }}	
+									</div>
+								</div>		
+								<br /><br />				
+							</div>
+								
+							<div class="row">
+								<div class="col-md-12">
+									<div class="col-md-12" align="right" >
+										<!-- <input id="viewrep" type="submit" class="btn btn-primary btn-sm" value="&nbsp;&nbsp;View&nbsp;&nbsp;" /> -->
+										<input id="genreps" type="submit" class="btn btn-primary btn-sm" value="Generate" />	
+									</div>
+								</div>
+							</div>
+							
+						
+						</div>
+						<div class="col-md-4" style="height: 30px; line-height: 30px;" valign="middle">
+							<div id="divwlc" class="col-md-12" valign="middle">
+								<input style="vertical-align:middle; margin: 0px;" type="checkbox" name="withrem" value="YES" />
+								<label style="position: relative; display: inline-block; margin: 0px;">w/ Remaining Leave Credits</label>
+							</div>
+						</div>
+						</form>
+					</div>
+				</div>
+				<div class="col-md-1">
+					&nbsp;
+				</div>
+				
+			</div>
+		{% endblock %}
+
+

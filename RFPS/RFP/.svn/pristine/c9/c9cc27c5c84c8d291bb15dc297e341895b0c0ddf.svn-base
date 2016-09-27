@@ -1,0 +1,276 @@
+from __future__ import unicode_literals
+
+from django.db import models
+
+# Create your models here.
+
+from django.core.files.storage import FileSystemStorage
+from django.template.defaultfilters import default
+class OverwriteStorage(FileSystemStorage):
+    def _save(self, name, content):
+        if self.exists(name):
+            self.delete(name)
+        return super(OverwriteStorage, self)._save(name, content)
+
+    def get_available_name(self, name):
+        return name
+
+####################################################
+
+#NBU
+class NBU(models.Model):
+    desc = models.CharField(max_length=60,default=None)
+    alias = models.CharField(max_length=10,default=None)
+    
+    class Meta:
+        db_table = 'rfp_nbu'
+        
+    def __unicode__(self):              # __unicode__ on Python 2
+        return '%s %s' % (self.desc, self.alias)
+
+#########################################################################################
+#########################################################################################
+#########################################################################################
+
+#User Class
+class UserClass(models.Model):
+    desc = models.CharField(max_length=35,default=None)
+    
+    class Meta:
+        db_table = 'rfp_user_class'
+        
+    def __unicode__(self):              # __unicode__ on Python 2
+        return '%s' % (self.desc,)
+
+#########################################################################################
+#########################################################################################
+#########################################################################################
+
+#User
+class User(models.Model):
+    username = models.CharField(max_length=30, primary_key=True)
+    password = models.CharField(max_length=100)
+    fname = models.CharField(max_length=50)
+    mname = models.CharField(max_length=50)
+    lname = models.CharField(max_length=50)
+    pwdexpiry = models.DateField()
+    pwdhistory = models.CharField(max_length=100)
+    userlastlogin = models.DateTimeField()
+    userstatus = models.BinaryField()
+    userclass = models.ForeignKey(UserClass)
+    reportto = models.CharField(max_length=30)
+    
+    class Meta:
+        db_table = 'rfp_user'
+        
+    def __unicode__(self):              # __unicode__ on Python 2
+        return '%s %s %s %s %s %s %s' % (self.username, self.password, self.fname, self.mname, self.lname, self.pwdhistory, self.reportto,)
+
+#########################################################################################
+#########################################################################################
+#########################################################################################
+
+#User Access
+class User_Access(models.Model):
+    user = models.ForeignKey(User)
+    nbu = models.ForeignKey(NBU)
+    
+    class Meta:
+        db_table = 'rfp_user_access'
+
+#########################################################################################
+#########################################################################################
+#########################################################################################
+
+#TAX
+class Tax(models.Model):
+    desc = models.CharField(max_length=20)
+    
+    class Meta:
+        db_table = 'rfp_tax'
+        
+    def __unicode__(self):              # __unicode__ on Python 2
+        return '%s' % (self.desc,)
+
+#########################################################################################
+#########################################################################################
+#########################################################################################
+
+#WTax
+class WTax(models.Model):
+    desc = models.CharField(max_length=50,default=None)
+    
+    class Meta:
+        db_table = 'rfp_wtax'
+        
+    def __unicode__(self):              # __unicode__ on Python 2
+        return '%s' % (self.desc,)    
+    
+#########################################################################################
+#########################################################################################
+#########################################################################################
+
+#Status
+class Status(models.Model):
+    desc = models.CharField(max_length=30)
+    
+    class Meta:
+        db_table = 'rfp_status'
+        
+    def __unicode__(self):              # __unicode__ on Python 2
+        return '%s' % (self.desc,)    
+    
+#########################################################################################
+#########################################################################################
+#########################################################################################    
+    
+#Expense Type
+class Expense_Type(models.Model):
+    desc = models.CharField(max_length=50)
+    
+    class Meta:
+        db_table = 'rfp_expense_type'
+        
+    def __unicode__(self):              # __unicode__ on Python 2
+        return '%s' % (self.desc,)    
+    
+#########################################################################################
+#########################################################################################
+#########################################################################################
+
+#Remarks
+class Remarks(models.Model):
+    notes = models.CharField(max_length=50)
+    
+    class Meta:
+        db_table = 'rfp_remarks'
+        
+    def __unicode__(self):              # __unicode__ on Python 2
+        return '%s' % (self.notes,)    
+
+
+#########################################################################################
+#########################################################################################
+#########################################################################################
+
+#Remarks
+class Bank_Details(models.Model):
+    #notes = models.CharField(max_length=50)
+    
+    class Meta:
+        db_table = 'rfp_bank_details'
+    '''   
+    def __unicode__(self):              # __unicode__ on Python 2
+        return '%s' % (self.notes,) 
+    '''
+#########################################################################################
+#########################################################################################
+#########################################################################################
+
+#RFP
+class RFP(models.Model):
+    createdate = models.DateField()
+    
+    rfpno = models.CharField(max_length=17)
+    nbu = models.ForeignKey(NBU)
+    department = models.IntegerField()
+    location = models.IntegerField()
+    docnumber = models.CharField(max_length=35)
+    
+    vendorid = models.CharField(max_length=15)
+    vendorname = models.CharField(max_length=100)
+    checkpayee = models.CharField(max_length=75,default=None)
+    tax = models.ForeignKey(Tax)
+    wtax = models.ForeignKey(WTax)
+    
+    remarks = models.ForeignKey(Remarks)
+    ersnumber = models.CharField(max_length=30,default=None)
+    ejonumber = models.CharField(max_length=30,default=None)
+    epromosnumber = models.CharField(max_length=30,default=None)
+    
+    expensetype = models.ForeignKey(Expense_Type)
+    cwo = models.BinaryField(default=None)
+    bankdetails = models.ForeignKey(Bank_Details)
+    natureofreq = models.CharField(max_length=200,default=None)
+        
+    grossamount = models.DecimalField(max_digits=11,decimal_places=2)
+    netamount = models.DecimalField(max_digits=11,decimal_places=2)
+    
+    preparedby = models.ForeignKey(User,related_name="preparedby")#models.CharField(max_length=30)
+    checkedby = models.ForeignKey(User,related_name="checkedby")#models.CharField(max_length=30,default=None)
+    checkeddate = models.DateTimeField(default=None)
+    approvedby = models.ForeignKey(User,related_name="approvedby")#models.CharField(max_length=30,default=None)
+    approveddate = models.DateTimeField(default=None)
+    status = models.ForeignKey(Status)
+    
+    
+    class Meta:
+        db_table = 'rfp_rfp'
+        unique_together = (("rfpno", "nbu"),)
+        
+    def __unicode__(self):              # __unicode__ on Python 2
+        return '%s %s %s %s %s %s %s %s' % (self.rfpno, self.vendorid, self.vendorname, self.checkpayee, self.ersnumber, self.ejonumber, self.epromosnumber, self.docnumber, )    
+
+#########################################################################################
+#########################################################################################
+#########################################################################################
+
+#Control Number
+class Cntrl_No(models.Model):
+    code = models.CharField(max_length=5,default=None)
+    nbu = models.ForeignKey(NBU)
+    seriesno = models.IntegerField()
+    rfpnumber = models.CharField(max_length=17,default=None)
+    
+    class Meta:
+        db_table = 'rfp_cntrl_no'
+        
+    def __unicode__(self):              # __unicode__ on Python 2
+        return '%s %s' % (self.code, self.rfpnumber,)    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+'''
+import os
+
+###################
+def upload_filename(instance, filename):
+    path = "avatars/"
+    format = str(instance.imguser_id) + '.jpg'
+    return os.path.join(path, format)
+###################
+
+#Image Avatars
+class Images(models.Model):
+    avatar = models.ImageField(storage=OverwriteStorage(), upload_to = upload_filename)
+    imguser = models.ForeignKey(User)
+    
+    class Meta:
+        db_table = 'erm_images'
+        
+'''
+
+
+        
+
+    
+
+
+
+

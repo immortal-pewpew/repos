@@ -1,0 +1,263 @@
+{% load staticfiles %}
+{% load humanize %}
+
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/ecs_css/style.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.4-dist/css/bootstrap.css' %}" />
+
+<script type="text/javascript" src="{% static 'jquery-1.12.1/jquery-1.12.1.min.js' %}" ></script>
+<script type="text/javascript" src="{% static 'bootstrap-3.3.4-dist/js/bootstrap.js' %}" ></script>
+
+<!DOCTYPE html>
+
+<html>
+	<head>
+		
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<link rel="icon" href="/static/icons/ecs.ico">
+		<title>NCCC ECS</title>
+		
+		<style>
+		    @page {
+		        size: a5 landscape;
+		        margin: 1cm;
+		        
+		        @frame footer {
+                    -pdf-frame-content: footerContent;
+                    bottom: 0cm;
+                    
+                    height: 4cm;
+                }
+		    }
+		</style>
+	</head>
+
+	<body>
+		<!--
+			<div class="row">
+						<div class="row" align="center">
+							<h1>&nbsp;</h1>
+						</div>
+						
+						<div class="row">
+							<table border="0" cellspacing="5" width="100%" cellspacing="5">
+								<tr>
+									<td width="60px" valign="middle">
+										&nbsp;
+									</td>
+									<td width="180px" valign="middle">
+										<b>&nbsp;</b>		
+									</td>
+									<td valign="middle">
+										<h2>&nbsp;</h2>		
+									</td>
+									
+									<td width="500px" valign="middle">
+										&nbsp;
+									</td>
+									<td width="180px" valign="middle">
+										<b>&nbsp;</b>		
+									</td>
+									<td valign="middle">
+										<h2>&nbsp;</h2>		
+									</td>
+								</tr>
+								
+								<tr>
+									<td width="60px" valign="middle">
+										&nbsp;
+									</td>
+									<td width="180px" valign="middle">
+										<b>&nbsp;</b>		
+									</td>
+									<td valign="middle">
+										<h2>&nbsp;</h2>		
+									</td>
+									
+									<td width="500px" valign="middle">
+										&nbsp;
+									</td>
+									<td width="180px" valign="middle">
+										<b>&nbsp;</b>		
+									</td>
+									<td valign="middle">
+										<h2>&nbsp;</h2>		
+									</td>
+								</tr>
+								
+								<tr>
+									<td width="60px" valign="middle">
+										&nbsp;
+									</td>
+									<td width="180px" valign="middle">
+										<b>&nbsp;</b>	
+									</td>
+									<td valign="middle" colspan="4">
+										<h2>&nbsp;</h2>		
+									</td>
+								</tr>
+							</table>
+						</div>
+						<div class="row">
+							<table border="0" cellspacing="1" cellpadding="1">
+								<tr>
+									<th class="tabletitle" style="background: skyblue; vertical-align: middle; z-index: -100;">
+										&nbsp;
+									</th>
+									<th class="tabletitle" valign="middle" style="background: skyblue;">
+										&nbsp;
+									</th>
+									<th class="tabletitle" valign="middle" style="background: skyblue;">
+										&nbsp;
+									</th>
+									<th class="tabletitle" valign="middle" style="background: skyblue;">
+										&nbsp;
+									</th>
+									<th colspan="2" class="tabletitle" valign="middle" style="background: skyblue;">
+										&nbsp;
+									</th>
+								</tr>
+								{% for det in detinfo %}
+							
+								<tr>
+									<td align="center" valign="middle">
+										<b>&nbsp;</b>
+									</td>
+									<td align="center" valign="middle">
+										<b>&nbsp;</b>
+									</td>
+									<td align="center" valign="middle">
+										<b>&nbsp;</b>
+									</td>
+									<td align="center" valign="middle">
+										<b>&nbsp;</b>
+									</td>
+									<td class="tdamount" align="right" valign="middle">
+										<b>&nbsp;</b>
+									</td>
+									<td width="30px">
+										&nbsp;
+									</td>
+								</tr>
+							
+								{% endfor %}
+								
+								<tr>
+									<td colspan="6">
+										&nbsp;
+									</td>	
+								</tr>
+								<tr>
+									<td align="center">
+										<h3>&nbsp;</h3>
+									</td>
+									<td colspan="4" align="right">
+										<h3>&nbsp;</h3>
+									</td>
+									<td width="30px">
+										&nbsp;
+									</td>
+								</tr>
+								<tr>
+									<td colspan="6">
+										&nbsp;
+									</td>	
+								</tr>
+							</table>
+						</div>
+						
+						<div class="row">
+							&nbsp;
+						</div>
+					</div>
+					
+			-->
+					
+					<div id="footerContent" class="row">
+						<table class="text-left" cellspacing="1" cellpadding="1">
+							<tr rowspan="2" style="line-height: 30px; height: 30px;">
+								<td width="10%">
+									&nbsp;
+								</td>
+								<td width="10%" align="right">
+									<label>&nbsp;</label>
+								</td>
+								<td width="25%" style="vertical-align: bottom;">
+									&nbsp;
+								</td>
+								<td width="15%">
+									&nbsp;
+								</td>
+								<td width="10%" align="right">
+									<label>&nbsp;</label>
+								</td>
+								<td width="20%" style="vertical-align: bottom;">
+									{{soainfo.CtrPerson.UserName}}
+								</td>
+								<td width="10%">
+									&nbsp;
+								</td>
+							</tr>
+							<tr rowspan="2" style="line-height: 30px; height: 30px;">
+								<td width="10%">
+									&nbsp;
+								</td>
+								<td width="10%" align="right">
+									<label>&nbsp;</label>
+								</td>
+								<td width="25%" style="vertical-align: bottom;">
+									&nbsp;
+								</td>
+								<td width="15%">
+									&nbsp;
+								</td>
+								<td width="10%" align="right">
+									<label>&nbsp;</label>
+								</td>
+								<td width="20%" style="vertical-align: bottom;">
+									{{soainfo.RDate|date:"m/d/Y h:i:s A"}} 
+								</td>
+								<td width="10%">
+									&nbsp;
+								</td>
+							</tr>
+							<tr rowspan="2" style="line-height: 30px; height: 30px;">
+								<td width="10%">
+									&nbsp;
+								</td>
+								<td width="10%" align="right">
+									<label>&nbsp;</label>
+								</td>
+								<td width="25%" style="vertical-align: bottom;">
+									&nbsp;
+								</td>
+								<td width="15%">
+									&nbsp;
+								</td>
+								
+								<td width="10%" align="right">
+									<label>&nbsp;</label>
+								</td>
+								<td width="20%" style="vertical-align: bottom;">
+									{{soainfo.CBDate|date:"m/d/Y"}}
+								</td>
+								<td width="10%">
+									&nbsp;
+								</td>
+							</tr>
+							<tr>
+								<td colspan="7" align="center">
+									<label style="color: red;">Note: Special Holiday may not be included in Comeback date computation.</label>
+								</td>
+							</tr>
+						</table>
+						
+					</div>
+					
+			
+	
+	
+	</body>
+
+</html>
+

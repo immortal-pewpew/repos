@@ -1,0 +1,120 @@
+<script>
+	//Send message for SU
+	$('input#btnSend').on('click', function(event){
+		//var recipient = $(this).attr('recipient');
+		var msg = $('textarea#comment').val();
+		var contact_username = $('input#contact_username').val(); 
+		
+		$.ajax({
+	        url : "/ECS/sendmsg/", // the endpoint
+	        type : "post", // http method
+	        data : { msg: msg, contact_username:contact_username }, // data sent with the post request
+			
+			// handle a successful response
+	        success : function(data) {
+	        	$('#msgfield').html(data);
+	        	$('textarea#comment').val('');
+	        	$('#focusfield').focus();
+	        	$('#comment').focus();
+	        	},
+	
+	        // handle a non-successful response
+	        error : function(data) {
+	        	
+	        	}
+			 });
+		
+	});
+	
+	
+	$('textarea#comment').on('keydown', function(e){
+		// Enter was pressed without shift key
+		if (e.keyCode == 13 && !e.shiftKey){
+			var msg = $('textarea#comment').val();
+			var contact_username = $('input#contact_username').val(); 
+			
+			$.ajax({
+		        url : "/ECS/sendmsg/", // the endpoint
+		        type : "post", // http method
+		        data : { msg: msg, contact_username:contact_username }, // data sent with the post request
+				
+				// handle a successful response
+		        success : function(data) {
+		        	$('#msgfield').html(data);
+		        	$('textarea#comment').val('');
+		        	$('#focusfield').focus();
+		        	$('#comment').focus();
+		        	},
+		
+		        // handle a non-successful response
+		        error : function(data) {
+		        	
+		        	}
+				 });
+			}
+		
+	});
+	
+</script>
+
+<div class="row">
+	<div class="col-md-1">
+		&nbsp;
+	</div>
+	<div class="col-md-10"> 
+		<div id="msgfield" class="row">
+		{% if allusermsgs %}
+			{% for msg in allusermsgs %}	
+				{% if msg.sender_id != user %}
+					
+					<div class="row">
+						<label style="font-size: 10px; font-family: Arial Black; font-weight: bold; color: #5CB85C;">{{msg.sender.FullName}}</label>
+					</div>
+					<div class="row">
+						<div class="msgdiv" style="background-color: #999;">
+							<span style="font-size: 11px; font-family: Arial; font-weight: bold;">{{msg.message}}</span> 
+						</div>	
+						
+					</div>
+					<div class="row">
+						<label style="font-size: 9px; font-style: Arial; color: #999; margin-top: 5px;">{{msg.dateOfSending|date:"D M d, Y"|upper}} AT {{ msg.dateOfSending|time:"h:i A"|upper }}</label>
+					</div>	
+					
+				{% else %}
+					
+					<div class="row">
+						<div class="msgdiv-fill">
+							&nbsp;
+						</div>
+						<div class="msgdiv" style="background-color: #5BC0DE; float:right;">
+							<span style="font-size: 11px; font-family: Arial; font-weight: bold;">{{msg.message}}</span> 
+						</div>	
+					</div>
+					
+					<div class="row" align="right">
+						<label style="font-size: 9px; font-style: Arial; color: #999; margin-top: 5px;">{{msg.dateOfSending|date:"D M d, Y"|upper}} AT {{ msg.dateOfSending|time:"h:i A"|upper }}</label>
+					</div>
+				{% endif %}
+			{% endfor %}
+			
+		{% else %}
+			<h4 style="text-align: center; ">No messages.</h4>
+		{% endif %}
+		</div>
+		<div class="row">
+			<div class="row" style="margin-bottom: 5px;">
+				<textarea id="comment" rows="2" style="width:100%; resize: none;"></textarea>
+			</div>
+			<div class="row" align="right" style="margin-bottom: 5px;">
+				<input id="btnSend" class="btn btn-success btn-sm" type="button" value="Send" />
+				<input type="hidden" id="contact_username" value="{{contact_username}}" />
+			</div>
+			<div class="row" align="right">
+				<input id="focusfield" type="text" size="1px" style="z-index: -9999; position: relative; "/>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-1">
+		&nbsp;
+	</div>
+</div>

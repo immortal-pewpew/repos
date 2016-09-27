@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+		{% load tags %}
+		{% block content %}
+				<div class="row">
+					<div class="col-md-1">
+					  &nbsp;
+					</div>
+					<div class="col-md-10">
+						<div class="row" align="center">
+							<label class="textheader">
+								Users Masterlist
+							</label>
+						</div>
+						<div class="row" align="right">
+							<input id="newacctlink" type="image" class="btn btn-lg" title="Create User" src="/static/images/user_add.png" />
+						</div>
+						<div class="row">
+							&nbsp;
+						</div>
+						<div class="row" id="userdiv">
+									
+									<table class="table table-striped">
+										<tbody>
+											<tr>
+												<th class="text-left">
+													&nbsp;
+												</th>
+												<th class="text-left">
+													USERNAME
+												</th>
+												<th class="text-left">
+													LAST
+												</th>
+												<th class="text-left">
+													FIRST
+												</th>
+												<th class="text-left">
+													MIDDLE
+												</th>
+												<th class="text-left">
+													PWD EXPIRY
+												</th>
+												<th class="text-left">
+													STATUS
+												</th>
+												<th class="text-left">
+													USER TYPE
+												</th>
+												<th class="text-left">
+													REPORTS TO
+												</th>
+											</tr>
+										</tbody>
+										{% for user in allusers %}
+											<tr id="{{user.username}}" role="button" class="editlink">
+												<td width="25px" align="center">
+													<span style="color: gray;">{{forloop.counter|usernumbering:allusers.number}}</span>
+												</td>
+												<td align="left">
+													<span style="color: green; font-weight: bold;">{{ user.username }}</span>
+												</td>
+												<td align="left">
+													<span style="color: blue; font-weight: bold;">{{ user.lname }}</span>	
+												</td>
+												<td align="left">
+													<span style="color: blue; font-weight: bold;">{{ user.fname }}</span>
+												</td>
+												<td align="left">
+													<span style="color: blue; font-weight: bold;">{{ user.mname }}</span>
+												</td>
+												<td align="left">
+													<span style="color: blue; font-weight: bold;">{{ user.pwdexpiry }}</span>
+												</td>
+												<td align="left">
+													<span style="color: blue; font-weight: bold;">
+														{% if user.userstatus %}
+															Active
+														{% else %}
+															Inactive
+														{% endif %}
+													</span>
+												</td>
+												<td align="left">
+													<span style="color: blue; font-weight: bold;">{{ user.userclass }}</span>
+												</td>
+												<td align="left">
+													<span style="color: blue; font-weight: bold;">{{ user.reportto }}</span>
+												</td>
+											</tr>
+										{% endfor %}
+									</table> 
+									
+								
+							</div>
+							
+							<div class="row" align="right">
+								<div class="pagination">
+								    <span class="step-links" style="font-family: Verdana; font-size: 12px;" >
+								    	
+								    	Go to page:
+								    	<input id="userpager" type="text" class="numonly form-control input-sm" style="width: 40px; display: inline;" value="{{ allusers.number }}"/>
+								    	of {{ allusers.paginator.num_pages }}
+								    	
+								    	&nbsp;
+								        &nbsp;
+								        
+								        
+								        {% if allusers.has_previous %}
+								            <a href="?page={{ allusers.previous_page_number }}">
+								            	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true" title="Previous"></span>
+								            </a>
+								        {% else %}
+								        	<span class="glyphicon glyphicon-arrow-left restricted" aria-hidden="true"></span>
+								        {% endif %}
+										
+										&nbsp;
+								        
+								        {% if allusers.has_next %}
+								            <a href="?page={{ allusers.next_page_number }}">
+								            	<span class="glyphicon glyphicon-arrow-right" aria-hidden="true" title="Next"></span>
+								            </a>
+								        {% else %}
+								        	<span class="glyphicon glyphicon-arrow-right restricted" aria-hidden="true"></span>
+								        {% endif %}
+								    </span>
+							    </div>
+							</div>
+							 
+						
+					</div>
+					<div class="col-md-1">
+					  &nbsp;
+					</div>
+				</div>
+	
+		{% endblock %}
+			
+
+

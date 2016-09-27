@@ -1,0 +1,60 @@
+{% load staticfiles %}
+
+<script type="text/javascript" src="{% static 'jquery-1.12.1/jquery-1.12.1.min.js' %}" ></script>
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/ecs_css/style.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'jquery-ui-1.11.4.custom/jquery-ui.css' %}" />
+<script type="text/javascript" src="{% static 'jquery-ui-1.11.4.custom/jquery-ui.js' %}" ></script>
+
+
+<script type="text/javascript">
+	
+	$( document ).ready(function() {
+	  $( "#dialog" ).dialog({
+	    modal: true,
+	    position: { my: 'top', at: 'top+150',of: window },
+	    buttons: {
+	      Ok: function() {
+	    	/*
+	      	{% if msgNum == 0 %}
+	      		window.location.replace("/ECS/sumain/");     	
+	      	{% elif msgNum == 1 %}
+	      		window.location.replace("/ECS/camain/");
+	      	{% elif msgNum == 3 %}
+	      		window.location.replace("/ECS/mumain/");
+	      	{% elif msgNum == 4 %}
+	      		window.location.replace("/ECS/users/");
+	      	{% endif %}
+			*/
+	        $(this).dialog( "close" );
+	      }
+	    },
+	    beforeClose: function(){
+	    	{% if msgNum == 0 %}
+	      		window.location.replace("/ECS/sumain/");     	
+	      	{% elif msgNum == 1 %}
+	      		window.location.replace("/ECS/camain/");
+	      		{% elif msgNum == 2 %}
+	      		window.location.replace("/ECS/pamain/");
+	      	{% elif msgNum == 3 %}
+	      		window.location.replace("/ECS/mumain/");
+	      	{% elif msgNum == 4 %}
+	      		window.location.replace("/ECS/users/");
+      		{% elif msgNum == 5 %}
+	      		window.location.replace("/ECS/access/");
+	      	{% endif %}
+		      }
+	    
+	  });
+	  
+	  
+	
+	  
+	  
+	});
+
+</script>
+
+<div id="dialog" title="Information!" class="dialogbox">
+	<p class="normaltext">{{message}}</p>
+</div>

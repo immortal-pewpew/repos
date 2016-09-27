@@ -1,0 +1,163 @@
+{% load erm_tags %}
+<script>
+	$('input#hmonth').val($('select#viewmonth').val());
+	$('input#hyear').val($('select#viewyear').val());
+	$('input#hcutoff').val($('select#cutofftype').val());
+</script>
+<!-- <div class="row" id="summary"> -->
+	<div class="col-md-8">
+		<!--Leave Credits-->
+		<div class="row">
+			<div class="col-md-6">
+				<h4>Leave Credits:</h4>
+			</div>
+			<div class="col-md-6">
+				&nbsp;
+			</div>
+		</div>
+		<!--Remaining-->
+		<div class="row" align="right">
+			<div class="col-md-6">
+				&nbsp;
+			</div>
+			<div class="col-md-3">
+				<label style="color: blue;">Used &nbsp;&nbsp;&nbsp;&nbsp;</label>
+			</div>
+			<div class="col-md-3">
+				<label style="color: blue;">Remaining</label>
+			</div>
+			<br/>
+		</div>
+		
+		<input id="ctrlforprevyrvl" type="hidden" value="{{VLPrevYearRem}}" />
+		
+		<!--VL Previous Year-->
+		{% if not VLPrevYearRem == 0 %}
+		<div class="row" align="right">
+			<div class="col-md-6">
+				<label style="color: #00b9ff;">Previous Year VL:</label>
+			</div>
+			<div class="col-md-3">
+				<label id="prevyrvl" style="color: red;">{{ VLConsumedPrevYear|divide:60 }}hr {{ VLConsumedPrevYear|modulo:60 }}min</label>
+				<input id="hprevyrvl" type="hidden" value="{{VLConsumedPrevYear}}" />
+			</div>
+			<div class="col-md-3">
+				<label id="prevyrvlrem" style="color: limegreen;">{{ VLPrevYearRem|divide:60 }}hr {{ VLPrevYearRem|modulo:60 }}min</label>
+				<input id="hprevyrvlrem" type="hidden" value="{{VLPrevYearRem}}" />
+			</div>	
+		</div>
+		{% endif %}
+		<!--VL-->
+		<div class="row" align="right">
+			<div class="col-md-6">
+				Vacation Leave:
+			</div>
+			<div class="col-md-3">
+				<label id="totalvl">{{ VacationL|divide:60 }}hr {{ VacationL|modulo:60 }}min</label>
+				<input id="htotalvl" type="hidden" value="{{VacationL}}" />
+			</div>
+			<div class="col-md-3">
+				<label id="vlrem">{{ yearnum|VLR:currUser|divide:60 }}hr {{ yearnum|VLR:currUser|modulo:60 }}min</label>
+				<input id="hvlrem" type="hidden" value="{{yearnum|VLR:currUser}}" />
+			</div>
+		</div>
+		<!--SIL-->
+		<div class="row" align="right">
+			<div class="col-md-6">
+				Service Incentive Leave:
+			</div>
+			<div class="col-md-3">
+				<label id="totalsil">{{ ServiceIncentiveL|divide:60 }}hr {{ ServiceIncentiveL|modulo:60 }}min</label>
+				<input id="htotalsil" type="hidden" value="{{ServiceIncentiveL}}" />
+			</div>
+			<div class="col-md-3">
+				<label id="silrem">{{ yearnum|SILR:currUser|divide:60 }}hr {{ yearnum|SILR:currUser|modulo:60 }}min</label>
+				<input id="hsilrem" type="hidden" value="{{yearnum|SILR:currUser}}" />
+			</div>
+		</div>
+		<!--SL-->
+		<div class="row" align="right">
+			<div class="col-md-6">
+				Sick Leave:
+			</div>
+			<div class="col-md-3">
+				<label id="totalsl">{{ SickL|divide:60 }}hr {{ SickL|modulo:60 }}min</label>
+				<input id="htotalsl" type="hidden" value="{{SickL}}" />
+			</div>
+			<div class="col-md-3">
+				<label id="slrem">{{ yearnum|SLR:currUser|divide:60 }}hr {{ yearnum|SLR:currUser|modulo:60 }}min</label>
+				<input id="hslrem" type="hidden" value="{{yearnum|SLR:currUser}}" />
+			</div>
+		</div>
+		<br />
+		<!-- SUMMARY -->
+		<div class="row">
+			<div class="col-md-6">
+				<h4>Summary</h4>	
+			</div>
+				
+		</div>
+		<div class="row">
+			<div class="col-md-6">
+				&nbsp;
+			</div>
+			<div class="col-md-3" align="right">
+				<label style="color: blue;">Earned &nbsp;&nbsp;</label>
+			</div>
+			<div class="col-md-3" align="right">
+				&nbsp;
+			</div>
+			<br />
+		
+		</div>		
+		<div class="row" align="right">
+			<div class="col-md-6">
+				Total Hours Worked:
+			</div>
+			<div class="col-md-3">
+				<label id="totalhw">{{ earnedtime|divide:60 }}hr {{ earnedtime|modulo:60 }}min</label>
+				<input id="htotalhw" type="hidden" value="{{earnedtime}}" />
+			</div>
+			<div class="col-md-3">
+				&nbsp;
+			</div>
+		</div>
+		{% if not AAbsent == 0 %}
+		<div class="row" align="right">
+			<div class="col-md-6">
+				Total Absent Hours:
+			</div>
+			<div class="col-md-3">
+				<label id="totalaa" style="color: red;">{{ AAbsent|divide:60 }}hr {{ AAbsent|modulo:60 }}min</label>
+				<input id="htotalaa" type="hidden" value="{{AAbsent}}" />
+			</div>
+			<br /> <br /> <br/>
+		</div>
+		{% endif %}
+	</div>
+	<div class="col-md-4">
+		<form method="post" 
+			{% if not approver == None %}	
+				action="/ERM/submitdtr/"
+			{% else %}
+				action="/ERM/dtr1appr/"
+			{% endif %}
+		>
+	
+		{% csrf_token %}
+			<div class="row">
+				<div class="col-md-12" align="right">
+					<input type="hidden" id="hmonth" name="hmonthnum" value="{{monthnum}}"/>
+					<input type="hidden" id="hyear" name="hyearnum" value="{{yearnum}}"/>
+					<input type="hidden" id="hcutoff" name="hcutoff"/>
+					{% if dtrstatus == 1 or dtrstatus == 2 %}
+					<input type="submit" class="btn btn-md btn-warning" value="Submit DTR" disabled />
+					{% else %}
+					<input id="DTRSubmission" type="submit" class="btn btn-md btn-warning" value="Submit DTR" />
+					{% endif %}	
+				</div>
+			</div>
+		</form>
+	</div>
+												
+<!-- </div> -->

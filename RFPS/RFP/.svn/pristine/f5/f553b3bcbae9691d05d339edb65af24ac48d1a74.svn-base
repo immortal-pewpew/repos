@@ -1,0 +1,524 @@
+{% load staticfiles %}
+{% load tags %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.4-dist/css/bootstrap.min.css' %}" />
+
+<script type="text/javascript" src="{% static 'jquery-1.12.1/jquery-1.12.1.min.js' %}" ></script>
+
+<!-- GIPULIHAN NA NAKO SILA AS MINIFIED UG JQUERY 1.12.1 NA ANG AKO GAMIT-->
+<script type="text/javascript" src="{% static 'js/main.js' %}" ></script>
+<script type="text/javascript" src="{% static 'bootstrap-3.3.4-dist/js/bootstrap.min.js' %}" ></script>
+
+
+<link rel="stylesheet" type="text/css" href="{% static 'jquery-ui-1.11.4.custom/jquery-ui.min.css' %}" />
+<script type="text/javascript" src="{% static 'jquery-ui-1.11.4.custom/jquery-ui.min.js' %}" ></script>
+
+<!-- TABLESORTER -->
+<link rel="stylesheet" type="text/css" href="{% static 'tablesorter-master/css/theme.blue.css' %}" />
+<script type="text/javascript" src="{% static 'tablesorter-master/js/jquery.tablesorter.js' %}"></script>
+<script type="text/javascript" src="{% static 'tablesorter-master/js/jquery.tablesorter.widgets.js' %}"></script>
+<!-- TABLESORTER PAGINATION -->
+<link rel="stylesheet" type="text/css" href="{% static 'tablesorter-master/addons/pager/jquery.tablesorter.pager.css' %}" />
+<script type="text/javascript" src="{% static 'tablesorter-master/addons/pager/jquery.tablesorter.pager.js' %}"></script>
+
+<script type="text/javascript" src="{% static 'jasny-bootstrap/js/jasny-bootstrap.min.js' %}" ></script>
+
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>NCCC e-Request For Payment</title>
+		
+	</head>
+	<body>
+		<div id="wholepage" class="container-fluid" >
+			<div class="header">
+				<nav class="navbar">
+				 <div class="container-fluid">
+				    <!-- Collect the nav links, forms, and other content for toggling -->
+				    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+				      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+				        <span class="sr-only">Toggle navigation</span>
+				        <span class="icon-bar"></span>
+				        <span class="icon-bar"></span>
+				        <span class="icon-bar"></span>
+				      </button>
+				      
+				      
+				      	<a class="home navbar-brand" href="/RFP/main/">NCCC e-Request For Payment System</a>
+				      
+				      <ul class="nav navbar-nav navbar-right">
+				        <li><p class="navbar-text navbar-right"></p></li>
+				        <li class="dropdown">
+				        	<a style="color: black; font-weight: bold;" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{username}}, {{fname}} {{mname}} {{lname}} <span class="caret"></span></a>
+				        	<ul class="dropdown-menu">
+				        	
+				        	<li><a href="/RFP/main/" role="button">Transactions</a></li>
+				        	{% if userclass == 'PREPARER' %}
+				        		
+				        	{% elif userclass == 'CHECKER' %}
+				        	
+				        	{% elif userclass == 'APPROVER' %}
+				        	
+				        	{% elif userclass == 'PAYASSOC' %}
+				        	
+				        	{% elif userclass == 'ADMINISTRATOR' %}
+					           <li><a href="/RFP/users/" role="button">User Master</a></li>
+					           <li><a href="/RFP/access/" role="button">Access Master</a></li>
+				       		{% endif %}
+					            <li role="separator" class="divider">&nbsp;</li>
+					            <li><a class="pwdlink" role="button">Change Password</a></li>
+					            <li role="separator" class="divider">&nbsp;</li>
+					            <li><a href="/RFP/logout/">Logout</a></li>
+				          	</ul>
+				        </li>
+				        
+				      </ul>
+				      
+				    </div><!-- /.navbar-collapse -->
+				  </div><!-- /.container-fluid -->
+			</nav>
+			</div>
+			
+			<div class="content" style="border: 5px solid gray;" >
+				{% block content %}
+				{% endblock %}
+			</div>
+			
+			<div class="footer text-center" style="background: silver; padding: 5px; font-size: 11px;">
+				<span>New City Commercial Corporation (NCCC). NCCC e-Request For Payment System © NCCC 2016</span><br>
+				<span>NCCC eRFP System is maintained by NCCC, ICT Applications.</span><br>
+				<span id="stat"><!-- STATS: Total: %(total_time).2fs Python: %(python_time).2fs DB: %(db_time).2fs Queries: %(db_queries)d ENDSTATS --></span>
+			</div>
+		</div>
+	</body>
+</html>
+
+
+<!-- PROCESSSING DIALOG -->
+<div id="dialogprocessrequest" title="Create New Request" class="dialogbox">
+	<form method="post" action="/RFP/processrequest/" id="frmprocessrequest">
+		{% csrf_token %}
+		
+		<div class="row" style="margin: auto;">
+				
+			<div style="width:50%; float:left;">
+					
+				<table style="width:100%;">
+					<tr>
+						<td width="100px"><b>RFP No.: </b></td>
+						<td>
+							<span id="rfp_no" style="color: green; font-weight: bold;">-----------------</span>
+							<input type="hidden" id="hrfp_no" name="hrfp_no" />
+						</td>
+					</tr>
+					<tr>
+						<td><b>NBU: <span style="color: red;">*</span></b></td>
+						<td>
+							{{ formmain.nbu }}
+							<input type="hidden" id="nbucode" name="nbucode">
+						</td>
+					</tr>
+					
+					<tr>
+						<td><b>DOC No.: <span style="color: red;">*</span></b></td>
+						<td><input type="text" class="reqdet" id="doc_no" name="doc_no" style="width:100%" required/></td>
+					</tr>
+					<tr>
+						<td><b>Invoice Date: <span style="color: red;">*</span></b></td>
+						<td><input type="text" class="reqdet datepickerx noinput" id="inv_date" name="inv_date" style="width:100%" required/></td>
+					</tr>
+				</table>
+				
+				<hr style="height:3px;color:#808080;background-color:#808080;" />
+				
+				<table style="width:100%;">
+					<tr>
+						<td width="100px"><b>VENDOR ID: <span style="color: red;">*</span></b></td>
+						<td>
+							<input type="text" id="vendor_id" name="vendor_id" class="numonly reqdet vendor_dets" style="width:50%; margin-right: 20px;" required />
+							
+							<button id="btnLookup" type="button" class="btn btn-sm btn-default">
+						    	<span class="glyphicon glyphicon-search"></span> Search Name
+						    </button>
+						    
+						    <button id="btnClearVDets" type="button" class="btn btn-sm btn-default">
+						    	<span class="glyphicon glyphicon-erase"></span> Clear
+						    </button>
+						     
+						</td>
+					</tr>
+					<tr>
+						<td width="100px"><b>VENDOR NAME: </b></td>
+						<td><input type="text" id="vendor_name" name="vendor_name" class="reqdet vname_lookup uppercase vendor_dets" style="width:100%;" /></td>
+					</tr>
+					<tr>
+						<td width="100px"><b>CHECK PAYEE: </b></td>
+						<td><input type="text" id="check_payee" name="check_payee" class="reqdet vendor_dets" style="width:100%;" /></td>
+					</tr>
+				</table>
+				
+				<hr style="height:3px;color:#808080;background-color:#808080;" />
+				
+				<table style="width:100%;">
+					<tr>
+						<td style="vertical-align: top !important;">
+							<b>NATURE OF REQUEST: </b>
+							<div style="float:right;">
+							<input id="notes" name="notes" type="image" src="/static/images/note_edit.png" title="Remarks" class="img notelink" style="margin-left: 5px;" />
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<textarea id="nature_of_req" name="nature_of_req" style="width:100%; resize:none;">
+							</textarea>
+						</td>
+					</tr>
+				</table>
+				
+			</div>
+				
+			<div style="width:5%; float:left;">
+				&nbsp;
+			</div>
+				
+			<div style="width:45%; float:left;">
+				<hr style="height:3px;color:#808080;background-color:#808080;" />
+				
+				<table width="100%">
+					<tr>
+						<td width="100px" ><b>eRS No.: </b></td>
+						<td><input type="text" id="ers_no" name="ers_no" class="reqdet" style="width:100%"/></td>
+					</tr>
+					<tr>
+						<td><b>eJO No.: </b></td>
+						<td><input type="text" id="ejo_no" name="ejo_no" class="reqdet" style="width:100%"/></td>
+					</tr>
+					<tr>
+						<td><b>eProMoS No.: </b></td>
+						<td><input type="text" id="epromos_no" name="epromos_no" class="reqdet" style="width:100%"/></td>
+					</tr>
+				</table>
+				
+				<hr style="height:3px;color:#808080;background-color:#808080;" />
+				
+				<table width="100%">
+					<tr>
+						<td width="100px"><b>EXPENSE TYPE: </b></td>
+						<td>{{ formmain.expense_type }}</td>
+					</tr>
+					<tr>
+						<td><b>CASH W/ ORDER: </b></td>
+						<td>
+							<select id="cwo" name="cwo" class="reqdet">
+								<option value="0">No</option>
+								<option value="1">Yes</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">
+							<button id="bankclpslink" type="button" class="btn btn-sm btn-danger" data-toggle="collapse" data-target="#bank_clps_div">
+						    	<span class="glyphicon glyphicon-remove-circle"></span> Bank Details
+						    </button>
+						</td>
+					</tr>
+					<tr id="bank_clps_div" class="collapse" style="position:relative !important;">
+						<td colspan="2">
+							
+							<table style="background:#808080; width:95%;">
+								<tr>
+									<td width="100px"><b>Account No.: </b></td>
+									<td><input type="text" id="bankaccountno" name="bankaccountno" class="reqdet" style="width:95%" /></td>
+								</tr>
+								<tr>
+									<td><b>Account Name: </b></td>
+									<td><input type="text" id="bankaccountname" name="bankaccountname" class="reqdet" style="width:95%" /></td>
+								</tr>
+								<tr>
+									<td><b>Account Type: </b></td>
+									<td>
+										<select id="bankaccounttype" name="bankaccounttype" class="reqdet">
+											<option value="Savings">Savings</option>
+											<option value="Current">Current</option>
+											<option value="Others">Others</option>
+										</select>
+									</td>
+								</tr>
+								<tr>
+									<td><b>Bank Name: </b></td>
+									<td>
+										<input type="text" id="bankname" name="bankname" class="reqdet" style="width:95%;" />
+									</td>
+								</tr>
+								
+							</table>
+							 
+						</td>
+					</tr>
+				</table>
+				
+			</div>
+				
+		
+		</div>
+		
+		<hr style="height:3px;color:#808080;background-color:#808080;" />
+		
+		<div id="div_coa_details" class="row" style="margin:auto;">
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>
+						
+						</th>
+						<th class="tabletitle" title="Department">
+							Dept.
+						</th>
+						<th class="tabletitle" title="Location">
+							Loc.
+						</th>
+						<th class="tabletitle">
+							COA Distribution
+						</th>
+						<th class="tabletitle">
+							Amount
+						</th>
+						<th class="tabletitle">
+							Tax Sched
+						</th>
+						<th class="tabletitle">
+							VAT Amt
+						</th>
+						<th class="tabletitle">
+							EWT Sched
+						</th>
+						<th class="tabletitle">
+							EWT
+						</th>
+						<th class="tabletitle">
+							Net Amt
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for x in 10|get_range %}
+					<tr id="row{{forloop.counter}}">
+						<td>
+							<button id="btnAAClear{{forloop.counter}}" type="button" class="clearAALine btn btn-sm btn-default" entryno="{{forloop.counter}}" title="Clear Line">
+						    	<span class="glyphicon glyphicon-erase"></span>
+						    </button>
+						</td>
+						<td>
+							<input id="dept{{forloop.counter}}" class="text-right dept_lookup uppercase deptlocs" name="dept{{forloop.counter}}" entryno="{{forloop.counter}}" type="text" style="width:40px;" />
+						</td>
+						<td>
+							<input id="locs{{forloop.counter}}" class="text-right locs_lookup uppercase deptlocs" name="locs{{forloop.counter}}" entryno="{{forloop.counter}}" type="text" style="width:50px;" />
+						</td>
+						
+						<td width="250px">
+							<input type="text" id="coa_text{{forloop.counter}}" name="coa_text{{forloop.counter}}" class="coa_lookup" entryno="{{forloop.counter}}" style="width: 100%;" />
+							<!-- 
+							<input type="hidden" id="coa_hidden{{forloop.counter}}" name="coa_hidden{{forloop.counter}}" />
+							 -->
+							<span id="label-btn{{forloop.counter}}" class="tag label label-success tagtext">
+							  <span id="coa_span{{forloop.counter}}"></span>
+							  <a class="remove-label" entryno="{{forloop.counter}}"><i class="remove glyphicon glyphicon-remove-sign glyphicon-white"></i></a> 
+							</span>
+						</td>
+						
+						<td>
+							<input id="grossamt{{forloop.counter}}" name="grossamt{{forloop.counter}}" type="text" class="amts numdot calculate" entryno="{{forloop.counter}}" style="width:100px;" required disabled/>
+						</td>
+						<td>
+							<select id="tax{{forloop.counter}}" name="tax{{forloop.counter}}" class="calculate" entryno="{{forloop.counter}}" disabled>
+								<option value="1">VAT</option>
+								<option value="2">Non-VAT</option>
+								<option value="3">DR</option>
+							</select>
+						</td>
+						<td>
+							<input id="vatamt{{forloop.counter}}" name="vatamt{{forloop.counter}}" type="text" class="amts" style="width:100px;" readonly disabled/>
+						</td>
+						<td>
+							<select id="wtax{{forloop.counter}}" name="wtax{{forloop.counter}}" class="calculate" entryno="{{forloop.counter}}" disabled>	 
+								<option value="1|0.02">Services @ 2 %</option>
+								<option value="2|0.05">Rental @ 5 %</option>
+								<option value="3|0.10">Prof. @ 10</option>
+								<option value="4|0.15">Prof. @ 15</option>
+								<option value="5|0.01">Cap. Goods @ 1 %</option>
+								<option value="6|0.00">DR (No WTax)</option>
+							</select>
+						</td>
+						<td>
+							<input id="wtaxamt{{forloop.counter}}" name="wtaxamt{{forloop.counter}}" type="text" class="amts" style="width:100px;" readonly required disabled/>
+						</td>
+						<td>
+							<input id="netamt{{forloop.counter}}" name="netamt{{forloop.counter}}" type="text" class="amts" style="width:100px;" readonly required disabled/>
+							<!-- FOR UPDATE AA ID -->
+							<input type="hidden" id="aa_id{{forloop.counter}}" name="aa_id{{forloop.counter}}" class="aaid" />
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+				<tfoot>
+					<tr style="border-top: 2px solid black; border-bottom: 2px solid black;">
+						<th colspan="4">
+							<b>TOTAL</b>
+						</th>
+						<th class="text-right">
+							<span id="totalgross" class="totals">0.00</span>
+						</th>
+						<th>
+						</th>
+						<th class="text-right">
+							<span id="totalvat" class="totals">0.00</span>
+						</th>
+						<th>
+							
+						</th>
+						<th class="text-right">
+							<span id="totalwtax" class="totals">0.00</span>
+						</th>
+						<th class="text-right">
+							<span id="totalnet" class="totals">0.00</span>
+						</th>
+					</tr>
+				</tfoot>
+			</table>
+			
+			
+		</div>
+		<!-- 
+		<hr style="height:3px;color:#808080;background-color:#808080;" />
+		 -->
+		<div class="row" style="margin: auto;" align="right">
+			
+			<!-- CLEAR BUTTON -->
+			<button id="btnClear" title="Clear Values" type="button" class="actbtns btn btn-sm btn-default" style="color: #058DC7; font-weight: bold; font-size: 14px; margin-right:5px;">
+		    	<span class="glyphicon glyphicon-refresh"></span> Clear
+		    </button>
+			 
+			 <!-- SAVE/UPDATE BUTTON -->
+			<button id="btnRequest" name="btnRequest" type="submit" class="saveaction actbtns btn btn-sm btn-default" style="color: #058DC7; font-weight: bold; font-size: 14px; margin-right:5px;">
+		    	<span class="glyphicon glyphicon-floppy-disk"></span> Save
+		    </button>
+			
+			
+			<!-- PRINT BUTTON -->
+			<!-- 
+			<a href="javascript:printDiv('printarea')">
+			 -->
+				<button id="btnPrint" title="Print" type="button" class="actbtns btn btn-sm btn-default" style="color: #058DC7; font-weight: bold; font-size: 14px; margin-right:5px;">
+			    	<span class="glyphicon glyphicon-print"></span> Print
+			    </button>
+		    <!-- 
+		    </a>
+		     -->
+		     
+		     
+		     
+		    <!-- CANCEL BUTTON -->
+		    <button id="btnCancel" title="Discard Request" type="button" class="processbtn actbtns btn btn-sm btn-default" style="color: #058DC7; font-weight: bold; font-size: 14px; margin-right:5px;">
+		    	<span class="glyphicon glyphicon-ban-circle"></span> Discard
+		    </button>
+		    
+		    <!-- SENDBACK BUTTON -->
+		    <button id="btnSendback" title="Sendback RFP" type="button" class="processbtn actbtns btn btn-sm btn-default" style="color: #058DC7; font-weight: bold; font-size: 14px; margin-right:5px;">
+		    	<span class="glyphicon glyphicon-alert"></span> Sendback
+		    </button>
+		    
+		    <!-- RECEIVE BUTTON (APV ONLY) -->
+		    <button id="btnReceive" title="Receive RFP" type="button" class="processbtn actbtns btn btn-sm btn-default" style="color: #058DC7; font-weight: bold; font-size: 14px; margin-right:5px;">
+		    	<span class="glyphicon glyphicon-save-file"></span> Receive
+		    </button>
+		    
+		    <!-- PROCEED/SUBMIT BUTTON -->
+		    <button id="btnAction" type="button" class="processbtn actbtns btn btn-sm btn-default" style="color: #058DC7; font-weight: bold; font-size: 14px; margin-right:5px;">
+		    	<span class="glyphicon glyphicon-send"></span> <span id="btn-label">Post</span>
+		    </button>
+		    
+		    <!-- SAVE AND POST BUTTON -->
+		    <button id="btnSavePost" name="btnSavePost" type="submit" class="saveaction actbtns btn btn-sm btn-default" style="color: #058DC7; font-weight: bold; font-size: 14px; margin-right:5px;">
+		    	<span class="glyphicon glyphicon-floppy-saved"></span> <span id="btn-label">Save & Post</span>
+		    </button>
+		    
+		</div>
+			
+	</form>
+	
+	<!-- WINDOWS PRINTING -->
+	<div id="printarea" style="display:none;">
+		
+	</div>
+	<iframe name="print_frame" width="0" height="0" frameborder="0" src=""></iframe>
+</div>
+<!-- PROCESSSING DIALOG END -->
+
+
+
+
+
+
+<!-- NOTIF FOR VENDOR DOES NOT EXIST -->
+<div id="dialogvendornotif" title="Not Found!" class="dialogbox">
+	<label>Vendor does not exist!</label>
+</div>
+<!-- VENDOR NOTIF END -->
+
+
+<!-- NOTIF FOR ACTIONS/EVENTS -->
+<div id="dialogactionevent" title="Status Information" class="dialogbox">
+	<label id="actmessage" style="font-size:12px;"></label>
+</div>
+<!-- NOTIF FOR ACTIONS/EVENTS END -->
+
+
+<!-- LOADING BAR -->
+<div id="dialogloadingbar" title="Search Vendor Name" class="dialogbox">
+	<div class="row" style="margin: auto;" align="center">
+		<label>Searching Vendor Name ...</label>
+		<img src="/static/images/ajax-loader.gif" />
+	</div>
+</div>
+<!-- LOADING BAR END -->
+
+
+<!-- NOTES DIALOG -->
+<div id="dialognotes" title="Attached Note" class="dialogbox">
+	<div class="row" style="margin: auto; width: 100%;" align="center">
+		<textarea id="savednotes" name="savednotes" style="font-size:12px; width:100%; height:100%; resize:none;" ></textarea>
+	</div>
+</div>
+<!-- NOTES DIALOG END-->
+
+
+
+<!-- DIALOG CHANGE PWD -->
+<div id="dialogchangepwd" title="Change Password" class="dialogbox">
+	<div class="row" style="margin: auto;">
+		<form method="post" action="/RFP/pwdcheck/" id="frmChangePwd">
+			{% csrf_token %}
+			<label id="pwdnote" class="normaltext" style="color:red; margin-bottom:15px;">{{pwdmessage}}</label>
+			
+			<label class="normaltext">Old Password</label>
+			<input class="normaltext" id="oldpwd" name="oldpwd" type="password" style="width:100%; margin-bottom:15px;" required />	
+			
+			<label class="normaltext" style="font-family: Courier;">New Password</label>
+			<input class="normaltext" id="newpwd" name="newpwd"  type="password" style="width:100%; margin-bottom:15px;" required />	
+			
+			<label class="normaltext">Confirm New Password</label>
+			<input class="normaltext" id="confirmnewpwd" name="confirmnewpwd" type="password" style="width:100%; margin-bottom:15px;" required />	
+		</form>
+	</div>
+</div>
+<!-- CHANGE PWD END -->
+
+<!-- DIALOG PWDCHANGE NOTIF -->
+<div id="dialogpwdchngsuccess" title="Password Change Successful" class="dialogbox">
+	<label>Password has been successfully changed.</label>
+</div>
+<!-- PWDCHANGE NOTIF END -->

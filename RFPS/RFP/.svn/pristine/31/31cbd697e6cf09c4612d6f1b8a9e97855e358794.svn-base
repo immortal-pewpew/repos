@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+		{% load tags %}
+		{% block content %}
+				<div class="row">
+					<div class="col-md-3">
+					  &nbsp;
+					</div>
+					<div class="col-md-6">
+						<div class="row" align="center">
+							<label class="textheader">
+								Access Masterlist
+							</label>
+						</div>
+						<div class="row" align="right">
+							<input id="accesslink" type="image" class="btn btn-lg" title="New Access" src="/static/images/control_panel_access.png" />
+						</div>
+						<div class="row">
+							&nbsp;
+						</div>
+						<div class="row" id="accessdiv">
+									
+									<table class="table table-striped">
+										<tbody>
+											<tr>
+												<th class="text-left">
+													&nbsp;
+												</th>
+												<th class="text-left">
+													USERNAME
+												</th>
+												<th class="text-left">
+													LAST
+												</th>
+												<th class="text-left">
+													FIRST
+												</th>
+												<th class="text-left">
+													MIDDLE
+												</th>
+												<th class="text-left">
+													NBU
+												</th>
+												<th class="text-center">
+													ACTION
+												</th>
+											</tr>
+										</tbody>
+										{% for access in allaccess %}
+											<tr>
+												<td width="25px" align="center">
+													<span style="color: gray;">{{forloop.counter|accessnumbering:allaccess.number}}</span>
+												</td>
+												<td align="left">
+													<span style="color: green; font-weight: bold;">{{ access.user_id }}</span>
+												</td>
+												<td align="left">
+													<span style="font-weight: bold;">{{ access.user.lname }}</span>
+												</td>
+												<td align="left">
+													<span style="font-weight: bold;">{{ access.user.fname }}</span>
+												</td>
+												<td align="left">
+													<span style="font-weight: bold;">{{ access.user.mname }}</span>
+												</td>
+												<td align="left">
+													<span style="color: blue; font-weight: bold;">
+														{{ access.nbu.desc }}
+													</span>	
+												</td>
+												<td align="center">
+													<input id="{{access.id}}" type="image" class="img delaccess" title="Delete" src="/static/images/bin32.png" />
+												</td>
+											</tr>
+										{% endfor %}
+									</table> 
+								
+							</div>
+							
+							<div class="row" align="right">
+								<div class="pagination">
+								    <span class="step-links" style="font-family: Verdana; font-size: 12px;" >
+								    	
+								    	Go to page:
+								    	<input id="accesspager" type="text" class="numonly form-control input-sm" style="width: 40px; display: inline;" value="{{ allaccess.number }}"/>
+								    	of {{ allaccess.paginator.num_pages }}
+								    	
+								    	&nbsp;
+								        &nbsp;
+								        
+								        
+								        {% if allaccess.has_previous %}
+								            <a href="?page={{ allaccess.previous_page_number }}">
+								            	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true" title="Previous"></span>
+								            </a>
+								        {% else %}
+								        	<span class="glyphicon glyphicon-arrow-left restricted" aria-hidden="true"></span>
+								        {% endif %}
+										
+										&nbsp;
+								        
+								        {% if allaccess.has_next %}
+								            <a href="?page={{ allaccess.next_page_number }}">
+								            	<span class="glyphicon glyphicon-arrow-right" aria-hidden="true" title="Next"></span>
+								            </a>
+								        {% else %}
+								        	<span class="glyphicon glyphicon-arrow-right restricted" aria-hidden="true"></span>
+								        {% endif %}
+								    </span>
+							    </div>
+							</div>
+							 
+						
+					</div>
+					<div class="col-md-3">
+					  &nbsp;
+					</div>
+				</div>
+	
+		{% endblock %}
+			
+
+

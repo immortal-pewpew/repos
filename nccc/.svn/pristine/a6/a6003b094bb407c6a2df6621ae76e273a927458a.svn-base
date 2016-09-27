@@ -1,0 +1,50 @@
+{% extends "ecs_templates/base.html" %}
+		{% load ecs_tags %}
+		{% block content %}
+				<div class="row">
+					<div class="col-md-2">
+					  &nbsp;
+					</div>
+					<div class="col-md-8">
+						<div class="row" align="center">
+							<label class="textheader">
+								Forms & Downloads
+							</label>
+						</div>
+						
+						<div class="row">
+							<div class="fdownload-container">
+						        <div class="fd-icon-docx">
+						       		&nbsp;
+						        </div>
+						        <div class="fd-description">
+						        	Payment Information Sheet
+								</div>
+						        <div class="fd-download">
+						        	<a href="/static/downloads/PIS.docx">download</a>
+						        </div>
+						    </div>
+						    
+						    <div class="fdownload-container">
+						        <div class="fd-icon-docx">
+						       		&nbsp;
+						        </div>
+						        <div class="fd-description">
+						        	Terms & Conditions
+								</div>
+						        <div class="fd-download">
+						        	<a href="/static/downloads/ECS Terms and Conditions.docx">download</a>
+						        </div>
+						    </div>				
+						</div>
+						
+					</div>
+					<div class="col-md-2">
+					  &nbsp;
+					</div>
+				</div>
+	
+		{% endblock %}
+			
+
+

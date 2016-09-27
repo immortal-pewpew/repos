@@ -1,0 +1,80 @@
+{% load staticfiles %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/ecs_css/style.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.4-dist/css/bootstrap.css' %}" />
+<!-- <link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.4-dist/datepicker/css/datepicker.css' %}" /> -->
+
+<script type="text/javascript" src="{% static 'jquery-1.12.1/jquery-1.12.1.min.js' %}" ></script>
+<!-- <script type="text/javascript" src="{% static 'js/main.js' %}" ></script> -->
+<script type="text/javascript" src="{% static 'bootstrap-3.3.4-dist/js/bootstrap.js' %}" ></script>
+<!-- <script type="text/javascript" src="{% static 'bootstrap-3.3.4-dist/datepicker/js/bootstrap-datepicker.js' %}" ></script> -->
+
+<script type="text/javascript">
+	$(window).load(function(){
+		$('#cmodal').modal('show');
+
+		$("body").on("click",".nbuchoices",function(event) {
+			$("#btnSelect").prop("disabled", false);	
+	    });
+    });
+    
+	
+</script>
+	
+
+
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+		<title>NCCC ECS</title>
+
+	</head>
+
+	<body>
+
+	</body>
+</html>
+
+<!--MODAL FOR NBU HERE -->
+	<div id="cmodal" data-backdrop="static" aria-hidden="true" class="modal fade">
+	  <div class="modal-dialog modal-sm">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        
+	        <h3 class="modal-title" align="center">
+		        	<span class="label textheader">
+		        		SELECT NBU
+		        	</span>
+		        </h3>
+	      </div>
+		  		<div id="branchmodal" class="modal-body">
+			       <form method="post" action="/ECS/setnbu/" >
+			       	{% csrf_token %}
+			       	
+	            	<div data-toggle="buttons">
+	            	{% for access in nbuaccess %}
+						<div class="nbuchoices btn btn-primary" style="display: block; text-align: left; padding-left: 20px;">
+						    {% if isadmin == 1 or isadmin == 2 %}
+						    	<input type="radio" id="{{access.nbu_id}}" name="thenbu" value="{{access.nbu_id}}" /> {{access.nbu.NBUDesc}}
+						    {% else %}
+						    	<input type="radio" id="{{access.id}}" name="thenbu" value="{{access.id}}" /> {{access.NBUDesc}}
+						    {% endif %}
+						</div>
+					{% endfor %}
+						<div style="display: block;">
+							&nbsp;
+						</div>
+						
+					</div>
+					<div align="right">
+						<button type="submit" class="btn btn-success" id="btnSelect" disabled>SELECT</button>
+					</div>
+				  </form>	
+				</div>
+		       
+	    </div><!--/.modal-content -->
+	   </div><!-- /.modal-dialog --> 
+	 </div><!-- /.modal -->

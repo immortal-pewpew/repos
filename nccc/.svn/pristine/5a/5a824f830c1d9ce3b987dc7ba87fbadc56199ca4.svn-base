@@ -1,0 +1,50 @@
+#LoadModule ssl_module modules/mod_ssl.so
+
+#Listen 8080
+WSGISocketPrefix /var/run/wsgi
+ExtendedStatus On
+
+<VirtualHost *:80>
+   ServerName nccc.com
+   ServerAlias 10.33.10.36
+   
+   Redirect permanent / https://10.33.10.36/
+</VirtualHost>
+
+<VirtualHost *:443>
+    ServerName Django_Prod_Serv1
+    ServerAlias 10.33.10.36
+    
+    DocumentRoot /var/www/html
+
+    Alias /static/ /var/www/html/nccc/static/
+
+    <Directory /var/www/html>
+		Order allow,deny
+		Allow from all
+    </Directory>
+
+    WSGIDaemonProcess django_vpn1 processes=2 threads=25 display-name=%{GROUP}
+    WSGIProcessGroup django_vpn1
+
+
+    WSGIScriptAlias / /var/www/html/nccc/nccc/wsgi.py
+
+    <Directory /var/www/html/nccc/nccc>
+		<Files wsgi.py>
+			Order deny,allow
+			Allow from all
+		</Files>
+    </Directory>
+
+	<Location /server-status>
+		SetHandler server-status
+
+		Order Deny,Allow
+		Deny from all
+		Allow from all
+	</Location>
+
+</VirtualHost>
+
+WSGIPythonPath /var/www/html/nccc
